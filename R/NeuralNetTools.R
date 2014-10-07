@@ -1,3 +1,28 @@
+# Plot a neural network model
+#
+# @params mod.in 
+# @params nid 
+# @params all.out 
+# @params all.in
+# @params bias
+# @params wts.only
+# @params rel.rsc
+# @params circle.cex
+# @params node.labs
+# @params var.labs
+# @params x.lab
+# @params y.lab
+# @params line.stag
+# @params struct
+# @params cex.val
+# @params alpha.val
+# @params circle.col
+# @params pos.col
+# @params neg.col
+# @params bor.col
+# @params max.sp
+# @params ...
+# @return what it returns
 plot.nnet<-function(mod.in,nid=T,all.out=T,all.in=T,bias=T,wts.only=F,rel.rsc=5,
                     circle.cex=5,node.labs=T,var.labs=T,x.lab=NULL,y.lab=NULL,
                     line.stag=NULL,struct=NULL,cex.val=1,alpha.val=1,
@@ -21,85 +46,7 @@ plot.nnet<-function(mod.in,nid=T,all.out=T,all.in=T,bias=T,wts.only=F,rel.rsc=5,
     else stop('Only nnet method can be used with train object')
   }
   
-  #gets weights for neural network, output is list
-  #if rescaled argument is true, weights are returned but rescaled based on abs value
-  nnet.vals<-function(mod.in,nid,rel.rsc,struct.out=struct){
-    
-    require(scales)
-    require(reshape)
-    
-    if('numeric' %in% class(mod.in)){
-      struct.out<-struct
-      wts<-mod.in
-    }
-    
-    #neuralnet package
-    if('nn' %in% class(mod.in)){
-      struct.out<-unlist(lapply(mod.in$weights[[1]],ncol))
-      struct.out<-struct.out[-length(struct.out)]
-    	struct.out<-c(
-    		length(mod.in$model.list$variables),
-    		struct.out,
-    		length(mod.in$model.list$response)
-    		)    		
-      wts<-unlist(mod.in$weights[[1]])   
-    }
-    
-    #nnet package
-    if('nnet' %in% class(mod.in)){
-      struct.out<-mod.in$n
-      wts<-mod.in$wts
-    }
-    
-    #RSNNS package
-    if('mlp' %in% class(mod.in)){
-      struct.out<-c(mod.in$nInputs,mod.in$archParams$size,mod.in$nOutputs)
-      hid.num<-length(struct.out)-2
-      wts<-mod.in$snnsObject$getCompleteWeightMatrix()
-      
-      #get all input-hidden and hidden-hidden wts
-      inps<-wts[grep('Input',row.names(wts)),grep('Hidden_2',colnames(wts)),drop=F]
-      inps<-melt(rbind(rep(NA,ncol(inps)),inps))$value
-      uni.hids<-paste0('Hidden_',1+seq(1,hid.num))
-      for(i in 1:length(uni.hids)){
-        if(is.na(uni.hids[i+1])) break
-        tmp<-wts[grep(uni.hids[i],rownames(wts)),grep(uni.hids[i+1],colnames(wts)),drop=F]
-        inps<-c(inps,melt(rbind(rep(NA,ncol(tmp)),tmp))$value)
-        }
-      
-      #get connections from last hidden to output layers
-      outs<-wts[grep(paste0('Hidden_',hid.num+1),row.names(wts)),grep('Output',colnames(wts)),drop=F]
-      outs<-rbind(rep(NA,ncol(outs)),outs)
-      
-      #weight vector for all
-      wts<-c(inps,melt(outs)$value)
-      assign('bias',F,envir=environment(nnet.vals))
-      }
-    
-    if(nid) wts<-rescale(abs(wts),c(1,rel.rsc))
-    
-    #convert wts to list with appropriate names 
-    hid.struct<-struct.out[-c(length(struct.out))]
-    row.nms<-NULL
-    for(i in 1:length(hid.struct)){
-      if(is.na(hid.struct[i+1])) break
-      row.nms<-c(row.nms,rep(paste('hidden',i,seq(1:hid.struct[i+1])),each=1+hid.struct[i]))
-    }
-    row.nms<-c(
-      row.nms,
-      rep(paste('out',seq(1:struct.out[length(struct.out)])),each=1+struct.out[length(struct.out)-1])
-      )
-    out.ls<-data.frame(wts,row.nms)
-    out.ls$row.nms<-factor(row.nms,levels=unique(row.nms),labels=unique(row.nms))
-    out.ls<-split(out.ls$wts,f=out.ls$row.nms)
-    
-    assign('struct',struct.out,envir=environment(nnet.vals))
-    
-    out.ls
-    
-    }
-  
-  wts<-nnet.vals(mod.in,nid=F)
+  wts<-nnet.vals(mod.in,nid=F, struct.out = struct)
   
   if(wts.only) return(wts)
   
@@ -228,9 +175,9 @@ plot.nnet<-function(mod.in,nid=T,all.out=T,all.in=T,bias=T,wts.only=F,rel.rsc=5,
       y1<-rep(get.ys(struct[layer2])[h.layer],struct[layer1])
       src.str<-paste('out',h.layer)
       
-      wts<-nnet.vals(mod.in,nid=F,rel.rsc)
+      wts<-nnet.vals(mod.in,nid=F,rel.rsc, struct.out = struct)
       wts<-wts[grep(src.str,names(wts))][[1]][-1]
-      wts.rs<-nnet.vals(mod.in,nid=T,rel.rsc)
+      wts.rs<-nnet.vals(mod.in,nid=T,rel.rsc, struct.out = struct)
       wts.rs<-wts.rs[grep(src.str,names(wts.rs))][[1]][-1]
       
       cols<-rep(pos.col,struct[layer1])
@@ -250,9 +197,9 @@ plot.nnet<-function(mod.in,nid=T,all.out=T,all.in=T,bias=T,wts.only=F,rel.rsc=5,
       y1<-get.ys(struct[layer2])
       src.str<-paste('hidden',layer1)
       
-      wts<-nnet.vals(mod.in,nid=F,rel.rsc)
+      wts<-nnet.vals(mod.in,nid=F,rel.rsc, struct.out = struct)
       wts<-unlist(lapply(wts[grep(src.str,names(wts))],function(x) x[all.in+1]))
-      wts.rs<-nnet.vals(mod.in,nid=T,rel.rsc)
+      wts.rs<-nnet.vals(mod.in,nid=T,rel.rsc, struct.out = struct)
       wts.rs<-unlist(lapply(wts.rs[grep(src.str,names(wts.rs))],function(x) x[all.in+1]))
       
       cols<-rep(pos.col,struct[layer2])
@@ -272,8 +219,8 @@ plot.nnet<-function(mod.in,nid=T,all.out=T,all.in=T,bias=T,wts.only=F,rel.rsc=5,
     
     for(val in 1:length(bias.x)){
       
-      wts<-nnet.vals(mod.in,nid=F,rel.rsc)
-      wts.rs<-nnet.vals(mod.in,nid=T,rel.rsc)
+      wts<-nnet.vals(mod.in,nid=F,rel.rsc, struct.out = struct)
+      wts.rs<-nnet.vals(mod.in,nid=T,rel.rsc, struct.out = struct)
       
     	if(val != length(bias.x)){
         wts<-wts[grep('out',names(wts),invert=T)]
@@ -379,7 +326,18 @@ plot.nnet<-function(mod.in,nid=T,all.out=T,all.in=T,bias=T,wts.only=F,rel.rsc=5,
   
 }
 
-lek.fun<-function(mod.in,var.sens=NULL,resp.name=NULL,exp.in=NULL,steps=100,split.vals=seq(0,1,by=0.2),val.out=F){
+# Sensitivity analysis based on Lek's profile method
+#
+# @params mod.in
+# @params var.sens
+# @params resp.name 
+# @params exp.in
+# @params steps
+# @params split.vals
+# @params val.out
+# @return what it returns
+lek.fun<-function(mod.in,var.sens=NULL,resp.name=NULL,exp.in=NULL,
+  steps=100,split.vals=seq(0,1,by=0.2),val.out=F){
   
   require(ggplot2)
   require(reshape)
@@ -480,6 +438,16 @@ lek.fun<-function(mod.in,var.sens=NULL,resp.name=NULL,exp.in=NULL,steps=100,spli
   
 }
 
+# Modification of Garson's algorithm for variable importance
+#
+# @params out.var 
+# @params mod.in
+# @params bar.plot 
+# @params struct
+# @params x.lab
+# @params y.lab
+# @params wts.only
+# @return what it returns
 gar.fun<-function(out.var,mod.in,bar.plot=T,struct=NULL,x.lab=NULL,
                   y.lab=NULL, wts.only = F){
   
@@ -504,84 +472,6 @@ gar.fun<-function(out.var,mod.in,bar.plot=T,struct=NULL,x.lab=NULL,
       warning('Using best nnet model from train output')
     }
     else stop('Only nnet method can be used with train object')
-  }
-  
-  #gets weights for neural network, output is list
-  #if rescaled argument is true, weights are returned but rescaled based on abs value
-  nnet.vals<-function(mod.in,nid,rel.rsc,struct.out=struct){
-    
-    require(scales)
-    require(reshape)
-    
-    if('numeric' %in% class(mod.in)){
-      struct.out<-struct
-      wts<-mod.in
-    }
-    
-    #neuralnet package
-    if('nn' %in% class(mod.in)){
-      struct.out<-unlist(lapply(mod.in$weights[[1]],ncol))
-      struct.out<-struct.out[-length(struct.out)]
-      struct.out<-c(
-        length(mod.in$model.list$variables),
-        struct.out,
-        length(mod.in$model.list$response)
-      )        
-      wts<-unlist(mod.in$weights[[1]])   
-    }
-    
-    #nnet package
-    if('nnet' %in% class(mod.in)){
-      struct.out<-mod.in$n
-      wts<-mod.in$wts
-    }
-    
-    #RSNNS package
-    if('mlp' %in% class(mod.in)){
-      struct.out<-c(mod.in$nInputs,mod.in$archParams$size,mod.in$nOutputs)
-      hid.num<-length(struct.out)-2
-      wts<-mod.in$snnsObject$getCompleteWeightMatrix()
-      
-      #get all input-hidden and hidden-hidden wts
-      inps<-wts[grep('Input',row.names(wts)),grep('Hidden_2',colnames(wts)),drop=F]
-      inps<-melt(rbind(rep(NA,ncol(inps)),inps))$value
-      uni.hids<-paste0('Hidden_',1+seq(1,hid.num))
-      for(i in 1:length(uni.hids)){
-        if(is.na(uni.hids[i+1])) break
-        tmp<-wts[grep(uni.hids[i],rownames(wts)),grep(uni.hids[i+1],colnames(wts)),drop=F]
-        inps<-c(inps,melt(rbind(rep(NA,ncol(tmp)),tmp))$value)
-      }
-      
-      #get connections from last hidden to output layers
-      outs<-wts[grep(paste0('Hidden_',hid.num+1),row.names(wts)),grep('Output',colnames(wts)),drop=F]
-      outs<-rbind(rep(NA,ncol(outs)),outs)
-      
-      #weight vector for all
-      wts<-c(inps,melt(outs)$value)
-      assign('bias',F,envir=environment(nnet.vals))
-    }
-    
-    if(nid) wts<-rescale(abs(wts),c(1,rel.rsc))
-    
-    #convert wts to list with appropriate names 
-    hid.struct<-struct.out[-c(length(struct.out))]
-    row.nms<-NULL
-    for(i in 1:length(hid.struct)){
-      if(is.na(hid.struct[i+1])) break
-      row.nms<-c(row.nms,rep(paste('hidden',i,seq(1:hid.struct[i+1])),each=1+hid.struct[i]))
-    }
-    row.nms<-c(
-      row.nms,
-      rep(paste('out',seq(1:struct.out[length(struct.out)])),each=1+struct.out[length(struct.out)-1])
-    )
-    out.ls<-data.frame(wts,row.nms)
-    out.ls$row.nms<-factor(row.nms,levels=unique(row.nms),labels=unique(row.nms))
-    out.ls<-split(out.ls$wts,f=out.ls$row.nms)
-    
-    assign('struct',struct.out,envir=environment(nnet.vals))
-    
-    out.ls
-    
   }
   
   # get model weights
@@ -693,5 +583,87 @@ gar.fun<-function(out.var,mod.in,bar.plot=T,struct=NULL,x.lab=NULL,
     scale_y_continuous(y.names)
 
   return(out_plo)
+  
+}
+
+# Get weights for a neural network
+#
+# @params mod.in
+# @params nid 
+# @params rel.rsc
+# @params struct.out
+# @return Returns \code{list} of weight values for the input model
+nnet.vals<-function(mod.in,nid,rel.rsc,struct.out){
+  
+  require(scales)
+  require(reshape)
+  
+  if('numeric' %in% class(mod.in)){
+    wts<-mod.in
+  }
+  
+  #neuralnet package
+  if('nn' %in% class(mod.in)){
+    struct.out<-unlist(lapply(mod.in$weights[[1]],ncol))
+    struct.out<-struct.out[-length(struct.out)]
+    struct.out<-c(
+      length(mod.in$model.list$variables),
+      struct.out,
+      length(mod.in$model.list$response)
+    )        
+    wts<-unlist(mod.in$weights[[1]])   
+  }
+  
+  #nnet package
+  if('nnet' %in% class(mod.in)){
+    struct.out<-mod.in$n
+    wts<-mod.in$wts
+  }
+  
+  #RSNNS package
+  if('mlp' %in% class(mod.in)){
+    struct.out<-c(mod.in$nInputs,mod.in$archParams$size,mod.in$nOutputs)
+    hid.num<-length(struct.out)-2
+    wts<-mod.in$snnsObject$getCompleteWeightMatrix()
+    
+    #get all input-hidden and hidden-hidden wts
+    inps<-wts[grep('Input',row.names(wts)),grep('Hidden_2',colnames(wts)),drop=F]
+    inps<-melt(rbind(rep(NA,ncol(inps)),inps))$value
+    uni.hids<-paste0('Hidden_',1+seq(1,hid.num))
+    for(i in 1:length(uni.hids)){
+      if(is.na(uni.hids[i+1])) break
+      tmp<-wts[grep(uni.hids[i],rownames(wts)),grep(uni.hids[i+1],colnames(wts)),drop=F]
+      inps<-c(inps,melt(rbind(rep(NA,ncol(tmp)),tmp))$value)
+    }
+    
+    #get connections from last hidden to output layers
+    outs<-wts[grep(paste0('Hidden_',hid.num+1),row.names(wts)),grep('Output',colnames(wts)),drop=F]
+    outs<-rbind(rep(NA,ncol(outs)),outs)
+    
+    #weight vector for all
+    wts<-c(inps,melt(outs)$value)
+    assign('bias',F,envir=environment(nnet.vals))
+  }
+  
+  if(nid) wts<-rescale(abs(wts),c(1,rel.rsc))
+  
+  #convert wts to list with appropriate names 
+  hid.struct<-struct.out[-c(length(struct.out))]
+  row.nms<-NULL
+  for(i in 1:length(hid.struct)){
+    if(is.na(hid.struct[i+1])) break
+    row.nms<-c(row.nms,rep(paste('hidden',i,seq(1:hid.struct[i+1])),each=1+hid.struct[i]))
+  }
+  row.nms<-c(
+    row.nms,
+    rep(paste('out',seq(1:struct.out[length(struct.out)])),each=1+struct.out[length(struct.out)-1])
+  )
+  out.ls<-data.frame(wts,row.nms)
+  out.ls$row.nms<-factor(row.nms,levels=unique(row.nms),labels=unique(row.nms))
+  out.ls<-split(out.ls$wts,f=out.ls$row.nms)
+  
+  assign('struct',struct.out,envir=environment(nnet.vals))
+  
+  out.ls
   
 }

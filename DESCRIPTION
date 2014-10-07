@@ -1,9 +1,22 @@
 Package: NeuralNetTools
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: R package for generic neural network tools
+Version: 1.0.0
 Date: 2014-10-07
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Marcus Beck
+Maintainer: Marcus Beck <mbafs2012@gmail.com>
+Description: This packages provides functions to aid in the interpretation of 
+  neural network models created in R.  Functions are available for plotting, 
+  quantifying variable importance, conducting a sensitivity analysis, and 
+  obtaining a simple list of model weights.
+BugReports: https://github.com/fawda123/NeuralNetTools/issues
+License: CC0
+LazyData: true
+Imports:
+  ggplot2,
+  plyr,
+  reshape,
+  scales
+Depends: R (>= 3.1.0)
+Authors@R: person("Marcus", "Beck", email = "mbafs2012@gmail.com",
+  role = c("aut", "cre"))
