@@ -5,18 +5,23 @@ Version: 1.0.0
 Date: 2014-10-07
 Author: Marcus Beck
 Maintainer: Marcus Beck <mbafs2012@gmail.com>
-Description: This packages provides functions to aid in the interpretation of 
-  neural network models created in R.  Functions are available for plotting, 
-  quantifying variable importance, conducting a sensitivity analysis, and 
-  obtaining a simple list of model weights.
+Description: This packages provides functions to aid in the interpretation of
+    neural network models created in R.  Functions are available for plotting,
+    quantifying variable importance, conducting a sensitivity analysis, and
+    obtaining a simple list of model weights.
 BugReports: https://github.com/fawda123/NeuralNetTools/issues
 License: CC0
 LazyData: true
 Imports:
-  ggplot2,
-  plyr,
-  reshape,
-  scales
-Depends: R (>= 3.1.0)
+    ggplot2,
+    plyr,
+    reshape,
+    scales
+Suggests:
+    nnet,
+    neuralnet,
+    RSNNS
+Depends:
+    R (>= 3.1.0)
 Authors@R: person("Marcus", "Beck", email = "mbafs2012@gmail.com",
-  role = c("aut", "cre"))
+    role = c("aut", "cre"))

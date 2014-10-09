@@ -1,0 +1,12 @@
+## README
+
+This is the development repository for the NeuralNetTools package.  Functions within this package can be used for the interpretation of neural network models created in R, including functions to plot a neural network interpretation diagram, evaluation of variable importance, and a sensitivity analysis of input variables. 
+
+The development version of this package can be installed from Github:
+
+```
+install.packages('devtools')
+require(devtools)
+install_github('fawda123/NeuralNetTools')
+require(NeuralNetTools)
+```
