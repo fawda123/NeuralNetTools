@@ -14,14 +14,13 @@ License: CC0
 LazyData: true
 Imports:
     ggplot2,
+    neuralnet,
+    nnet,
     plyr,
     reshape,
+    RSNNS,
     scales
-Suggests:
-    nnet,
-    neuralnet,
-    RSNNS
 Depends:
-    R (>= 3.1.0)
+    R (>= 3.1.1)
 Authors@R: person("Marcus", "Beck", email = "mbafs2012@gmail.com",
     role = c("aut", "cre"))

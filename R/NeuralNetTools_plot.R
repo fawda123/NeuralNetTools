@@ -22,7 +22,11 @@
 #' @param bor.col
 #' @param max.sp
 #' @param ...
+#' 
+#' @export
+#' 
 #' @return what -it returns
+#' 
 #' @examples 
 #' rnorm(10)
 plot.nnet<-function(mod.in,nid=T,all.out=T,all.in=T,bias=T,wts.only=F,rel.rsc=5,

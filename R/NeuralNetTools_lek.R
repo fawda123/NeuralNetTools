@@ -7,6 +7,9 @@
 #' @param steps
 #' @param split.vals
 #' @param val.out
+#' 
+#' @export
+#' 
 #' @return what it returns
 lekprofile<-function(mod.in,var.sens=NULL,resp.name=NULL,exp.in=NULL,
                   steps=100,split.vals=seq(0,1,by=0.2),val.out=F){

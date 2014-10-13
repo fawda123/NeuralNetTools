@@ -7,6 +7,9 @@
 #' @param x.lab
 #' @param y.lab
 #' @param wts.only
+#' 
+#' @export
+#' 
 #' @return what it returns
 garson<-function(out.var,mod.in,bar.plot=T,struct=NULL,x.lab=NULL,
                   y.lab=NULL, wts.only = F){
