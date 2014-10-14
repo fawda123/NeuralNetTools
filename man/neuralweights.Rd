@@ -27,7 +27,7 @@ neuralweights(mod_in, ...)
 \item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 }
 \value{
-Returns \code{list} of weight values for the input model.
+Returns a named \code{list} of weight values for the input model.
 }
 \description{
 Get weights for a neural network in an organized list by extracting values from a neural network object.  This function is generally not called by itself.
@@ -36,14 +36,34 @@ Get weights for a neural network in an organized list by extracting values from 
 Each element of the returned list is named using the construct 'layer node', e.g. 'out 1' is the first node of the output layer.  Hidden layers are named using three values for instances with more than one hidden layer, e.g., 'hidden 1 1' is the first node in the first hidden layer, 'hidden 1 2' is the second node in the first hidden layer, 'hidden 2 1' is the first node in the second hidden layer, etc.  The values in each element of the list represent the weights entering the specific node from the preceding layer in sequential order, starting with the bias layer if applicable.
 }
 \examples{
-## using documentation from the nnet package to create a model
+data(neuraldat)
+set.seed(123)
 
-library(nnet)
+## using numeric input
 
-ird <- data.frame(rbind(iris3[,,1], iris3[,,2], iris3[,,3]), species = factor(c(rep("s",50), rep("c", 50), rep("v", 50))))
+wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
+struct <- c(2, 2, 1) #two inputs, two hidden, one output
 
-ir.nn2 <- nnet(species ~ ., data = ird, subset = samp, size = 2, rang = 0.1, decay = 5e-4, maxit = 200)
+neuralweights(wts_in, struct = struct)
 
-neuralweights(ir.nn2)
+## using nnet
+
+mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 10, linout = T)
+
+neuralweights(mod)
+
+## using RSNNS, no bias layers
+
+x <- neuraldat[, c('X1', 'X2', 'X3')]
+y <- neuraldat[, 'Y1']
+mod <- mlp(x, y, size = 10, linOut = T)
+
+neuralweights(mod)
+
+## using neuralnet
+
+mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 2)
+
+neuralweights(mod)
 }
 

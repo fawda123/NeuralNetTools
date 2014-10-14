@@ -1,4 +1,6 @@
-#' Modification of Garson's algorithm for variable importance
+#' Variable importance for neural networks
+#' 
+#' Variable importance for neural networks using a modification of Garson's algorithm.  
 #'
 #' @param out.var 
 #' @param mod.in
@@ -35,7 +37,7 @@ garson<-function(out.var,mod.in,bar.plot=T,struct=NULL,x.lab=NULL,
   }
   
   # get model weights
-  best.wts<-nnet.vals(mod.in,nid=F,rel.rsc=5,struct.out=NULL)
+  best.wts<-neuralweights(mod.in,rel.rsc=5,struct=NULL)
   
   # weights only if T
   if(wts.only) return(best.wts)

@@ -8,21 +8,41 @@
 #' 
 #' @export neuralweights
 #' 
-#' @return Returns \code{list} of weight values for the input model.  
+#' @return Returns a named \code{list} of weight values for the input model.  
 #' 
 #' @details Each element of the returned list is named using the construct 'layer node', e.g. 'out 1' is the first node of the output layer.  Hidden layers are named using three values for instances with more than one hidden layer, e.g., 'hidden 1 1' is the first node in the first hidden layer, 'hidden 1 2' is the second node in the first hidden layer, 'hidden 2 1' is the first node in the second hidden layer, etc.  The values in each element of the list represent the weights entering the specific node from the preceding layer in sequential order, starting with the bias layer if applicable.  
 #' 
 #' @examples
+#' 
+#' data(neuraldat)
+#' set.seed(123)
+#' 
+#' ## using numeric input
+#' 
+#' wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
+#' struct <- c(2, 2, 1) #two inputs, two hidden, one output 
+#' 
+#' neuralweights(wts_in, struct = struct)
+#' 
+#' ## using nnet
+#' 
+#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 10, linout = T)
 #'  
-#' ## using documentation from the nnet package to create a model
-#'  
-#' library(nnet)
-#'   
-#' ird <- data.frame(rbind(iris3[,,1], iris3[,,2], iris3[,,3]), species = factor(c(rep("s",50), rep("c", 50), rep("v", 50))))
-#'  
-#' ir.nn2 <- nnet(species ~ ., data = ird, subset = samp, size = 2, rang = 0.1, decay = 5e-4, maxit = 200)
-#'  
-#' neuralweights(ir.nn2)  
+#' neuralweights(mod)  
+#' 
+#' ## using RSNNS, no bias layers
+#' 
+#' x <- neuraldat[, c('X1', 'X2', 'X3')]
+#' y <- neuraldat[, 'Y1']
+#' mod <- mlp(x, y, size = 10, linOut = T)
+#' 
+#' neuralweights(mod)
+#' 
+#' ## using neuralnet
+#' 
+#' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 2)
+#' 
+#' neuralweights(mod)
 neuralweights <-  function(mod_in, ...) UseMethod('neuralweights')
 
 #' @rdname neuralweights
@@ -36,6 +56,10 @@ neuralweights <-  function(mod_in, ...) UseMethod('neuralweights')
 neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct){
   
   wts <-  mod_in
+  
+  # sanity check
+  if(length(wts) != struct[1]*struct[2]+struct[2]*struct[3]+struct[3]+struct[2])
+    stop('Incorrect length of weight matrix for given network structure')
   
   if(!is.null(rel_rsc)) wts <-  scales::rescale(abs(wts), c(1, rel_rsc))
   
@@ -95,7 +119,7 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL){
 
 #' @rdname neuralweights
 #' 
-#' @import scales 
+#' @import scales reshape2
 #'
 #' @method neuralweights mlp
 neuralweights.mlp <-  function(mod_in, rel_rsc = NULL){
