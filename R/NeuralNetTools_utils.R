@@ -3,7 +3,6 @@
 #' Get weights for a neural network in an organized list by extracting values from a neural network object.  This function is generally not called by itself.  
 #'
 #' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn} 
-#' 
 #' @param ... arguments passed to other methods
 #' 
 #' @export neuralweights
@@ -52,6 +51,8 @@ neuralweights <-  function(mod_in, ...) UseMethod('neuralweights')
 #' 
 #' @import scales
 #' 
+#' @export neuralweights.numeric
+#' 
 #' @method neuralweights numeric
 neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct){
   
@@ -61,7 +62,7 @@ neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct){
   if(length(wts) != struct[1]*struct[2]+struct[2]*struct[3]+struct[3]+struct[2])
     stop('Incorrect length of weight matrix for given network structure')
   
-  if(!is.null(rel_rsc)) wts <-  scales::rescale(abs(wts), c(1, rel_rsc))
+  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), c(1, rel_rsc))
   
   #convert wts to list with appropriate names 
   hid_struct <-  struct[ -c(length(struct))]
@@ -87,7 +88,9 @@ neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct){
 #' @rdname neuralweights
 #' 
 #' @import scales
-#' 
+#'
+#' @export neuralweights.nnet
+#'  
 #' @method neuralweights nnet
 neuralweights.nnet <-  function(mod_in, rel_rsc = NULL){
   
@@ -120,6 +123,8 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL){
 #' @rdname neuralweights
 #' 
 #' @import scales reshape2
+#'
+#' @export neuralweights.mlp
 #'
 #' @method neuralweights mlp
 neuralweights.mlp <-  function(mod_in, rel_rsc = NULL){
@@ -173,6 +178,8 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL){
 #'   
 #' @import scales
 #'   
+#' @export neuralweights.nn
+#'
 #' @method neuralweights nn
 neuralweights.nn <- function(mod_in, rel_rsc = NULL){
   

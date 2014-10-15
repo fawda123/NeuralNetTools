@@ -3,7 +3,7 @@ library(clusterGeneration)
 seed.val <- 2
 set.seed(seed.val)
 
-num.vars <- 8
+num.vars <- 3
 num.obs <- 1000
 
 #input variables
@@ -12,9 +12,9 @@ rand.vars <- mvrnorm(num.obs, rep(0, num.vars), Sigma = cov.mat)
 
 #output variables
 parms <- runif(num.vars, -10, 10)
-y1 <- rand.vars %*% matrix(parms) + rnorm(num.obs, sd = 20)
+y1 <- rand.vars %*% matrix(parms) + rnorm(num.obs, sd = 10)
 parms2 <- runif(num.vars, -10, 10)
-y2 <- rand.vars %*% matrix(parms2) + rnorm(num.obs, sd = 20)
+y2 <- rand.vars %*% matrix(parms2) + rnorm(num.obs, sd = 10)
 
 #final datasets
 rand.vars <- data.frame(rand.vars)
