@@ -15,11 +15,11 @@ garson(mod_in, out_var, ...)
 \method{garson}{nnet}(mod_in, out_var, bar_plot = T, x_lab = NULL,
   y_lab = NULL, wts_only = F)
 
-\method{garson}{mlp}(mod_in, out_var, bar_plot = T, struct = NULL,
-  x_lab = NULL, y_lab = NULL, wts_only = F)
+\method{garson}{mlp}(mod_in, out_var, bar_plot = T, x_lab = NULL,
+  y_lab = NULL, wts_only = F)
 
-\method{garson}{nn}(mod_in, out_var, bar_plot = T, struct = NULL,
-  x_lab = NULL, y_lab = NULL, wts_only = F)
+\method{garson}{nn}(mod_in, out_var, bar_plot = T, x_lab = NULL,
+  y_lab = NULL, wts_only = F)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}}
@@ -30,7 +30,7 @@ garson(mod_in, out_var, ...)
 
 \item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 
-\item{bar_plot}{logical indicating if a \code{ggplot} object is returend (default \code{T}, otherwise numeric values are returned}
+\item{bar_plot}{logical indicating if a \code{ggplot} object is returned (default \code{T}), otherwise numeric values are returned}
 
 \item{x_lab}{chr string of alternative names to be used for explanatory variables in the figure, default is taken from \code{mod_in}}
 
@@ -47,12 +47,9 @@ Variable importance for neural networks using a modification of Garson's algorit
 \details{
 The weights that connect variables in a neural network are partially analogous to parameter coefficients in a standard regression model and can be used to describe relationships between variables. The weights dictate the relative influence of information that is processed in the network such that input variables that are not relevant in their correlation with a response variable are suppressed by the weights. The opposite effect is seen for weights assigned to explanatory variables that have strong, positive associations with a response variable. An obvious difference between a neural network and a regression model is that the number of weights is excessive in the former case. This characteristic is advantageous in that it makes neural networks very flexible for modeling non-linear functions with multiple interactions, although interpretation of the effects of specific variables is of course challenging.
 
-A method proposed by Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined. This function modifies the original method to preserve the sign, such that relative importance values for input variables can be ranked continuous from -1 (negative relation) to 1 (positive relation).
+A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined. This function modifies the original method to preserve the sign, such that relative importance values for input variables can be ranked continuous from -1 (negative relation) to 1 (positive relation).
 }
 \examples{
-data(neuraldat)
-set.seed(123)
-
 ## using numeric input
 
 wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
@@ -62,23 +59,32 @@ garson(wts_in, 'Y1', struct)
 
 ## using nnet
 
-mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 10, linout = T)
+library(nnet)
+
+data(neuraldat)
+set.seed(123)
+
+mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 10)
 
 garson(mod, 'Y1')
 
 ## using RSNNS, no bias layers
 
+library(RSNNS)
+
 x <- neuraldat[, c('X1', 'X2', 'X3')]
 y <- neuraldat[, 'Y1']
-mod <- mlp(x, y, size = 10, linOut = T)
+mod <- mlp(x, y, size = 10)
 
-garson(mod)
+garson(mod, 'Y1')
 
 ## using neuralnet
 
-mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 2)
+library(neuralnet)
 
-garson(mod)
+mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 10)
+
+garson(mod, 'Y1')
 }
 \references{
 Garson, G.D. 1991. Interpreting neural network connection weights. Artificial Intelligence Expert. 6(4):46-51.

@@ -48,11 +48,15 @@ neuralweights(wts_in, struct = struct)
 
 ## using nnet
 
+library(nnet)
+
 mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 10, linout = T)
 
 neuralweights(mod)
 
 ## using RSNNS, no bias layers
+
+library(RSNNS)
 
 x <- neuraldat[, c('X1', 'X2', 'X3')]
 y <- neuraldat[, 'Y1']
@@ -62,7 +66,9 @@ neuralweights(mod)
 
 ## using neuralnet
 
-mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 2)
+library(neuralnet)
+
+mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 10)
 
 neuralweights(mod)
 }
