@@ -133,9 +133,9 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = T, x_lab = NULL, 
   
   #get relative contribution
   #inp_cont/sum(inp_cont)
-  rel_imp <- {
-    signs <- sign(inp_cont)
-    signs*scales::rescale(abs(inp_cont), c(0, 1))
+  rel_imp <- { inp_cont
+#     signs <- sign(inp_cont)
+#     signs*scales::rescale(abs(inp_cont), c(0, 1))
   }
   
   if(!bar_plot){
@@ -230,9 +230,9 @@ garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NUL
   
   #get relative contribution
   #inp_cont/sum(inp_cont)
-  rel_imp <- {
-    signs <- sign(inp_cont)
-    signs*scales::rescale(abs(inp_cont), c(0, 1))
+  rel_imp <- { inp_cont
+#     signs <- sign(inp_cont)
+#     signs*scales::rescale(abs(inp_cont), c(0, 1))
   }
   
   if(!bar_plot){
@@ -279,45 +279,12 @@ garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL
   
   #get variable names from mod_in object
   #change to user input if supplied
-  if('numeric' %in% class(mod_in)){
-    x_names <- paste0(rep('X', struct[1]), seq(1:struct[1]))
-    y_names <- paste0(rep('Y', struct[3]), seq(1:struct[3]))
-  }
-  if('mlp' %in% class(mod_in)){
-    all_names <- mod_in$snnsObject$getUnitDefinitions()
-    x_names <- all_names[grep('Input', all_names$unitName), 'unitName']
-    y_names <- all_names[grep('Output', all_names$unitName), 'unitName']
-  }
-  if('nn' %in% class(mod_in)){
-    x_names <- mod_in$model.list$variables
-    y_names <- mod_in$model.list$response
-  }
-  if('xNames' %in% names(mod_in)){
-    x_names <- mod_in$xNames
-    y_names <- attr(terms(mod_in), 'factor')
-    y_names <- row.names(y_names)[!row.names(y_names) %in% x_names]
-  }
-  if(!'xNames' %in% names(mod_in) & 'nnet' %in% class(mod_in)){
-    if(is.null(mod_in$call$formula)){
-      x_names <- colnames(eval(mod_in$call$x))
-      y_names <- colnames(eval(mod_in$call$y))
-    }
-    else{
-      forms <- eval(mod_in$call$formula)
-      x_names <- mod_in$coefnames
-      facts <- attr(terms(mod_in), 'factors')
-      y_check <- mod_in$fitted
-      if(ncol(y_check)>1) y_names <- colnames(y_check)
-      else y_names <- as.character(forms)[2]
-    } 
-  }
-  
+  all_names <- mod_in$snnsObject$getUnitDefinitions()
+  x_names <- all_names[grep('Input', all_names$unitName), 'unitName']
+  y_names <- all_names[grep('Output', all_names$unitName), 'unitName']
+
   # get index value for response variable to measure
-  if('numeric' %in% class(mod_in)){
-    out_ind <- as.numeric(gsub('^[A-Z]', '', out_var))
-  } else {
-    out_ind <- grep(out_var, y_names)
-  }
+  out_ind <- grep(out_var, y_names)
   
   #change variables names to user sub 
   if(!is.null(x_lab)){
@@ -360,9 +327,9 @@ garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL
   
   #get relative contribution
   #inp_cont/sum(inp_cont)
-  rel_imp <- {
-    signs <- sign(inp_cont)
-    signs*scales::rescale(abs(inp_cont), c(0, 1))
+  rel_imp <- { inp_cont
+#     signs <- sign(inp_cont)
+#     signs*scales::rescale(abs(inp_cont), c(0, 1))
   }
   
   if(!bar_plot){
@@ -392,23 +359,6 @@ garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL
 #' @method garson nn
 garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F){
   
-  #sanity checks
-  if('numeric' %in% class(mod_in)){
-    if(is.null(struct)) stop('Three-element vector required for struct')
-    if(length(mod_in) != ((struct[1]*struct[2]+struct[2]*struct[3])+(struct[3]+struct[2])))
-      stop('Incorrect length of weight matrix for given network structure')
-    if(substr(out_var, 1, 1) != 'Y' | 
-         class(as.numeric(gsub('^[A-Z]', '', out_var))) != 'numeric')
-      stop('out_var must be of form "Y1", "Y2", etc.')
-  }
-  if('train' %in% class(mod_in)){
-    if('nnet' %in% class(mod_in$finalModel)){
-      mod_in <- mod_in$finalModel
-      warning('Using best nnet model from train output')
-    }
-    else stop('Only nnet method can be used with train object')
-  }
-  
   # get model weights
   best_wts <- neuralweights(mod_in, rel_rsc = 5)
   
@@ -417,45 +367,11 @@ garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL,
   
   #get variable names from mod_in object
   #change to user input if supplied
-  if('numeric' %in% class(mod_in)){
-    x_names <- paste0(rep('X', struct[1]), seq(1:struct[1]))
-    y_names <- paste0(rep('Y', struct[3]), seq(1:struct[3]))
-  }
-  if('mlp' %in% class(mod_in)){
-    all_names <- mod_in$snnsObject$getUnitDefinitions()
-    x_names <- all_names[grep('Input', all_names$unitName), 'unitName']
-    y_names <- all_names[grep('Output', all_names$unitName), 'unitName']
-  }
-  if('nn' %in% class(mod_in)){
-    x_names <- mod_in$model.list$variables
-    y_names <- mod_in$model.list$response
-  }
-  if('xNames' %in% names(mod_in)){
-    x_names <- mod_in$xNames
-    y_names <- attr(terms(mod_in), 'factor')
-    y_names <- row.names(y_names)[!row.names(y_names) %in% x_names]
-  }
-  if(!'xNames' %in% names(mod_in) & 'nnet' %in% class(mod_in)){
-    if(is.null(mod_in$call$formula)){
-      x_names <- colnames(eval(mod_in$call$x))
-      y_names <- colnames(eval(mod_in$call$y))
-    }
-    else{
-      forms <- eval(mod_in$call$formula)
-      x_names <- mod_in$coefnames
-      facts <- attr(terms(mod_in), 'factors')
-      y_check <- mod_in$fitted
-      if(ncol(y_check)>1) y_names <- colnames(y_check)
-      else y_names <- as.character(forms)[2]
-    } 
-  }
-  
+  x_names <- mod_in$model.list$variables
+  y_names <- mod_in$model.list$response
+
   # get index value for response variable to measure
-  if('numeric' %in% class(mod_in)){
-    out_ind <- as.numeric(gsub('^[A-Z]', '', out_var))
-  } else {
-    out_ind <- grep(out_var, y_names)
-  }
+  out_ind <- grep(out_var, y_names)
   
   #change variables names to user sub 
   if(!is.null(x_lab)){
@@ -498,9 +414,9 @@ garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL,
   
   #get relative contribution
   #inp_cont/sum(inp_cont)
-  rel_imp <- {
-    signs <- sign(inp_cont)
-    signs*scales::rescale(abs(inp_cont), c(0, 1))
+  rel_imp <- { inp_cont
+#     signs <- sign(inp_cont)
+#     signs*scales::rescale(abs(inp_cont), c(0, 1))
   }
   
   if(!bar_plot){
