@@ -29,7 +29,7 @@
 #' 
 #' library(nnet)
 #' 
-#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 10, linout = T)
+#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, linout = T)
 #'  
 #' neuralweights(mod)  
 #' 
@@ -39,7 +39,7 @@
 #' 
 #' x <- neuraldat[, c('X1', 'X2', 'X3')]
 #' y <- neuraldat[, 'Y1']
-#' mod <- mlp(x, y, size = 10, linOut = T)
+#' mod <- mlp(x, y, size = 5, linOut = T)
 #' 
 #' neuralweights(mod)
 #' 
@@ -47,7 +47,7 @@
 #' 
 #' library(neuralnet)
 #' 
-#' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 10)
+#' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
 #' 
 #' neuralweights(mod)
 neuralweights <-  function(mod_in, ...) UseMethod('neuralweights')

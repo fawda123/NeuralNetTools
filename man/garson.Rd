@@ -42,12 +42,12 @@ garson(mod_in, out_var, ...)
 A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = F}, otherwise a \code{data.frame} of relative importance values for each input variable.
 }
 \description{
-Variable importance for neural networks using a modification of Garson's algorithm
+Relative importance of input variables in neural networks using Garson's algorithm
 }
 \details{
 The weights that connect variables in a neural network are partially analogous to parameter coefficients in a standard regression model and can be used to describe relationships between variables. The weights dictate the relative influence of information that is processed in the network such that input variables that are not relevant in their correlation with a response variable are suppressed by the weights. The opposite effect is seen for weights assigned to explanatory variables that have strong, positive associations with a response variable. An obvious difference between a neural network and a regression model is that the number of weights is excessive in the former case. This characteristic is advantageous in that it makes neural networks very flexible for modeling non-linear functions with multiple interactions, although interpretation of the effects of specific variables is of course challenging.
 
-A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined. This function modifies the original method to preserve the sign, such that relative importance values for input variables can be ranked continuous from -1 (negative relation) to 1 (positive relation).
+A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined.
 }
 \examples{
 ## using numeric input
@@ -64,7 +64,7 @@ library(nnet)
 data(neuraldat)
 set.seed(123)
 
-mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 10)
+mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 
 garson(mod, 'Y1')
 
@@ -74,7 +74,7 @@ library(RSNNS)
 
 x <- neuraldat[, c('X1', 'X2', 'X3')]
 y <- neuraldat[, 'Y1']
-mod <- mlp(x, y, size = 10)
+mod <- mlp(x, y, size = 5)
 
 garson(mod, 'Y1')
 
@@ -82,7 +82,7 @@ garson(mod, 'Y1')
 
 library(neuralnet)
 
-mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 10)
+mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
 
 garson(mod, 'Y1')
 }

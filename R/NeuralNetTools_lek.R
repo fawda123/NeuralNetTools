@@ -1,4 +1,66 @@
 #' Sensitivity analysis based on Lek's profile method
+#' 
+#' Conduct a sensitivity analysis of model responses in a neural network to input variables using Lek's profile method
+#' 
+#' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}
+#' @param var_sens
+#' @param resp_name 
+#' @param exp_in
+#' @param steps
+#' @param split_vals
+#' @param val_out
+#' @param ... arguments passed to other methods
+#' 
+#' @details
+#' 
+#' @export lekprofile neuralnet nnet mlp
+#' 
+#' @import ggplot2 neuralnet nnet RSNNS
+#' 
+#' @return 
+#' 
+#' @references
+#' 
+#' @examples
+#' 
+#' ## using numeric input
+#' 
+#' wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
+#' struct <- c(2, 2, 1) #two inputs, two hidden, one output 
+#' 
+#' 
+#' 
+#' ## using nnet
+#' 
+#' library(nnet)
+#' 
+#' data(neuraldat) 
+#' set.seed(123)
+#' 
+#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
+#'  
+#'  
+#' 
+#' ## using RSNNS, no bias layers
+#' 
+#' library(RSNNS)
+#' 
+#' x <- neuraldat[, c('X1', 'X2', 'X3')]
+#' y <- neuraldat[, 'Y1']
+#' mod <- mlp(x, y, size = 5)
+#' 
+#' 
+#' 
+#' ## using neuralnet
+#' 
+#' library(neuralnet)
+#' 
+#' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
+#' 
+#' 
+lekprofile <- function(mod_in, ....) UseMethod('lekprofile')
+
+#' Sensitivity analysis based on Lek's profile method
 #'
 #' @param mod.in
 #' @param var.sens
@@ -12,7 +74,7 @@
 #' 
 #' @return what it returns
 lekprofile<-function(mod.in,var.sens=NULL,resp.name=NULL,exp.in=NULL,
-                  steps=100,split.vals=seq(0,1,by=0.2),val.out=F){
+                     steps=100,split.vals=seq(0,1,by=0.2),val.out=F){
   
   ##
   #sort out exp and resp names based on object type of call to mod.in
