@@ -25,7 +25,7 @@ norm.fun <- function(x){
   (x - min(x))/(max(x) - min(x)) 
 }
 
-neuraldat <- apply(neuraldat, 2, norm.fun)
+neuraldat <- data.frame(apply(neuraldat, 2, norm.fun))
 
 save(neuraldat, file = 'data/neuraldat.RData')
 

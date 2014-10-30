@@ -2,172 +2,210 @@
 #' 
 #' Conduct a sensitivity analysis of model responses in a neural network to input variables using Lek's profile method
 #' 
-#' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}
-#' @param var_sens
-#' @param resp_name 
-#' @param exp_in
-#' @param steps
-#' @param split_vals
-#' @param val_out
+#' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{nnet} or \code{mlp}
+#' @param var_sens chr strings indicating the explanatory variables to evaluate, default \code{NULL} will evaluate all
+#' @param resp_name chr string indicating the response variables to evaluate, default \code{NULL} will evaluate all
+#' @param steps numeric value indicating number of observations to evaluate for each explanatory variable from minimum to maximum value, default 100
+#' @param split_vals numeric vector indicating quantile values at which to hold other explanatory variables constant
+#' @param val_out logical value indicating if actual sensitivity values are returned rather than a plot, default \code{F}
 #' @param ... arguments passed to other methods
 #' 
 #' @details
+#' The Lek profile method is described briefly in Lek et al. 1996 and in more detail in Gevrey et al. 2003. The profile method is fairly generic and can be extended to any statistical model in R with a predict method.  However, it is one of few methods used to evaluate sensitivity in neural networks.  Note that there is no predict method for neuralnet objects from the nn package, so a profile method is not available.  Currently, the defualt method of this function attempts to find variables names from a generic model object.  The default method of this function has only been tested with \code{\link[stats]{lm}} and may not work with other model types if the variable names cannot be found.
 #' 
-#' @export lekprofile neuralnet nnet mlp
+#' The profile method begins by obtaining model predictions of the response variable across the range of values for the given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum). The final result is a set of response curves for one response variable across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is implemented in in the functoin by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.
 #' 
-#' @import ggplot2 neuralnet nnet RSNNS
+#' @export lekprofile neuralnet nnet mlp ggplot aes facet_grid geom_line scale_linetype_manual scale_size_manual melt
 #' 
-#' @return 
+#' @import ggplot2 neuralnet nnet RSNNS reshape2
+#' 
+#' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  F}, otherwise a \code{data.frame} in long form showing the predicted responses at different values of the explanatory varibales. 
 #' 
 #' @references
+#' Lek, S., Delacoste, M., Baran, P., Dimopoulos, I., Lauga, J., Aulagnier, S. 1996. Application of neural networks to modelling nonlinear relationships in Ecology. Ecological Modelling. 90:39-52.
+#' 
+#' Gevrey, M., Dimopoulos, I., Lek, S. 2003. Review and comparison of methods to study the contribution of variables in artificial neural network models. Ecological Modelling. 160:249-264.
 #' 
 #' @examples
 #' 
-#' ## using numeric input
+#' ## a simple lm 
 #' 
-#' wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
-#' struct <- c(2, 2, 1) #two inputs, two hidden, one output 
+#' data(neuraldat) 
 #' 
+#' mod <- lm(Y1 ~ X1 + X2 + X3, data = neuraldat)
 #' 
+#' lekprofile(mod)
 #' 
 #' ## using nnet
 #' 
 #' library(nnet)
 #' 
-#' data(neuraldat) 
 #' set.seed(123)
 #' 
 #' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 #'  
-#'  
+#' lekprofile(mod)  
 #' 
 #' ## using RSNNS, no bias layers
 #' 
 #' library(RSNNS)
 #' 
 #' x <- neuraldat[, c('X1', 'X2', 'X3')]
-#' y <- neuraldat[, 'Y1']
+#' y <- neuraldat[, 'Y1', drop = F]
 #' mod <- mlp(x, y, size = 5)
 #' 
+#' lekprofile(mod, exp_in = x)
 #' 
+#' ## back to nnet, not using formula to create model
+#' ## y variable must a name attribute
 #' 
-#' ## using neuralnet
+#' mod <- nnet(x, y, data = neuraldat, size = 5)
 #' 
-#' library(neuralnet)
-#' 
-#' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
-#' 
-#' 
-lekprofile <- function(mod_in, ....) UseMethod('lekprofile')
+#' lekprofile(mod)
+lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 
-#' Sensitivity analysis based on Lek's profile method
+#' @rdname lekprofile
 #'
-#' @param mod.in
-#' @param var.sens
-#' @param resp.name 
-#' @param exp.in
-#' @param steps
-#' @param split.vals
-#' @param val.out
+#' @import ggplot2 reshape2
 #' 
-#' @export
+#' @export lekprofile.default
 #' 
-#' @return what it returns
-lekprofile<-function(mod.in,var.sens=NULL,resp.name=NULL,exp.in=NULL,
-                     steps=100,split.vals=seq(0,1,by=0.2),val.out=F){
+#' @method lekprofile default
+lekprofile.default <- function(mod_in, var_sens = NULL, resp_name = NULL,
+                            steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F){
   
   ##
-  #sort out exp and resp names based on object type of call to mod.in
+  #sort out exp and resp names based on object type of call to mod_in
   #get matrix for exp vars
-  
-  #for nnet
-  if('nnet' %in% class(mod.in) | !'mlp' %in% class(mod.in)){
-    if(is.null(mod.in$call$formula)){
-      if(is.null(resp.name)) resp.name<-colnames(eval(mod.in$call$y))
-      if(is.null(var.sens)) var.sens<-colnames(eval(mod.in$call$x))
-      mat.in<-eval(mod.in$call$x)
-    }
-    else{
-      forms<-eval(mod.in$call$formula)
-      dat.names<-model.frame(forms,data=eval(mod.in$call$data))
-      if(is.null(resp.name)) resp.name<-as.character(forms)[2]
-      if(is.null(var.sens)) 
-        var.sens<-names(dat.names)[!names(dat.names) %in% as.character(forms)[2]]
-      mat.in<-dat.names[,!names(dat.names) %in% as.character(forms)[2]]
-    }
+  if(is.null(mod_in$call$formula)){
+    if(is.null(resp_name)) resp_name <- colnames(eval(mod_in$call$y))
+    if(is.null(var_sens)) var_sens <- colnames(eval(mod_in$call$x))
+    mat_in <- eval(mod_in$call$x)
+  }
+  else{
+    forms <- eval(mod_in$call$formula)
+    dat_names <- model.frame(forms, data = eval(mod_in$call$data))
+    if(is.null(resp_name)) resp_name <- as.character(forms)[2]
+    if(is.null(var_sens)) 
+      var_sens <- names(dat_names)[!names(dat_names) %in% as.character(forms)[2]]
+    mat_in <- dat_names[, !names(dat_names) %in% as.character(forms)[2]]
   }
   
-  #for rsnns
-  if('mlp' %in% class(mod.in)){
-    if(is.null(exp.in)) stop('Must include matrix or data frame of input variables')
-    
-    if(is.null(resp.name)) resp.name<-paste0('Y',seq(1,mod.in$nOutputs))
-    mat.in<-data.frame(exp.in)
-    names(mat.in)<-paste0('X',seq(1,mod.in$nInputs))
-    if(is.null(var.sens)) var.sens<-names(mat.in)
-    
-  }
-  
-  ##
-  #gets predicted output for nnet based on matrix of explanatory variables
-  #selected explanatory variable is sequenced across range of values
-  #all other explanatory variables are held constant at value specified by 'fun.in'
-  pred.sens<-function(mat.in,mod.in,var.sel,step.val,fun.in,resp.name){
-    
-    mat.out<-matrix(nrow=step.val,ncol=ncol(mat.in),dimnames=list(c(1:step.val),colnames(mat.in)))
-    
-    mat.cons<-mat.in[,!names(mat.in) %in% var.sel]
-    mat.cons<-apply(mat.cons,2,fun.in)
-    mat.out[,!names(mat.in) %in% var.sel]<-t(sapply(1:step.val,function(x) mat.cons))
-    
-    mat.out[,var.sel]<-seq(min(mat.in[,var.sel]),max(mat.in[,var.sel]),length=step.val)
-    
-    out<-data.frame(predict(mod.in,new=as.data.frame(mat.out)))
-    names(out)<-paste0('Y',seq(1,ncol(out)))
-    out<-out[,resp.name,drop=F]
-    x.vars<-mat.out[,var.sel]
-    data.frame(out,x.vars)
-    
-  }
-  
-  #use 'pred.fun' to get pred vals of response across range of vals for an exp vars
+  #use 'pred_fun' to get pred vals of response across range of vals for an exp vars
   #loops over all explanatory variables of interest and all split values
-  lek.vals<-sapply(
-    var.sens,
+  lek_vals <- sapply(
+    var_sens, 
     function(vars){
       sapply(
-        split.vals,
+        split_vals, 
         function(splits){
-          pred.sens(
-            mat.in,
-            mod.in,
-            vars,
-            steps,
-            function(val) quantile(val,probs=splits),
-            resp.name
+          pred_sens(
+            mat_in, 
+            mod_in, 
+            vars, 
+            steps, 
+            function(val) quantile(val, probs = splits), 
+            resp_name
           )
-        },
-        simplify=F
+        }, 
+        simplify = F
       )
-    },
-    simplify=F  
+    }, 
+    simplify = F  
   )
   
-  #melt lek.val list for use with ggplot
-  lek.vals<-melt.list(lek.vals,id.vars='x.vars')
-  lek.vals$L2<-factor(lek.vals$L2,labels=split.vals)
-  names(lek.vals)<-c('Explanatory','resp.name','Response','Splits','exp.name')
+  #melt lek_val list for use with ggplot
+  lek_vals <- melt(lek_vals, id.vars = 'x_vars')
+  lek_vals$L2 <- factor(lek_vals$L2, labels = split_vals)
+  names(lek_vals) <- c('Explanatory', 'resp_name', 'Response', 'Splits', 'exp_name')
   
-  #return only values if val.out = T
-  if(val.out) return(lek.vals)
+  #return only values if val_out = T
+  if(val_out) return(lek_vals)
   
   #ggplot object
-  p<-ggplot(lek.vals,aes(x=Explanatory,y=Response,group=Splits)) + 
-    geom_line(aes(colour=Splits,linetype=Splits,size=Splits)) + 
-    facet_grid(resp.name~exp.name) +
-    scale_linetype_manual(values=rep('solid',length(split.vals))) +
-    scale_size_manual(values=rep(1,length(split.vals)))
+  p <- ggplot(lek_vals, aes(x = Explanatory, y = Response, group = Splits)) + 
+    geom_line(aes(colour = Splits, linetype = Splits, size = Splits)) + 
+    facet_grid(resp_name ~ exp_name) +
+    scale_linetype_manual(values = rep('solid', length(split_vals))) +
+    scale_size_manual(values = rep(1, length(split_vals)))
   
   return(p)
   
 }
+
+#' @rdname lekprofile
+#'
+#' @import ggplot2 reshape2
+#' 
+#' @export lekprofile.nnet
+#' 
+#' @method lekprofile nnet
+lekprofile.nnet <- function(mod_in, var_sens = NULL, resp_name = NULL,
+                     steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F){
+  
+  lekprofile.default(mod_in, var_sens, resp_name, steps, split_vals, val_out)
+
+}
+
+#' @rdname lekprofile
+#'
+#' @param exp_in \code{matrix} or \code{data.frame} of input variables used to create the model 
+#' 
+#' @import ggplot2 reshape2
+#' 
+#' @export lekprofile.mlp
+#' 
+#' @method lekprofile mlp
+lekprofile.mlp <- function(mod_in, var_sens = NULL, resp_name = NULL, exp_in,
+                            steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F){
+
+  ##
+  #sort out exp and resp names based on object type of call to mod_in
+  #get matrix for exp vars
+  if(is.null(resp_name)) resp_name <- paste0('Y', seq(1, mod_in$nOutputs))
+  mat_in <- data.frame(exp_in)
+  names(mat_in) <- paste0('X', seq(1, mod_in$nInputs))
+  if(is.null(var_sens)) var_sens <- names(mat_in)
+
+  #use 'pred_fun' to get pred vals of response across range of vals for an exp vars
+  #loops over all explanatory variables of interest and all split values
+  lek_vals <- sapply(
+    var_sens, 
+    function(vars){
+      sapply(
+        split_vals, 
+        function(splits){
+          pred_sens(
+            mat_in, 
+            mod_in, 
+            vars, 
+            steps, 
+            function(val) quantile(val, probs = splits), 
+            resp_name
+          )
+        }, 
+        simplify = F
+      )
+    }, 
+    simplify = F  
+  )
+  
+  #melt lek_val list for use with ggplot
+  lek_vals <- melt(lek_vals, id.vars = 'x_vars')
+  lek_vals$L2 <- factor(lek_vals$L2, labels = split_vals)
+  names(lek_vals) <- c('Explanatory', 'resp_name', 'Response', 'Splits', 'exp_name')
+  
+  #return only values if val_out = T
+  if(val_out) return(lek_vals)
+  
+  #ggplot object
+  p <- ggplot(lek_vals, aes(x = Explanatory, y = Response, group = Splits)) + 
+    geom_line(aes(colour = Splits, linetype = Splits, size = Splits)) + 
+    facet_grid(resp_name ~ exp_name) +
+    scale_linetype_manual(values = rep('solid', length(split_vals))) +
+    scale_size_manual(values = rep(1, length(split_vals)))
+  
+  return(p)
+  
+}
+    
