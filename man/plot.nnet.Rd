@@ -3,65 +3,102 @@
 \alias{plot.nnet}
 \title{Plot a neural network model}
 \usage{
-\method{plot}{nnet}(mod.in, nid = T, all.out = T, all.in = T, bias = T,
-  wts.only = F, rel.rsc = 5, circle.cex = 5, node.labs = T,
-  var.labs = T, x.lab = NULL, y.lab = NULL, line.stag = NULL,
-  struct = NULL, cex.val = 1, alpha.val = 1, circle.col = "lightblue",
-  pos.col = "black", neg.col = "grey", bord.col = "lightblue",
-  max.sp = F, ...)
+\method{plot}{nnet}(mod_in, nid = T, all_out = T, all_in = T, bias = T,
+  wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T,
+  var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL,
+  struct = NULL, cex_val = 1, alpha_val = 1, circle_col = "lightblue",
+  pos_col = "black", neg_col = "grey", bord_col = "lightblue",
+  max_sp = F, ...)
 }
 \arguments{
-\item{mod.in}{}
+\item{mod_in}{}
 
 \item{nid}{}
 
-\item{all.out}{}
+\item{all_out}{}
 
-\item{all.in}{}
+\item{all_in}{}
 
 \item{bias}{}
 
-\item{wts.only}{}
+\item{wts_only}{}
 
-\item{rel.rsc}{}
+\item{rel_rsc}{}
 
-\item{circle.cex}{}
+\item{circle_cex}{}
 
-\item{node.labs}{}
+\item{node_labs}{}
 
-\item{var.labs}{}
+\item{var_labs}{}
 
-\item{x.lab}{}
+\item{x_lab}{}
 
-\item{y.lab}{}
+\item{y_lab}{}
 
-\item{line.stag}{}
+\item{line_stag}{}
 
 \item{struct}{}
 
-\item{cex.val}{}
+\item{cex_val}{}
 
-\item{alpha.val}{}
+\item{alpha_val}{}
 
-\item{circle.col}{}
+\item{circle_col}{}
 
-\item{pos.col}{}
+\item{pos_col}{}
 
-\item{neg.col}{}
+\item{neg_col}{}
 
-\item{max.sp}{}
+\item{max_sp}{}
 
 \item{...}{}
 
-\item{bor.col}{}
+\item{bor_col}{}
 }
 \value{
-what -it returns
+A graphics object unless \code{wts_only = T}, then neural network weights from \code{\link{neuralweights}}.
 }
 \description{
 Plot a neural network model
 }
 \examples{
-rnorm(10)
+## using numeric input
+
+wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
+struct <- c(2, 2, 1) #two inputs, two hidden, one output
+
+plot.nnet(wts_in, struct = struct)
+
+## using nnet
+
+library(nnet)
+
+data(neuraldat)
+set.seed(123)
+
+mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
+
+garson(mod, 'Y1')
+
+## using RSNNS, no bias layers
+
+library(RSNNS)
+
+x <- neuraldat[, c('X1', 'X2', 'X3')]
+y <- neuraldat[, 'Y1']
+mod <- mlp(x, y, size = 5)
+
+garson(mod, 'Y1')
+
+## using neuralnet
+
+library(neuralnet)
+
+mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
+
+garson(mod, 'Y1')
+}
+\references{
+Odezmi
 }
 

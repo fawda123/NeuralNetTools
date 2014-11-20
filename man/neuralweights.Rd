@@ -22,7 +22,7 @@ neuralweights(mod_in, ...)
 
 \item{...}{arguments passed to other methods}
 
-\item{rel_rsc}{numeric vector of length two indicating minimum and maximum values to rescale weights for plotting in a neural interpretation diagram.}
+\item{rel_rsc}{numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.}
 
 \item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 }
