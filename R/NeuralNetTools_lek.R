@@ -77,18 +77,24 @@ lekprofile.default <- function(mod_in, var_sens = NULL, resp_name = NULL,
   ##
   #sort out exp and resp names based on object type of call to mod_in
   #get matrix for exp vars
-  if(is.null(mod_in$call$formula)){
-    if(is.null(resp_name)) resp_name <- colnames(eval(mod_in$call$y))
-    if(is.null(var_sens)) var_sens <- colnames(eval(mod_in$call$x))
-    mat_in <- eval(mod_in$call$x)
+  if('xNames' %in% names(mod_in)){
+    x_names <- mod_in$xNames
+    y_names <- attr(terms(mod_in), 'factor')
+    y_names <- row.names(y_names)[!row.names(y_names) %in% x_names]
   }
-  else{
-    forms <- eval(mod_in$call$formula)
-    dat_names <- model.frame(forms, data = eval(mod_in$call$data))
-    if(is.null(resp_name)) resp_name <- as.character(forms)[2]
-    if(is.null(var_sens)) 
-      var_sens <- names(dat_names)[!names(dat_names) %in% as.character(forms)[2]]
-    mat_in <- dat_names[, !names(dat_names) %in% as.character(forms)[2]]
+  if(!'xNames' %in% names(mod_in) & 'nnet' %in% class(mod_in)){
+    if(is.null(mod_in$call$formula)){
+      x_names <- colnames(eval(mod_in$call$x))
+      y_names <- colnames(eval(mod_in$call$y))
+    }
+    else{
+      forms <- eval(mod_in$call$formula)
+      x_names <- mod_in$coefnames
+      facts <- attr(terms(mod_in), 'factors')
+      y_check <- mod_in$fitted
+      if(ncol(y_check)>1) y_names <- colnames(y_check)
+      else y_names <- as.character(forms)[2]
+    } 
   }
   
   #use 'pred_fun' to get pred vals of response across range of vals for an exp vars

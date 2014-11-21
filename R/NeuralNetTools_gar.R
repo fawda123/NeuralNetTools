@@ -169,18 +169,25 @@ garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NUL
   
   # get variable names from mod_in object
   # separate methdos if nnet called with formula 
-  if(is.null(mod_in$call$formula)){
-    x_names <- colnames(eval(mod_in$call$x))
-    y_names <- colnames(eval(mod_in$call$y))
+  if('xNames' %in% names(mod_in)){
+    x_names <- mod_in$xNames
+    y_names <- attr(terms(mod_in), 'factor')
+    y_names <- row.names(y_names)[!row.names(y_names) %in% x_names]
   }
-  else{
-    forms <- eval(mod_in$call$formula)
-    x_names <- mod_in$coefnames
-    facts <- attr(terms(mod_in), 'factors')
-    y_check <- mod_in$fitted
-    if(ncol(y_check)>1) y_names <- colnames(y_check)
-    else y_names <- as.character(forms)[2]
-  } 
+  if(!'xNames' %in% names(mod_in) & 'nnet' %in% class(mod_in)){
+    if(is.null(mod_in$call$formula)){
+      x_names <- colnames(eval(mod_in$call$x))
+      y_names <- colnames(eval(mod_in$call$y))
+    }
+    else{
+      forms <- eval(mod_in$call$formula)
+      x_names <- mod_in$coefnames
+      facts <- attr(terms(mod_in), 'factors')
+      y_check <- mod_in$fitted
+      if(ncol(y_check)>1) y_names <- colnames(y_check)
+      else y_names <- as.character(forms)[2]
+    } 
+  }
   
   # get index value for response variable to measure
   out_ind <- grep(out_var, y_names)
@@ -254,17 +261,8 @@ garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NUL
 #' @method garson mlp
 garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F){
   
-  # exception of train class for mlp
-  if('train' %in% class(mod_in)){
-    if('nnet' %in% class(mod_in$finalModel)){
-      mod_in <- mod_in$finalModel
-      warning('Using best nnet model from train output')
-    }
-    else stop('Only nnet method can be used with train object')
-  }
-  
   # get model weights
-  best_wts <- neuralweights(mod_in, rel_rsc = 5)
+  best_wts <- neuralweights(mod_in)
   
   # weights only if T
   if(wts_only) return(best_wts)
@@ -348,7 +346,7 @@ garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL
 garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F){
   
   # get model weights
-  best_wts <- neuralweights(mod_in, rel_rsc = 5)
+  best_wts <- neuralweights(mod_in)
   
   # weights only if T
   if(wts_only) return(best_wts)
@@ -421,3 +419,5 @@ garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL,
   return(out_plo)
   
 }
+
+
