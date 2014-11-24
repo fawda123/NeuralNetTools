@@ -13,6 +13,7 @@ BugReports: https://github.com/fawda123/NeuralNetTools/issues
 License: CC0
 LazyData: true
 Imports:
+    caret,
     ggplot2,
     neuralnet,
     nnet,

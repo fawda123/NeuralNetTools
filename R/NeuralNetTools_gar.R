@@ -61,6 +61,13 @@
 #' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
 #' 
 #' garson(mod, 'Y1')
+#' 
+#' ## using caret
+#' 
+#' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
+#' mod <- mod$finalModel
+#' 
+#' garson(mod, 'Y1')
 garson <- function(mod_in, out_var, ...) UseMethod('garson')
  
 #' @rdname garson

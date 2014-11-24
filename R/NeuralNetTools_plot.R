@@ -72,6 +72,13 @@
 #' 
 #' plotnet(mod)
 #' 
+#' ## using caret
+#' 
+#' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
+#' mod <- mod$finalModel
+#' 
+#' plotnet(mod)
+#'
 #' ## a more complicated network with categorical response
 #' AND <- c(rep(0, 7), 1)
 #' OR <- c(0, rep(1, 7))
