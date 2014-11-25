@@ -62,7 +62,7 @@ neuralweights <-  function(mod_in, ...) UseMethod('neuralweights')
 #' @export neuralweights.numeric
 #' 
 #' @method neuralweights numeric
-neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct){
+neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct, ...){
   
   wts <-  mod_in
   
@@ -100,7 +100,7 @@ neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct){
 #' @export neuralweights.nnet
 #'  
 #' @method neuralweights nnet
-neuralweights.nnet <-  function(mod_in, rel_rsc = NULL){
+neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   
   struct <-  mod_in$n
   wts <-  mod_in$wts
@@ -135,7 +135,7 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL){
 #' @export neuralweights.mlp
 #'
 #' @method neuralweights mlp
-neuralweights.mlp <-  function(mod_in, rel_rsc = NULL){
+neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
   
   struct <-  c(mod_in$nInputs, mod_in$archParams$size, mod_in$nOutputs)
   hid.num <-  length(struct) - 2
@@ -189,7 +189,7 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL){
 #' @export neuralweights.nn
 #'
 #' @method neuralweights nn
-neuralweights.nn <- function(mod_in, rel_rsc = NULL){
+neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
   
   struct <-  unlist(lapply(mod_in$weights[[1]], ncol))
   struct <-  struct[ - length(struct)]

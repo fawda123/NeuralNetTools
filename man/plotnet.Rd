@@ -5,6 +5,7 @@
 \alias{plotnet.nn}
 \alias{plotnet.nnet}
 \alias{plotnet.numeric}
+\alias{plotnet.train}
 \title{Plot a neural network model}
 \usage{
 plotnet(mod_in, ...)
@@ -32,6 +33,13 @@ plotnet(mod_in, ...)
 
 \method{plotnet}{nn}(mod_in, nid = T, all_out = T, all_in = T, bias = T,
   wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T,
+  var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL,
+  cex_val = 1, alpha_val = 1, circle_col = "lightblue",
+  pos_col = "black", neg_col = "grey", bord_col = "lightblue",
+  max_sp = F, ...)
+
+\method{plotnet}{train}(mod_in, nid = T, all_out = T, all_in = T,
+  bias = T, wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T,
   var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL,
   cex_val = 1, alpha_val = 1, circle_col = "lightblue",
   pos_col = "black", neg_col = "grey", bord_col = "lightblue",
@@ -70,11 +78,11 @@ plotnet(mod_in, ...)
 
 \item{alpha_val}{numeric value (0-1) indicating transparency of connections, default 1}
 
-\item{circle_col}{chr string indicating color of nodes, default \code{‘lightblue’}, or two element list with first element indicating color of input nodes and second indicating color of remaining nodes}
+\item{circle_col}{chr string indicating color of nodes, default \code{'lightblue'}, or two element list with first element indicating color of input nodes and second indicating color of remaining nodes}
 
-\item{pos_col}{chr string indicating color of positive connection weights, default \code{‘black’}}
+\item{pos_col}{chr string indicating color of positive connection weights, default \code{'black'}}
 
-\item{neg_col}{chr string indicating color of negative connection weights, default \code{‘grey’}}
+\item{neg_col}{chr string indicating color of negative connection weights, default \code{'grey'}}
 
 \item{max_sp}{logical value indicating if space between nodes in each layer is maximized, default \code{FALSE}}
 
@@ -123,6 +131,12 @@ plotnet(mod)
 library(neuralnet)
 
 mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
+
+plotnet(mod)
+
+## using caret
+
+mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
 
 plotnet(mod)
 

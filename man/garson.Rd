@@ -5,21 +5,25 @@
 \alias{garson.nn}
 \alias{garson.nnet}
 \alias{garson.numeric}
+\alias{garson.train}
 \title{Variable importance for neural networks}
 \usage{
 garson(mod_in, out_var, ...)
 
 \method{garson}{numeric}(mod_in, out_var, struct, bar_plot = T,
-  x_lab = NULL, y_lab = NULL, wts_only = F)
+  x_lab = NULL, y_lab = NULL, wts_only = F, ...)
 
 \method{garson}{nnet}(mod_in, out_var, bar_plot = T, x_lab = NULL,
-  y_lab = NULL, wts_only = F)
+  y_lab = NULL, wts_only = F, ...)
 
 \method{garson}{mlp}(mod_in, out_var, bar_plot = T, x_lab = NULL,
-  y_lab = NULL, wts_only = F)
+  y_lab = NULL, wts_only = F, ...)
 
 \method{garson}{nn}(mod_in, out_var, bar_plot = T, x_lab = NULL,
-  y_lab = NULL, wts_only = F)
+  y_lab = NULL, wts_only = F, ...)
+
+\method{garson}{train}(mod_in, out_var, bar_plot = T, x_lab = NULL,
+  y_lab = NULL, wts_only = F, ...)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}}
@@ -83,6 +87,12 @@ garson(mod, 'Y1')
 library(neuralnet)
 
 mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
+
+garson(mod, 'Y1')
+
+## using caret
+
+mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
 
 garson(mod, 'Y1')
 }

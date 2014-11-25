@@ -18,7 +18,7 @@ Imports:
     neuralnet,
     nnet,
     plyr,
-    reshape,
+    reshape2,
     RSNNS,
     scales
 Depends:

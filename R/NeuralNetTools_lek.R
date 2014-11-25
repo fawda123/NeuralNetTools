@@ -17,7 +17,7 @@
 #' 
 #' @export lekprofile neuralnet nnet mlp ggplot aes facet_grid geom_line scale_linetype_manual scale_size_manual melt
 #' 
-#' @import ggplot2 neuralnet nnet RSNNS reshape2
+#' @import ggplot2 neuralnet nnet RSNNS 
 #' 
 #' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  F}, otherwise a \code{data.frame} in long form showing the predicted responses at different values of the explanatory varibales. 
 #' 
@@ -66,6 +66,8 @@
 #' 
 #' ## using caret
 #' 
+#' library(caret)
+#' 
 #' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
 #' 
 #' lekprofile(mod)
@@ -73,13 +75,13 @@ lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 
 #' @rdname lekprofile
 #'
-#' @import ggplot2 reshape2
+#' @import ggplot2 
 #' 
 #' @export lekprofile.default
 #' 
 #' @method lekprofile default
 lekprofile.default <- function(mod_in, var_sens = NULL, resp_name = NULL,
-                            steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F){
+                            steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...){
   
   ##
   #sort out exp and resp names based on object type of call to mod_in
@@ -144,13 +146,13 @@ lekprofile.default <- function(mod_in, var_sens = NULL, resp_name = NULL,
 
 #' @rdname lekprofile
 #'
-#' @import ggplot2 reshape2
+#' @import ggplot2 
 #' 
 #' @export lekprofile.nnet
 #' 
 #' @method lekprofile nnet
 lekprofile.nnet <- function(mod_in, var_sens = NULL, resp_name = NULL,
-                     steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F){
+                     steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...){
   
   lekprofile.default(mod_in, var_sens, resp_name, steps, split_vals, val_out)
 
@@ -160,13 +162,13 @@ lekprofile.nnet <- function(mod_in, var_sens = NULL, resp_name = NULL,
 #'
 #' @param exp_in \code{matrix} or \code{data.frame} of input variables used to create the model 
 #' 
-#' @import ggplot2 reshape2
+#' @import ggplot2 
 #' 
 #' @export lekprofile.mlp
 #' 
 #' @method lekprofile mlp
 lekprofile.mlp <- function(mod_in, var_sens = NULL, resp_name = NULL, exp_in,
-                            steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F){
+                            steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...){
 
   ##
   #sort out exp and resp names based on object type of call to mod_in
@@ -220,18 +222,29 @@ lekprofile.mlp <- function(mod_in, var_sens = NULL, resp_name = NULL, exp_in,
 
 #' @rdname lekprofile
 #'
-#' @import ggplot2 reshape2
+#' @import ggplot2 
 #' 
 #' @export lekprofile.train
 #' 
 #' @method lekprofile train
 lekprofile.train <- function(mod_in, var_sens = NULL, resp_name = NULL,
-                           steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F){
+                           steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...){
+  
+  # input data, x_names, and y_names
+  mat_in <- mod_in$trainingData
+  mat_in <- mat_in[, !names(mat_in) %in% '.outcome']
+  
+  y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = T)[[1]]
+  
+  mod_in <- mod_in$finalModel
+  x_names <- mod_in$xNames
+  
+  mat_in <- mat_in[, x_names]
   
   ##
   #sort out exp and resp names based on object type of call to mod_in
   #get matrix for exp vars
-  if(is.null(resp_name)) resp_name <- paste0('Y', seq(1, mod_in$nOutputs))
+  if(is.null(resp_name)) resp_name <- y_names
   if(is.null(var_sens)) var_sens <- names(mat_in)
   
   #use 'pred_fun' to get pred vals of response across range of vals for an exp vars

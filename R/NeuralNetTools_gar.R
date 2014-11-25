@@ -65,7 +65,6 @@
 #' ## using caret
 #' 
 #' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
-#' mod <- mod$finalModel
 #' 
 #' garson(mod, 'Y1')
 garson <- function(mod_in, out_var, ...) UseMethod('garson')
@@ -83,7 +82,7 @@ garson <- function(mod_in, out_var, ...) UseMethod('garson')
 #' @export garson.numeric
 #' 
 #' @method garson numeric
-garson.numeric <- function(mod_in, out_var, struct, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F){
+garson.numeric <- function(mod_in, out_var, struct, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in, struct = struct)
@@ -166,7 +165,7 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = T, x_lab = NULL, 
 #' @export garson.nnet
 #' 
 #' @method garson nnet
-garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F){
+garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in)
@@ -176,25 +175,18 @@ garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NUL
   
   # get variable names from mod_in object
   # separate methdos if nnet called with formula 
-  if('xNames' %in% names(mod_in)){
-    x_names <- mod_in$xNames
-    y_names <- attr(terms(mod_in), 'factor')
-    y_names <- row.names(y_names)[!row.names(y_names) %in% x_names]
+  if(is.null(mod_in$call$formula)){
+    x_names <- colnames(eval(mod_in$call$x))
+    y_names <- colnames(eval(mod_in$call$y))
   }
-  if(!'xNames' %in% names(mod_in) & 'nnet' %in% class(mod_in)){
-    if(is.null(mod_in$call$formula)){
-      x_names <- colnames(eval(mod_in$call$x))
-      y_names <- colnames(eval(mod_in$call$y))
-    }
-    else{
-      forms <- eval(mod_in$call$formula)
-      x_names <- mod_in$coefnames
-      facts <- attr(terms(mod_in), 'factors')
-      y_check <- mod_in$fitted
-      if(ncol(y_check)>1) y_names <- colnames(y_check)
-      else y_names <- as.character(forms)[2]
-    } 
-  }
+  else{
+    forms <- eval(mod_in$call$formula)
+    x_names <- mod_in$coefnames
+    facts <- attr(terms(mod_in), 'factors')
+    y_check <- mod_in$fitted
+    if(ncol(y_check)>1) y_names <- colnames(y_check)
+    else y_names <- as.character(forms)[2]
+  } 
   
   # get index value for response variable to measure
   out_ind <- grep(out_var, y_names)
@@ -266,7 +258,7 @@ garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NUL
 #' @export garson.mlp
 #' 
 #' @method garson mlp
-garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F){
+garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in)
@@ -350,7 +342,7 @@ garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL
 #' @export garson.nn
 #'  
 #' @method garson nn
-garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F){
+garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in)
@@ -427,4 +419,85 @@ garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL,
   
 }
 
+#' @rdname garson
+#' 
+#' @import ggplot2 scales
+#' 
+#' @export garson.train
+#' 
+#' @method garson train
+garson.train <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
+  
+  y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = T)[[1]]
+  mod_in <- mod_in$finalModel
+  x_names <- mod_in$xNames
+  
+  # get model weights
+  best_wts <- neuralweights(mod_in)
+  
+  # weights only if T
+  if(wts_only) return(best_wts)
+  
+  # get index value for response variable to measure
+  out_ind <- grep(out_var, y_names)
+  
+  #change variables names to user sub 
+  if(!is.null(x_lab)){
+    if(length(x_names) != length(x_lab)) stop('x_lab length not equal to number of input variables')
+    else x_names <- x_lab
+  }
+  if(!is.null(y_lab)){
+    y_names <- y_lab
+  } else {
+    y_names <- y_names[grep(out_var, y_names)]
+  }
+  
+  # organize hidden layer weights for matrix mult
+  inp_hid <- best_wts[grep('hidden', names(best_wts))]
+  split_vals <- substr(names(inp_hid), 1, 8)
+  inp_hid <- split(inp_hid, split_vals)
+  inp_hid <- lapply(inp_hid, function(x) t(do.call('rbind', x))[-1, ])
+  
+  # final layer weights for output
+  hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
+  
+  # matrix multiplication of output layer with connecting hidden layer
+  max_i <- length(inp_hid)
+  sum_in <- as.matrix(inp_hid[[max_i]]) %*% matrix(hid_out)
+  
+  # recursive matrix multiplication for all remaining hidden layers
+  # only for multiple hidden layers
+  if(max_i != 1){ 
+    
+    for(i in (max_i - 1):1) sum_in <- as.matrix(inp_hid[[i]]) %*% sum_in
+    
+    # final contribution vector for all inputs
+    inp_cont <- sum_in    
+    
+  } else {
+    
+    inp_cont <- sum_in
+    
+  }
+  
+  #get relative contribution
+  rel_imp <- abs(inp_cont)/sum(abs(inp_cont))
+  
+  if(!bar_plot){
+    out <- data.frame(rel_imp)
+    row.names(out) <- x_names
+    return(out)
+  }
+  
+  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = F]
+  to_plo$x_names <- factor(x_names[order(rel_imp)], levels = x_names[order(rel_imp)])
+  out_plo <- ggplot2::ggplot(to_plo, aes(x = x_names, y = rel_imp, fill = rel_imp,
+                                         colour = rel_imp)) + 
+    geom_bar(stat = 'identity') + 
+    scale_x_discrete(element_blank()) +
+    scale_y_continuous(y_names)
+  
+  return(out_plo)
+  
+}
 

@@ -9,13 +9,13 @@
 \usage{
 neuralweights(mod_in, ...)
 
-\method{neuralweights}{numeric}(mod_in, rel_rsc = NULL, struct)
+\method{neuralweights}{numeric}(mod_in, rel_rsc = NULL, struct, ...)
 
-\method{neuralweights}{nnet}(mod_in, rel_rsc = NULL)
+\method{neuralweights}{nnet}(mod_in, rel_rsc = NULL, ...)
 
-\method{neuralweights}{mlp}(mod_in, rel_rsc = NULL)
+\method{neuralweights}{mlp}(mod_in, rel_rsc = NULL, ...)
 
-\method{neuralweights}{nn}(mod_in, rel_rsc = NULL)
+\method{neuralweights}{nn}(mod_in, rel_rsc = NULL, ...)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}}
