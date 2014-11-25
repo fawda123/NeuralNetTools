@@ -16,7 +16,7 @@ pred_sens(mat_in, mod_in, var_sel, step_val, fun_in, resp_name)
 
 \item{fun_in}{function defining the method of holding explanatory variables constant}
 
-\item{resp_name}{chr string of response variable to select}
+\item{fun_in}{chr string of response variable names for correct labelling}
 }
 \value{
 A \code{\link[base]{data.frame}} of predictions and the sequence values of the selected explanatory variable

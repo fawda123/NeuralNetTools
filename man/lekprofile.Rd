@@ -9,26 +9,22 @@
 \usage{
 lekprofile(mod_in, ...)
 
-\method{lekprofile}{default}(mod_in, var_sens = NULL, resp_name = NULL,
-  steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...)
+\method{lekprofile}{default}(mod_in, steps = 100, split_vals = seq(0, 1, by
+  = 0.2), val_out = F, ...)
 
-\method{lekprofile}{nnet}(mod_in, var_sens = NULL, resp_name = NULL,
-  steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...)
+\method{lekprofile}{nnet}(mod_in, steps = 100, split_vals = seq(0, 1, by =
+  0.2), val_out = F, ...)
 
-\method{lekprofile}{mlp}(mod_in, var_sens = NULL, resp_name = NULL, exp_in,
-  steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...)
+\method{lekprofile}{mlp}(mod_in, exp_in, steps = 100, split_vals = seq(0, 1,
+  by = 0.2), val_out = F, ...)
 
-\method{lekprofile}{train}(mod_in, var_sens = NULL, resp_name = NULL,
-  steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...)
+\method{lekprofile}{train}(mod_in, steps = 100, split_vals = seq(0, 1, by =
+  0.2), val_out = F, ...)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{nnet} or \code{mlp}}
 
 \item{...}{arguments passed to other methods}
-
-\item{var_sens}{chr strings indicating the explanatory variables to evaluate, default \code{NULL} will evaluate all.  For mlp models, variables must be named as \code{'X1'}, \code{'X2'}, etc. regardless of names in input data.}
-
-\item{resp_name}{chr string indicating the response variables to evaluate, default \code{NULL} will evaluate all.  For mlp models, variables must be called as \code{'Y1'}, \code{'Y2'}, etc. regardless of names in input data.}
 
 \item{steps}{numeric value indicating number of observations to evaluate for each explanatory variable from minimum to maximum value, default 100}
 
