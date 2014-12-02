@@ -84,6 +84,8 @@ plotnet(mod_in, ...)
 
 \item{neg_col}{chr string indicating color of negative connection weights, default \code{'grey'}}
 
+\item{bord_col}{chr string indicating border color around nodes, default \code{'lightblue'}}
+
 \item{max_sp}{logical value indicating if space between nodes in each layer is maximized, default \code{FALSE}}
 
 \item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
@@ -95,7 +97,7 @@ A graphics object unless \code{wts_only = T}, then neural network weights from \
 Plot a neural interpretation diagram for a neural network object
 }
 \details{
-This function plots a neural network as a neural interpretation diagram as in Özesmi and Özesmi (1999). Options to plot without color-coding or shading of weights are also provided.  The default settings plot positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled arbitrarily as I1 through In for n input variables.  One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn.  The output layer is plotted last with nodes labeled as O1 through On.  Bias nodes connected to the hidden and output layers are also shown.  Neural networks created using \code{\link[RSNNS]{mlp}} do not show bias layers.
+This function plots a neural network as a neural interpretation diagram as in Ozesmi and Ozesmi (1999). Options to plot without color-coding or shading of weights are also provided.  The default settings plot positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled arbitrarily as I1 through In for n input variables.  One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn.  The output layer is plotted last with nodes labeled as O1 through On.  Bias nodes connected to the hidden and output layers are also shown.  Neural networks created using \code{\link[RSNNS]{mlp}} do not show bias layers.
 }
 \examples{
 ## using numeric input
@@ -136,9 +138,13 @@ plotnet(mod)
 
 ## using caret
 
-mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
+\dontrun{
+library(caret)
+
+mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 
 plotnet(mod)
+}
 
 ## a more complicated network with categorical response
 AND <- c(rep(0, 7), 1)

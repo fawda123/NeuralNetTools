@@ -50,7 +50,7 @@ neuralweights(wts_in, struct = struct)
 
 library(nnet)
 
-mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, linout = T)
+mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, linout = TRUE)
 
 neuralweights(mod)
 
@@ -60,7 +60,7 @@ library(RSNNS)
 
 x <- neuraldat[, c('X1', 'X2', 'X3')]
 y <- neuraldat[, 'Y1']
-mod <- mlp(x, y, size = 5, linOut = T)
+mod <- mlp(x, y, size = 5, linOut = TRUE)
 
 neuralweights(mod)
 

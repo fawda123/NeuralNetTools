@@ -92,9 +92,14 @@ garson(mod, 'Y1')
 
 ## using caret
 
-mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
+\dontrun{
+library(caret)
+
+mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 
 garson(mod, 'Y1')
+
+}
 }
 \references{
 Garson, G.D. 1991. Interpreting neural network connection weights. Artificial Intelligence Expert. 6(4):46-51.

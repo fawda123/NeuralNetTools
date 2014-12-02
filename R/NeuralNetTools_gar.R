@@ -11,7 +11,7 @@
 #'
 #' A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined.
 #' 
-#' @export garson neuralnet nnet mlp ggplot aes geom_bar scale_x_discrete scale_y_continuous
+#' @export garson
 #' 
 #' @import ggplot2 neuralnet nnet RSNNS
 #' 
@@ -64,9 +64,14 @@
 #' 
 #' ## using caret
 #' 
-#' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
+#' \dontrun{
+#' library(caret)
+#' 
+#' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 #' 
 #' garson(mod, 'Y1')
+#' 
+#' }
 garson <- function(mod_in, out_var, ...) UseMethod('garson')
  
 #' @rdname garson

@@ -13,7 +13,7 @@
 #' 
 #' The profile method begins by obtaining model predictions of the response variable across the range of values for the given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum). The final result is a set of response curves for one response variable across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is implemented in in the functoin by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.
 #' 
-#' @export lekprofile neuralnet nnet mlp ggplot aes facet_grid geom_line scale_linetype_manual scale_size_manual melt
+#' @export lekprofile
 #' 
 #' @import ggplot2 neuralnet nnet RSNNS 
 #' 
@@ -64,11 +64,14 @@
 #' 
 #' ## using caret
 #' 
+#' \dontrun{
 #' library(caret)
 #' 
-#' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = T)
+#' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 #' 
 #' lekprofile(mod)
+#' 
+#' }
 lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 
 #' @rdname lekprofile

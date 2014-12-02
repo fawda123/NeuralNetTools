@@ -5,7 +5,7 @@
 #' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn} 
 #' @param ... arguments passed to other methods
 #' 
-#' @export neuralweights neuralnet nnet mlp
+#' @export neuralweights
 #' 
 #' @import neuralnet nnet RSNNS
 #' 
@@ -29,7 +29,7 @@
 #' 
 #' library(nnet)
 #' 
-#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, linout = T)
+#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, linout = TRUE)
 #'  
 #' neuralweights(mod)  
 #' 
@@ -39,7 +39,7 @@
 #' 
 #' x <- neuraldat[, c('X1', 'X2', 'X3')]
 #' y <- neuraldat[, 'Y1']
-#' mod <- mlp(x, y, size = 5, linOut = T)
+#' mod <- mlp(x, y, size = 5, linOut = TRUE)
 #' 
 #' neuralweights(mod)
 #' 
@@ -87,7 +87,7 @@ neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct, ...){
   out_ls$row_nms <-  factor(row_nms, levels = unique(row_nms), labels = unique(row_nms))
   out_ls <-  split(out_ls$wts, f = out_ls$row_nms)
   
-  assign('struct', struct, envir = environment(neuralweights))
+  assign('struct', struct)
   
   out_ls
   
@@ -122,7 +122,7 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   out_ls$row_nms <-  factor(row_nms, levels = unique(row_nms), labels = unique(row_nms))
   out_ls <-  split(out_ls$wts, f = out_ls$row_nms)
   
-  assign('struct', struct, envir = environment(neuralweights))
+  assign('struct', struct)
   
   out_ls
   
@@ -157,7 +157,7 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
     
   #weight vector for all
   wts <-  c(inps, melt(outs)$value)
-  assign('bias', F, envir = environment(neuralweights))
+  assign('bias', F)
   
   if(!is.null(rel_rsc)) wts <-  scales::rescale(abs(wts), c(1, rel_rsc))
   
@@ -176,7 +176,7 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
   out_ls$row_nms <-  factor(row_nms, levels = unique(row_nms), labels = unique(row_nms))
   out_ls <-  split(out_ls$wts, f = out_ls$row_nms)
   
-  assign('struct', struct, envir = environment(neuralweights))
+  assign('struct', struct)
   
   out_ls
   
@@ -217,7 +217,7 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
   out_ls$row_nms <-  factor(row_nms, levels = unique(row_nms), labels = unique(row_nms))
   out_ls <-  split(out_ls$wts, f = out_ls$row_nms)
   
-  assign('struct', struct, envir = environment(neuralweights))
+  assign('struct', struct)
   
   out_ls
   
@@ -232,14 +232,14 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
 #' @param var_sel chr string of explanatory variable to select
 #' @param step_val number of values to sequence range of selected explanatory variable
 #' @param fun_in function defining the method of holding explanatory variables constant
-#' @param fun_in chr string of response variable names for correct labelling
+#' @param resp_name chr string of response variable names for correct labelling
 #'
 #'@details
 #' Gets predicted output for a model's response variable based on matrix of explanatory variables that are restricted following Lek's profile method. The selected explanatory variable is sequenced across a range of values. All other explanatory variables are held constant at the value specified by \code{fun_in}.
 #' 
 #' @seealso lekprofile
 #' 
-#' @return A \code{\link[base]{data.frame}} of predictions and the sequence values of the selected explanatory variable
+#' @return A \code{\link{data.frame}} of predictions and the sequence values of the selected explanatory variable
 #' 
 #' @export pred_sens
 #' 
