@@ -27,7 +27,7 @@ neuralweights(mod_in, ...)
 \item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 }
 \value{
-Returns a named \code{list} of weight values for the input model.
+Returns a two-element list with the first element being a vector indicating the number of nodes in each layer of the neural network and the second element being a named list of weight values for the input model.
 }
 \description{
 Get weights for a neural network in an organized list by extracting values from a neural network object.  This function is generally not called by itself.

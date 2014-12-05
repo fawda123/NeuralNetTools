@@ -10,16 +10,16 @@
 lekprofile(mod_in, ...)
 
 \method{lekprofile}{default}(mod_in, steps = 100, split_vals = seq(0, 1, by
-  = 0.2), val_out = F, ...)
+  = 0.2), val_out = FALSE, ...)
 
 \method{lekprofile}{nnet}(mod_in, steps = 100, split_vals = seq(0, 1, by =
-  0.2), val_out = F, ...)
+  0.2), val_out = FALSE, ...)
 
 \method{lekprofile}{mlp}(mod_in, exp_in, steps = 100, split_vals = seq(0, 1,
-  by = 0.2), val_out = F, ...)
+  by = 0.2), val_out = FALSE, ...)
 
 \method{lekprofile}{train}(mod_in, steps = 100, split_vals = seq(0, 1, by =
-  0.2), val_out = F, ...)
+  0.2), val_out = FALSE, ...)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{nnet} or \code{mlp}}
@@ -30,12 +30,12 @@ lekprofile(mod_in, ...)
 
 \item{split_vals}{numeric vector indicating quantile values at which to hold other explanatory variables constant}
 
-\item{val_out}{logical value indicating if actual sensitivity values are returned rather than a plot, default \code{F}}
+\item{val_out}{logical value indicating if actual sensitivity values are returned rather than a plot, default \code{FALSE}}
 
 \item{exp_in}{\code{matrix} or \code{data.frame} of input variables used to create the model}
 }
 \value{
-A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  F}, otherwise a \code{data.frame} in long form showing the predicted responses at different values of the explanatory varibales.
+A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  FALSE}, otherwise a \code{data.frame} in long form showing the predicted responses at different values of the explanatory varibales.
 }
 \description{
 Conduct a sensitivity analysis of model responses in a neural network to input variables using Lek's profile method
@@ -43,7 +43,7 @@ Conduct a sensitivity analysis of model responses in a neural network to input v
 \details{
 The Lek profile method is described briefly in Lek et al. 1996 and in more detail in Gevrey et al. 2003. The profile method is fairly generic and can be extended to any statistical model in R with a predict method.  However, it is one of few methods used to evaluate sensitivity in neural networks.  Note that there is no predict method for neuralnet objects from the nn package, so a profile method is not available.  Currently, the default method of this function attempts to find variables names from a generic model object.  The default method of this function has only been tested with \code{\link[stats]{lm}} and may not work with other model types if the variable names cannot be found.
 
-The profile method begins by obtaining model predictions of the response variable across the range of values for the given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum). The final result is a set of response curves for one response variable across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is implemented in in the functoin by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.
+The profile method begins by obtaining model predictions of the response variable across the range of values for the given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum). The final result is a set of response curves for one response variable across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is implemented in in the function by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.
 }
 \examples{
 ## a simple lm
@@ -69,7 +69,7 @@ lekprofile(mod)
 library(RSNNS)
 
 x <- neuraldat[, c('X1', 'X2', 'X3')]
-y <- neuraldat[, 'Y1', drop = F]
+y <- neuraldat[, 'Y1', drop = FALSE]
 
 mod <- mlp(x, y, size = 5)
 

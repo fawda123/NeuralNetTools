@@ -5,19 +5,19 @@
 #' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{nnet} or \code{mlp}
 #' @param steps numeric value indicating number of observations to evaluate for each explanatory variable from minimum to maximum value, default 100
 #' @param split_vals numeric vector indicating quantile values at which to hold other explanatory variables constant
-#' @param val_out logical value indicating if actual sensitivity values are returned rather than a plot, default \code{F}
+#' @param val_out logical value indicating if actual sensitivity values are returned rather than a plot, default \code{FALSE}
 #' @param ... arguments passed to other methods
 #' 
 #' @details
 #' The Lek profile method is described briefly in Lek et al. 1996 and in more detail in Gevrey et al. 2003. The profile method is fairly generic and can be extended to any statistical model in R with a predict method.  However, it is one of few methods used to evaluate sensitivity in neural networks.  Note that there is no predict method for neuralnet objects from the nn package, so a profile method is not available.  Currently, the default method of this function attempts to find variables names from a generic model object.  The default method of this function has only been tested with \code{\link[stats]{lm}} and may not work with other model types if the variable names cannot be found.
 #' 
-#' The profile method begins by obtaining model predictions of the response variable across the range of values for the given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum). The final result is a set of response curves for one response variable across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is implemented in in the functoin by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.
+#' The profile method begins by obtaining model predictions of the response variable across the range of values for the given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum). The final result is a set of response curves for one response variable across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is implemented in in the function by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.
 #' 
 #' @export lekprofile
 #' 
 #' @import ggplot2 neuralnet nnet RSNNS 
 #' 
-#' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  F}, otherwise a \code{data.frame} in long form showing the predicted responses at different values of the explanatory varibales. 
+#' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  FALSE}, otherwise a \code{data.frame} in long form showing the predicted responses at different values of the explanatory varibales. 
 #' 
 #' @references
 #' Lek, S., Delacoste, M., Baran, P., Dimopoulos, I., Lauga, J., Aulagnier, S. 1996. Application of neural networks to modelling nonlinear relationships in Ecology. Ecological Modelling. 90:39-52.
@@ -49,7 +49,7 @@
 #' library(RSNNS)
 #' 
 #' x <- neuraldat[, c('X1', 'X2', 'X3')]
-#' y <- neuraldat[, 'Y1', drop = F]
+#' y <- neuraldat[, 'Y1', drop = FALSE]
 #' 
 #' mod <- mlp(x, y, size = 5)
 #' 
@@ -81,7 +81,7 @@ lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 #' @export lekprofile.default
 #' 
 #' @method lekprofile default
-lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...){
+lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
   
   ##
   #sort out exp and resp names based on object type of call to mod_in
@@ -121,10 +121,10 @@ lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 
             resp_name
           )
         }, 
-        simplify = F
+        simplify = FALSE
       )
     }, 
-    simplify = F  
+    simplify = FALSE  
   )
   
   #melt lek_val list for use with ggplot
@@ -132,12 +132,12 @@ lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 
   lek_vals$L2 <- factor(lek_vals$L2, labels = split_vals)
   names(lek_vals) <- c('Explanatory', 'resp_name', 'Response', 'Splits', 'exp_name')
   
-  #return only values if val_out = T
+  #return only values if val_out = TRUE
   if(val_out) return(lek_vals)
   
   #ggplot object
-  p <- ggplot(lek_vals, aes(x = Explanatory, y = Response, group = Splits)) + 
-    geom_line(aes(colour = Splits, linetype = Splits, size = Splits)) + 
+  p <- ggplot2::ggplot(lek_vals, aes_string(x = 'Explanatory', y = 'Response', group = 'Splits')) + 
+    geom_line(aes_string(colour = 'Splits', linetype = 'Splits', size = 'Splits')) + 
     facet_grid(resp_name ~ exp_name) +
     scale_linetype_manual(values = rep('solid', length(split_vals))) +
     scale_size_manual(values = rep(1, length(split_vals)))
@@ -153,7 +153,7 @@ lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 
 #' @export lekprofile.nnet
 #' 
 #' @method lekprofile nnet
-lekprofile.nnet <- function(mod_in,steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...){
+lekprofile.nnet <- function(mod_in,steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
   
   lekprofile.default(mod_in, steps, split_vals, val_out)
 
@@ -168,7 +168,7 @@ lekprofile.nnet <- function(mod_in,steps = 100, split_vals = seq(0, 1, by = 0.2)
 #' @export lekprofile.mlp
 #' 
 #' @method lekprofile mlp
-lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...){
+lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
 
   ##
   #sort out exp and resp names based on object type of call to mod_in
@@ -191,13 +191,14 @@ lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, b
             mod_in, 
             vars,
             steps, 
-            function(val) quantile(val, probs = splits)
+            function(val) quantile(val, probs = splits),
+            resp_name
           )
         }, 
-        simplify = F
+        simplify = FALSE
       )
     }, 
-    simplify = F  
+    simplify = FALSE  
   )
   
   #melt lek_val list for use with ggplot
@@ -205,12 +206,12 @@ lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, b
   lek_vals$L2 <- factor(lek_vals$L2, labels = split_vals)
   names(lek_vals) <- c('Explanatory', 'resp_name', 'Response', 'Splits', 'exp_name')
   
-  #return only values if val_out = T
+  #return only values if val_out = TRUE
   if(val_out) return(lek_vals)
   
   #ggplot object
-  p <- ggplot(lek_vals, aes(x = Explanatory, y = Response, group = Splits)) + 
-    geom_line(aes(colour = Splits, linetype = Splits, size = Splits)) + 
+  p <- ggplot2::ggplot(lek_vals, aes_string(x = 'Explanatory', y = 'Response', group = 'Splits')) + 
+    geom_line(aes_string(colour = 'Splits', linetype = 'Splits', size = 'Splits')) + 
     facet_grid(resp_name ~ exp_name) +
     scale_linetype_manual(values = rep('solid', length(split_vals))) +
     scale_size_manual(values = rep(1, length(split_vals)))
@@ -226,13 +227,13 @@ lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, b
 #' @export lekprofile.train
 #' 
 #' @method lekprofile train
-lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = F, ...){
+lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
   
   # input data, x_names, and y_names
   mat_in <- mod_in$trainingData
   mat_in <- mat_in[, !names(mat_in) %in% '.outcome']
   
-  y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = T)[[1]]
+  y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = TRUE)[[1]]
   
   mod_in <- mod_in$finalModel
   x_names <- mod_in$xNames
@@ -261,10 +262,10 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
             function(val) quantile(val, probs = splits)
           )
         }, 
-        simplify = F
+        simplify = FALSE
       )
     }, 
-    simplify = F  
+    simplify = FALSE  
   )
   
   #melt lek_val list for use with ggplot
@@ -272,12 +273,12 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
   lek_vals$L2 <- factor(lek_vals$L2, labels = split_vals)
   names(lek_vals) <- c('Explanatory', 'resp_name', 'Response', 'Splits', 'exp_name')
   
-  #return only values if val_out = T
+  #return only values if val_out = TRUE
   if(val_out) return(lek_vals)
   
   #ggplot object
-  p <- ggplot(lek_vals, aes(x = Explanatory, y = Response, group = Splits)) + 
-    geom_line(aes(colour = Splits, linetype = Splits, size = Splits)) + 
+  p <- ggplot2::ggplot(lek_vals, aes_string(x = 'Explanatory', y = 'Response', group = 'Splits')) + 
+    geom_line(aes_string(colour = 'Splits', linetype = 'Splits', size = 'Splits')) + 
     facet_grid(resp_name ~ exp_name) +
     scale_linetype_manual(values = rep('solid', length(split_vals))) +
     scale_size_manual(values = rep(1, length(split_vals)))

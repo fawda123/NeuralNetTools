@@ -10,40 +10,40 @@
 \usage{
 plotnet(mod_in, ...)
 
-\method{plotnet}{nnet}(mod_in, nid = T, all_out = T, all_in = T,
-  bias = T, wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T,
-  var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL,
-  cex_val = 1, alpha_val = 1, circle_col = "lightblue",
-  pos_col = "black", neg_col = "grey", bord_col = "lightblue",
-  max_sp = F, ...)
-
-\method{plotnet}{numeric}(mod_in, struct, nid = T, all_out = T,
-  all_in = T, bias = T, wts_only = F, rel_rsc = 5, circle_cex = 5,
-  node_labs = T, var_labs = T, x_lab = NULL, y_lab = NULL,
+\method{plotnet}{nnet}(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE,
+  bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5,
+  node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL,
   line_stag = NULL, cex_val = 1, alpha_val = 1,
   circle_col = "lightblue", pos_col = "black", neg_col = "grey",
-  bord_col = "lightblue", max_sp = F, ...)
+  bord_col = "lightblue", max_sp = FALSE, ...)
 
-\method{plotnet}{mlp}(mod_in, nid = T, all_out = T, all_in = T,
-  wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T,
-  var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL,
+\method{plotnet}{numeric}(mod_in, struct, nid = TRUE, all_out = TRUE,
+  all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5,
+  circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL,
+  y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1,
+  circle_col = "lightblue", pos_col = "black", neg_col = "grey",
+  bord_col = "lightblue", max_sp = FALSE, ...)
+
+\method{plotnet}{mlp}(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE,
+  wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE,
+  var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL,
   cex_val = 1, alpha_val = 1, circle_col = "lightblue",
   pos_col = "black", neg_col = "grey", bord_col = "lightblue",
-  max_sp = F, ...)
+  max_sp = FALSE, ...)
 
-\method{plotnet}{nn}(mod_in, nid = T, all_out = T, all_in = T, bias = T,
-  wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T,
-  var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL,
-  cex_val = 1, alpha_val = 1, circle_col = "lightblue",
-  pos_col = "black", neg_col = "grey", bord_col = "lightblue",
-  max_sp = F, ...)
+\method{plotnet}{nn}(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE,
+  bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5,
+  node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL,
+  line_stag = NULL, cex_val = 1, alpha_val = 1,
+  circle_col = "lightblue", pos_col = "black", neg_col = "grey",
+  bord_col = "lightblue", max_sp = FALSE, ...)
 
-\method{plotnet}{train}(mod_in, nid = T, all_out = T, all_in = T,
-  bias = T, wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T,
-  var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL,
-  cex_val = 1, alpha_val = 1, circle_col = "lightblue",
-  pos_col = "black", neg_col = "grey", bord_col = "lightblue",
-  max_sp = F, ...)
+\method{plotnet}{train}(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE,
+  bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5,
+  node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL,
+  line_stag = NULL, cex_val = 1, alpha_val = 1,
+  circle_col = "lightblue", pos_col = "black", neg_col = "grey",
+  bord_col = "lightblue", max_sp = FALSE, ...)
 }
 \arguments{
 \item{mod_in}{neural network object or numeric vector of weights}
@@ -91,7 +91,7 @@ plotnet(mod_in, ...)
 \item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 }
 \value{
-A graphics object unless \code{wts_only = T}, then neural network weights from \code{\link{neuralweights}}.
+A graphics object unless \code{wts_only = TRUE}, then neural network weights from \code{\link{neuralweights}}.
 }
 \description{
 Plot a neural interpretation diagram for a neural network object
@@ -159,7 +159,7 @@ plotnet(mod)
 ## color input nodes by relative importance
 mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 
-rel_imp <- garson(mod, 'Y1', bar_plot = F)$rel_imp
+rel_imp <- garson(mod, 'Y1', bar_plot = FALSE)$rel_imp
 cols <- colorRampPalette(c('lightgreen', 'darkgreen'))(3)[rank(rel_imp)]
 
 plotnet(mod, circle_col = list(cols, 'lightblue'))

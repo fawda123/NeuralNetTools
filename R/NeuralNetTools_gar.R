@@ -15,7 +15,7 @@
 #' 
 #' @import ggplot2 neuralnet nnet RSNNS
 #' 
-#' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = F}, otherwise a \code{data.frame} of relative importance values for each input variable.
+#' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = FALSE}, otherwise a \code{data.frame} of relative importance values for each input variable.
 #' 
 #' @references
 #' Garson, G.D. 1991. Interpreting neural network connection weights. Artificial Intelligence Expert. 6(4):46-51.
@@ -80,19 +80,21 @@ garson <- function(mod_in, out_var, ...) UseMethod('garson')
 #' @param struct numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.
 #' @param x_lab chr string of alternative names to be used for explanatory variables in the figure, default is taken from \code{mod_in}
 #' @param y_lab chr string of alternative names to be used for response variable in the figure, default is taken from \code{out_var}
-#' @param wts_only logical passed to \code{\link{neuralweights}}, default \code{F}
+#' @param wts_only logical passed to \code{\link{neuralweights}}, default \code{FALSE}
 #' 
 #' @import ggplot2 scales
 #' 
 #' @export garson.numeric
 #' 
 #' @method garson numeric
-garson.numeric <- function(mod_in, out_var, struct, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
+garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in, struct = struct)
+  struct <- best_wts$struct
+  best_wts <- best_wts$wts
   
-  # weights only if T
+  # weights only if TRUE
   if(wts_only) return(best_wts)
   
   #get variable names from mod_in object
@@ -151,7 +153,7 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = T, x_lab = NULL, 
     return(out)
   }
   
-  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = F]
+  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = FALSE]
   to_plo$x_names <- factor(x_names[order(rel_imp)], levels = x_names[order(rel_imp)])
   out_plo <- ggplot2::ggplot(to_plo, aes(x = x_names, y = rel_imp, fill = rel_imp,
                                 colour = rel_imp)) + 
@@ -170,12 +172,14 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = T, x_lab = NULL, 
 #' @export garson.nnet
 #' 
 #' @method garson nnet
-garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
+garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in)
+  struct <- best_wts$struct
+  best_wts <- best_wts$wts
   
-  # weights only if T
+  # weights only if TRUE
   if(wts_only) return(best_wts)
   
   # get variable names from mod_in object
@@ -244,7 +248,7 @@ garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NUL
     return(out)
   }
   
-  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = F]
+  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = FALSE]
   to_plo$x_names <- factor(x_names[order(rel_imp)], levels = x_names[order(rel_imp)])
   out_plo <- ggplot2::ggplot(to_plo, aes(x = x_names, y = rel_imp, fill = rel_imp,
                                 colour = rel_imp)) + 
@@ -263,12 +267,14 @@ garson.nnet <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NUL
 #' @export garson.mlp
 #' 
 #' @method garson mlp
-garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
+garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in)
+  struct <- best_wts$struct
+  best_wts <- best_wts$wts
   
-  # weights only if T
+  # weights only if TRUE
   if(wts_only) return(best_wts)
   
   #get variable names from mod_in object
@@ -328,7 +334,7 @@ garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL
     return(out)
   }
   
-  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = F]
+  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = FALSE]
   to_plo$x_names <- factor(x_names[order(rel_imp)], levels = x_names[order(rel_imp)])
   out_plo <- ggplot2::ggplot(to_plo, aes(x = x_names, y = rel_imp, fill = rel_imp,
                                 colour = rel_imp)) + 
@@ -347,12 +353,14 @@ garson.mlp <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL
 #' @export garson.nn
 #'  
 #' @method garson nn
-garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
+garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in)
+  struct <- best_wts$struct
+  best_wts <- best_wts$wts
   
-  # weights only if T
+  # weights only if TRUE
   if(wts_only) return(best_wts)
   
   #get variable names from mod_in object
@@ -412,7 +420,7 @@ garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL,
     return(out)
   }
   
-  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = F]
+  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = FALSE]
   to_plo$x_names <- factor(x_names[order(rel_imp)], levels = x_names[order(rel_imp)])
   out_plo <- ggplot2::ggplot(to_plo, aes(x = x_names, y = rel_imp, fill = rel_imp,
                                 colour = rel_imp)) + 
@@ -431,16 +439,18 @@ garson.nn <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL,
 #' @export garson.train
 #' 
 #' @method garson train
-garson.train <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NULL, wts_only = F, ...){
+garson.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
-  y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = T)[[1]]
+  y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = TRUE)[[1]]
   mod_in <- mod_in$finalModel
   x_names <- mod_in$xNames
   
   # get model weights
   best_wts <- neuralweights(mod_in)
+  struct <- best_wts$struct
+  best_wts <- best_wts$wts
   
-  # weights only if T
+  # weights only if TRUE
   if(wts_only) return(best_wts)
   
   # get index value for response variable to measure
@@ -494,7 +504,7 @@ garson.train <- function(mod_in, out_var, bar_plot = T, x_lab = NULL, y_lab = NU
     return(out)
   }
   
-  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = F]
+  to_plo <- data.frame(rel_imp, x_names)[order(rel_imp), , drop = FALSE]
   to_plo$x_names <- factor(x_names[order(rel_imp)], levels = x_names[order(rel_imp)])
   out_plo <- ggplot2::ggplot(to_plo, aes(x = x_names, y = rel_imp, fill = rel_imp,
                                          colour = rel_imp)) + 

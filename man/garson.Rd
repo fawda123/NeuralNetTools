@@ -10,20 +10,20 @@
 \usage{
 garson(mod_in, out_var, ...)
 
-\method{garson}{numeric}(mod_in, out_var, struct, bar_plot = T,
-  x_lab = NULL, y_lab = NULL, wts_only = F, ...)
+\method{garson}{numeric}(mod_in, out_var, struct, bar_plot = TRUE,
+  x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...)
 
-\method{garson}{nnet}(mod_in, out_var, bar_plot = T, x_lab = NULL,
-  y_lab = NULL, wts_only = F, ...)
+\method{garson}{nnet}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
+  y_lab = NULL, wts_only = FALSE, ...)
 
-\method{garson}{mlp}(mod_in, out_var, bar_plot = T, x_lab = NULL,
-  y_lab = NULL, wts_only = F, ...)
+\method{garson}{mlp}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
+  y_lab = NULL, wts_only = FALSE, ...)
 
-\method{garson}{nn}(mod_in, out_var, bar_plot = T, x_lab = NULL,
-  y_lab = NULL, wts_only = F, ...)
+\method{garson}{nn}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
+  y_lab = NULL, wts_only = FALSE, ...)
 
-\method{garson}{train}(mod_in, out_var, bar_plot = T, x_lab = NULL,
-  y_lab = NULL, wts_only = F, ...)
+\method{garson}{train}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
+  y_lab = NULL, wts_only = FALSE, ...)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}}
@@ -40,10 +40,10 @@ garson(mod_in, out_var, ...)
 
 \item{y_lab}{chr string of alternative names to be used for response variable in the figure, default is taken from \code{out_var}}
 
-\item{wts_only}{logical passed to \code{\link{neuralweights}}, default \code{F}}
+\item{wts_only}{logical passed to \code{\link{neuralweights}}, default \code{FALSE}}
 }
 \value{
-A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = F}, otherwise a \code{data.frame} of relative importance values for each input variable.
+A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = FALSE}, otherwise a \code{data.frame} of relative importance values for each input variable.
 }
 \description{
 Relative importance of input variables in neural networks using Garson's algorithm

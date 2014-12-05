@@ -31,7 +31,7 @@
 #' @references
 #' Ozesmi, S.L., Ozesmi, U. 1999. An artificial neural network approach to spatial habitat modeling with interspecific interaction. Ecological Modelling. 116:15-31.
 #' 
-#' @return A graphics object unless \code{wts_only = T}, then neural network weights from \code{\link{neuralweights}}.
+#' @return A graphics object unless \code{wts_only = TRUE}, then neural network weights from \code{\link{neuralweights}}.
 #' 
 #' @details
 #'  This function plots a neural network as a neural interpretation diagram as in Ozesmi and Ozesmi (1999). Options to plot without color-coding or shading of weights are also provided.  The default settings plot positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled arbitrarily as I1 through In for n input variables.  One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn.  The output layer is plotted last with nodes labeled as O1 through On.  Bias nodes connected to the hidden and output layers are also shown.  Neural networks created using \code{\link[RSNNS]{mlp}} do not show bias layers.
@@ -96,7 +96,7 @@
 #' ## color input nodes by relative importance
 #' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 #'  
-#' rel_imp <- garson(mod, 'Y1', bar_plot = F)$rel_imp
+#' rel_imp <- garson(mod, 'Y1', bar_plot = FALSE)$rel_imp
 #' cols <- colorRampPalette(c('lightgreen', 'darkgreen'))(3)[rank(rel_imp)]
 #'  
 #' plotnet(mod, circle_col = list(cols, 'lightblue'))
@@ -109,9 +109,11 @@ plotnet <- function(mod_in, ...) UseMethod('plotnet')
 #' @export plotnet.nnet
 #' 
 #' @method plotnet nnet
-plotnet.nnet <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T, var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = F, ...){
+plotnet.nnet <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
   
   wts <- neuralweights(mod_in)
+  struct <- wts$struct
+  wts <- wts$wts
   
   if(wts_only) return(wts)
   
@@ -157,7 +159,7 @@ plotnet.nnet <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts
   }
   
   #initiate plot
-  plot(x_range, y_range, type = 'n', axes = F, ylab = '', xlab = '', ...)
+  plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '', ...)
   
   #function for getting y locations for input, hidden, output layers
   #input is integer value from 'struct'
@@ -208,20 +210,20 @@ plotnet.nnet <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts
   
   #function creates lines colored by direction and width as proportion of magnitude
   #use 'all_in' argument if you want to plot connection lines for only a single input node
-  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = F, nid, rel_rsc, all_in, pos_col, neg_col, ...){
+  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE, nid, rel_rsc, all_in, pos_col, neg_col, ...){
     
     x0 <- rep(layer_x[layer1] * diff(x_range) + line_stag * diff(x_range), struct[layer1])
     x1 <- rep(layer_x[layer2] * diff(x_range) - line_stag * diff(x_range), struct[layer1])
     
-    if(out_layer == T){
+    if(out_layer == TRUE){
       
       y0 <- get_ys(struct[layer1])
       y1 <- rep(get_ys(struct[layer2])[h_layer], struct[layer1])
       src_str <- paste('out', h_layer)
       
-      wts <- neuralweights(mod_in)
+      wts <- neuralweights(mod_in)$wts
       wts <- wts[grep(src_str, names(wts))][[1]][-1]
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]][-1]
       
       cols <- rep(pos_col, struct[layer1])
@@ -241,9 +243,9 @@ plotnet.nnet <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts
       y1 <- get_ys(struct[layer2])
       src_str <- paste('hidden', layer1)
       
-      wts <- neuralweights(mod_in)
+      wts <- neuralweights(mod_in)$wts
       wts <- unlist(lapply(wts[grep(src_str, names(wts))], function(x) x[all_in + 1]))
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       wts_rs <- unlist(lapply(wts_rs[grep(src_str, names(wts_rs))], function(x) x[all_in + 1]))
       
       cols <- rep(pos_col, struct[layer2])
@@ -263,12 +265,12 @@ plotnet.nnet <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts
     
     for(val in 1:length(bias_x)){
       
-      wts <- neuralweights(mod_in)
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts <- neuralweights(mod_in)$wts
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       
       if(val != length(bias_x)){
-        wts <- wts[grep('out', names(wts), invert = T)]
-        wts_rs <- wts_rs[grep('out', names(wts_rs), invert = T)]
+        wts <- wts[grep('out', names(wts), invert = TRUE)]
+        wts_rs <- wts_rs[grep('out', names(wts_rs), invert = TRUE)]
         sel_val <- grep(val, substr(names(wts_rs), 8, 8))
         wts <- wts[sel_val]
         wts_rs <- wts_rs[sel_val]
@@ -283,7 +285,7 @@ plotnet.nnet <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts
       cols[unlist(lapply(wts, function(x) x[1]))<0] <- neg_col
       wts_rs <- unlist(lapply(wts_rs, function(x) x[1]))
       
-      if(nid == F){
+      if(nid == FALSE){
         wts_rs <- rep(1, struct[val + 1])
         cols <- rep('black', struct[val + 1])
       }
@@ -337,7 +339,7 @@ plotnet.nnet <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts
   lays <- lays[-c(1, (length(struct) - 1))]
   for(lay in lays){
     for(node in 1:struct[lay[1]]){
-      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = T, 
+      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
                   pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val))
     }
   }
@@ -345,12 +347,12 @@ plotnet.nnet <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts
   #uses 'all_out' argument to plot connection lines for all output nodes or a single node
   if(is.logical(all_out))
     mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
+      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
       1:struct[length(struct)]
     )
   else{
     node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, 
+    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, 
                 pos_col = pos_col, neg_col = neg_col, all_out = all_out)
   }
   
@@ -376,13 +378,15 @@ plotnet.nnet <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts
 #' @export plotnet.numeric
 #' 
 #' @method plotnet numeric
-plotnet.numeric <- function(mod_in, struct, nid = T, all_out = T, all_in = T, bias = T, wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T, var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = F, ...){
+plotnet.numeric <- function(mod_in, struct, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
   
   if(is.null(struct)) stop('Three-element vector required for struct')
   if(length(mod_in) != ((struct[1] * struct[2] + struct[2] * struct[3]) + (struct[3] + struct[2])))
     stop('Incorrect length of weight matrix for given network structure')
   
   wts <- neuralweights(mod_in, struct = struct)
+  struct <- wts$struct
+  wts <- wts$wts
   
   if(wts_only) return(wts)
   
@@ -419,7 +423,7 @@ plotnet.numeric <- function(mod_in, struct, nid = T, all_out = T, all_in = T, bi
   }
   
   #initiate plot
-  plot(x_range, y_range, type = 'n', axes = F, ylab = '', xlab = '', ...)
+  plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '', ...)
   
   #function for getting y locations for input, hidden, output layers
   #input is integer value from 'struct'
@@ -470,20 +474,20 @@ plotnet.numeric <- function(mod_in, struct, nid = T, all_out = T, all_in = T, bi
   
   #function creates lines colored by direction and width as proportion of magnitude
   #use 'all_in' argument if you want to plot connection lines for only a single input node
-  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = F, nid, rel_rsc, all_in, pos_col, neg_col, ...){
+  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE, nid, rel_rsc, all_in, pos_col, neg_col, ...){
     
     x0 <- rep(layer_x[layer1] * diff(x_range) + line_stag * diff(x_range), struct[layer1])
     x1 <- rep(layer_x[layer2] * diff(x_range) - line_stag * diff(x_range), struct[layer1])
     
-    if(out_layer == T){
+    if(out_layer == TRUE){
       
       y0 <- get_ys(struct[layer1])
       y1 <- rep(get_ys(struct[layer2])[h_layer], struct[layer1])
       src_str <- paste('out', h_layer)
       
-      wts <- neuralweights(mod_in, struct = struct)
+      wts <- neuralweights(mod_in, struct = struct)$wts
       wts <- wts[grep(src_str, names(wts))][[1]][-1]
-      wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)
+      wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)$wts
       wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]][-1]
       
       cols <- rep(pos_col, struct[layer1])
@@ -503,9 +507,9 @@ plotnet.numeric <- function(mod_in, struct, nid = T, all_out = T, all_in = T, bi
       y1 <- get_ys(struct[layer2])
       src_str <- paste('hidden', layer1)
       
-      wts <- neuralweights(mod_in, struct = struct)
+      wts <- neuralweights(mod_in, struct = struct)$wts
       wts <- unlist(lapply(wts[grep(src_str, names(wts))], function(x) x[all_in + 1]))
-      wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)
+      wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)$wts
       wts_rs <- unlist(lapply(wts_rs[grep(src_str, names(wts_rs))], function(x) x[all_in + 1]))
       
       cols <- rep(pos_col, struct[layer2])
@@ -525,12 +529,12 @@ plotnet.numeric <- function(mod_in, struct, nid = T, all_out = T, all_in = T, bi
     
     for(val in 1:length(bias_x)){
       
-      wts <- neuralweights(mod_in, struct = struct)
-      wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)
+      wts <- neuralweights(mod_in, struct = struct)$wts
+      wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)$wts
       
       if(val != length(bias_x)){
-        wts <- wts[grep('out', names(wts), invert = T)]
-        wts_rs <- wts_rs[grep('out', names(wts_rs), invert = T)]
+        wts <- wts[grep('out', names(wts), invert = TRUE)]
+        wts_rs <- wts_rs[grep('out', names(wts_rs), invert = TRUE)]
         sel_val <- grep(val, substr(names(wts_rs), 8, 8))
         wts <- wts[sel_val]
         wts_rs <- wts_rs[sel_val]
@@ -545,7 +549,7 @@ plotnet.numeric <- function(mod_in, struct, nid = T, all_out = T, all_in = T, bi
       cols[unlist(lapply(wts, function(x) x[1]))<0] <- neg_col
       wts_rs <- unlist(lapply(wts_rs, function(x) x[1]))
       
-      if(nid == F){
+      if(nid == FALSE){
         wts_rs <- rep(1, struct[val + 1])
         cols <- rep('black', struct[val + 1])
       }
@@ -599,7 +603,7 @@ plotnet.numeric <- function(mod_in, struct, nid = T, all_out = T, all_in = T, bi
   lays <- lays[-c(1, (length(struct) - 1))]
   for(lay in lays){
     for(node in 1:struct[lay[1]]){
-      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = T, 
+      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
                   pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val))
     }
   }
@@ -607,12 +611,12 @@ plotnet.numeric <- function(mod_in, struct, nid = T, all_out = T, all_in = T, bi
   #uses 'all_out' argument to plot connection lines for all output nodes or a single node
   if(is.logical(all_out))
     mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
+      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
       1:struct[length(struct)]
     )
   else{
     node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, 
+    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, 
                 pos_col = pos_col, neg_col = neg_col, all_out = all_out)
   }
   
@@ -636,9 +640,11 @@ plotnet.numeric <- function(mod_in, struct, nid = T, all_out = T, all_in = T, bi
 #' @export plotnet.mlp
 #' 
 #' @method plotnet mlp
-plotnet.mlp <- function(mod_in, nid = T, all_out = T, all_in = T, wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T, var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = F, ...){
+plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
 
   wts <- neuralweights(mod_in)
+  struct <- wts$struct
+  wts <- wts$wts
   
   if(wts_only) return(wts)
   
@@ -674,7 +680,7 @@ plotnet.mlp <- function(mod_in, nid = T, all_out = T, all_in = T, wts_only = F, 
   }
   
   #initiate plot
-  plot(x_range, y_range, type = 'n', axes = F, ylab = '', xlab = '', ...)
+  plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '', ...)
   
   #function for getting y locations for input, hidden, output layers
   #input is integer value from 'struct'
@@ -704,20 +710,20 @@ plotnet.mlp <- function(mod_in, nid = T, all_out = T, all_in = T, wts_only = F, 
   
   #function creates lines colored by direction and width as proportion of magnitude
   #use 'all_in' argument if you want to plot connection lines for only a single input node
-  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = F, nid, rel_rsc, all_in, pos_col, neg_col, ...){
+  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE, nid, rel_rsc, all_in, pos_col, neg_col, ...){
     
     x0 <- rep(layer_x[layer1] * diff(x_range) + line_stag * diff(x_range), struct[layer1])
     x1 <- rep(layer_x[layer2] * diff(x_range) - line_stag * diff(x_range), struct[layer1])
     
-    if(out_layer == T){
+    if(out_layer == TRUE){
       
       y0 <- get_ys(struct[layer1])
       y1 <- rep(get_ys(struct[layer2])[h_layer], struct[layer1])
       src_str <- paste('out', h_layer)
       
-      wts <- neuralweights(mod_in)
+      wts <- neuralweights(mod_in)$wts
       wts <- wts[grep(src_str, names(wts))][[1]][-1]
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]][-1]
       
       cols <- rep(pos_col, struct[layer1])
@@ -737,9 +743,9 @@ plotnet.mlp <- function(mod_in, nid = T, all_out = T, all_in = T, wts_only = F, 
       y1 <- get_ys(struct[layer2])
       src_str <- paste('hidden', layer1)
       
-      wts <- neuralweights(mod_in)
+      wts <- neuralweights(mod_in)$wts
       wts <- unlist(lapply(wts[grep(src_str, names(wts))], function(x) x[all_in + 1]))
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       wts_rs <- unlist(lapply(wts_rs[grep(src_str, names(wts_rs))], function(x) x[all_in + 1]))
       
       cols <- rep(pos_col, struct[layer2])
@@ -772,7 +778,7 @@ plotnet.mlp <- function(mod_in, nid = T, all_out = T, all_in = T, wts_only = F, 
   lays <- lays[-c(1, (length(struct) - 1))]
   for(lay in lays){
     for(node in 1:struct[lay[1]]){
-      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = T, 
+      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
                   pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val))
     }
   }
@@ -780,12 +786,12 @@ plotnet.mlp <- function(mod_in, nid = T, all_out = T, all_in = T, wts_only = F, 
   #uses 'all_out' argument to plot connection lines for all output nodes or a single node
   if(is.logical(all_out))
     mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
+      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
       1:struct[length(struct)]
     )
   else{
     node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, 
+    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, 
                 pos_col = pos_col, neg_col = neg_col, all_out = all_out)
   }
   
@@ -807,9 +813,11 @@ plotnet.mlp <- function(mod_in, nid = T, all_out = T, all_in = T, wts_only = F, 
 #' @export plotnet.nn
 #' 
 #' @method plotnet nn
-plotnet.nn <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T, var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = F, ...){
+plotnet.nn <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
   
   wts <- neuralweights(mod_in)
+  struct <- wts$struct
+  wts <- wts$wts
   
   if(wts_only) return(wts)
   
@@ -846,7 +854,7 @@ plotnet.nn <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_o
   }
   
   #initiate plot
-  plot(x_range, y_range, type = 'n', axes = F, ylab = '', xlab = '', ...)
+  plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '', ...)
   
   #function for getting y locations for input, hidden, output layers
   #input is integer value from 'struct'
@@ -897,20 +905,20 @@ plotnet.nn <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_o
   
   #function creates lines colored by direction and width as proportion of magnitude
   #use 'all_in' argument if you want to plot connection lines for only a single input node
-  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = F, nid, rel_rsc, all_in, pos_col, neg_col, ...){
+  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE, nid, rel_rsc, all_in, pos_col, neg_col, ...){
     
     x0 <- rep(layer_x[layer1] * diff(x_range) + line_stag * diff(x_range), struct[layer1])
     x1 <- rep(layer_x[layer2] * diff(x_range) - line_stag * diff(x_range), struct[layer1])
     
-    if(out_layer == T){
+    if(out_layer == TRUE){
       
       y0 <- get_ys(struct[layer1])
       y1 <- rep(get_ys(struct[layer2])[h_layer], struct[layer1])
       src_str <- paste('out', h_layer)
       
-      wts <- neuralweights(mod_in)
+      wts <- neuralweights(mod_in)$wts
       wts <- wts[grep(src_str, names(wts))][[1]][-1]
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]][-1]
       
       cols <- rep(pos_col, struct[layer1])
@@ -930,9 +938,9 @@ plotnet.nn <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_o
       y1 <- get_ys(struct[layer2])
       src_str <- paste('hidden', layer1)
       
-      wts <- neuralweights(mod_in)
+      wts <- neuralweights(mod_in)$wts
       wts <- unlist(lapply(wts[grep(src_str, names(wts))], function(x) x[all_in + 1]))
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       wts_rs <- unlist(lapply(wts_rs[grep(src_str, names(wts_rs))], function(x) x[all_in + 1]))
       
       cols <- rep(pos_col, struct[layer2])
@@ -952,12 +960,12 @@ plotnet.nn <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_o
     
     for(val in 1:length(bias_x)){
       
-      wts <- neuralweights(mod_in)
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts <- neuralweights(mod_in)$wts
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       
       if(val != length(bias_x)){
-        wts <- wts[grep('out', names(wts), invert = T)]
-        wts_rs <- wts_rs[grep('out', names(wts_rs), invert = T)]
+        wts <- wts[grep('out', names(wts), invert = TRUE)]
+        wts_rs <- wts_rs[grep('out', names(wts_rs), invert = TRUE)]
         sel_val <- grep(val, substr(names(wts_rs), 8, 8))
         wts <- wts[sel_val]
         wts_rs <- wts_rs[sel_val]
@@ -972,7 +980,7 @@ plotnet.nn <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_o
       cols[unlist(lapply(wts, function(x) x[1]))<0] <- neg_col
       wts_rs <- unlist(lapply(wts_rs, function(x) x[1]))
       
-      if(nid == F){
+      if(nid == FALSE){
         wts_rs <- rep(1, struct[val + 1])
         cols <- rep('black', struct[val + 1])
       }
@@ -1026,7 +1034,7 @@ plotnet.nn <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_o
   lays <- lays[-c(1, (length(struct) - 1))]
   for(lay in lays){
     for(node in 1:struct[lay[1]]){
-      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = T, 
+      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
                   pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val))
     }
   }
@@ -1034,12 +1042,12 @@ plotnet.nn <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_o
   #uses 'all_out' argument to plot connection lines for all output nodes or a single node
   if(is.logical(all_out))
     mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
+      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
       1:struct[length(struct)]
     )
   else{
     node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, 
+    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, 
                 pos_col = pos_col, neg_col = neg_col, all_out = all_out)
   }
   
@@ -1063,12 +1071,14 @@ plotnet.nn <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_o
 #' @export plotnet.train
 #' 
 #' @method plotnet train
-plotnet.train <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wts_only = F, rel_rsc = 5, circle_cex = 5, node_labs = T, var_labs = T, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = F, ...){
+plotnet.train <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
   
-  y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = T)[[1]]
+  y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = TRUE)[[1]]
   mod_in <- mod_in$finalModel
   x_names <- mod_in$xNames
   wts <- neuralweights(mod_in)
+  struct <- wts$struct
+  wts <- wts$wts
   
   if(wts_only) return(wts)
   
@@ -1100,7 +1110,7 @@ plotnet.train <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wt
   }
   
   #initiate plot
-  plot(x_range, y_range, type = 'n', axes = F, ylab = '', xlab = '', ...)
+  plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '', ...)
   
   #function for getting y locations for input, hidden, output layers
   #input is integer value from 'struct'
@@ -1151,20 +1161,20 @@ plotnet.train <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wt
   
   #function creates lines colored by direction and width as proportion of magnitude
   #use 'all_in' argument if you want to plot connection lines for only a single input node
-  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = F, nid, rel_rsc, all_in, pos_col, neg_col, ...){
+  layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE, nid, rel_rsc, all_in, pos_col, neg_col, ...){
     
     x0 <- rep(layer_x[layer1] * diff(x_range) + line_stag * diff(x_range), struct[layer1])
     x1 <- rep(layer_x[layer2] * diff(x_range) - line_stag * diff(x_range), struct[layer1])
     
-    if(out_layer == T){
+    if(out_layer == TRUE){
       
       y0 <- get_ys(struct[layer1])
       y1 <- rep(get_ys(struct[layer2])[h_layer], struct[layer1])
       src_str <- paste('out', h_layer)
       
-      wts <- neuralweights(mod_in)
+      wts <- neuralweights(mod_in)$wts
       wts <- wts[grep(src_str, names(wts))][[1]][-1]
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]][-1]
       
       cols <- rep(pos_col, struct[layer1])
@@ -1184,9 +1194,9 @@ plotnet.train <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wt
       y1 <- get_ys(struct[layer2])
       src_str <- paste('hidden', layer1)
       
-      wts <- neuralweights(mod_in)
+      wts <- neuralweights(mod_in)$wts
       wts <- unlist(lapply(wts[grep(src_str, names(wts))], function(x) x[all_in + 1]))
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       wts_rs <- unlist(lapply(wts_rs[grep(src_str, names(wts_rs))], function(x) x[all_in + 1]))
       
       cols <- rep(pos_col, struct[layer2])
@@ -1206,12 +1216,12 @@ plotnet.train <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wt
     
     for(val in 1:length(bias_x)){
       
-      wts <- neuralweights(mod_in)
-      wts_rs <- neuralweights(mod_in, rel_rsc)
+      wts <- neuralweights(mod_in)$wts
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
       
       if(val != length(bias_x)){
-        wts <- wts[grep('out', names(wts), invert = T)]
-        wts_rs <- wts_rs[grep('out', names(wts_rs), invert = T)]
+        wts <- wts[grep('out', names(wts), invert = TRUE)]
+        wts_rs <- wts_rs[grep('out', names(wts_rs), invert = TRUE)]
         sel_val <- grep(val, substr(names(wts_rs), 8, 8))
         wts <- wts[sel_val]
         wts_rs <- wts_rs[sel_val]
@@ -1226,7 +1236,7 @@ plotnet.train <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wt
       cols[unlist(lapply(wts, function(x) x[1]))<0] <- neg_col
       wts_rs <- unlist(lapply(wts_rs, function(x) x[1]))
       
-      if(nid == F){
+      if(nid == FALSE){
         wts_rs <- rep(1, struct[val + 1])
         cols <- rep('black', struct[val + 1])
       }
@@ -1280,7 +1290,7 @@ plotnet.train <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wt
   lays <- lays[-c(1, (length(struct) - 1))]
   for(lay in lays){
     for(node in 1:struct[lay[1]]){
-      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = T, 
+      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
                   pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val))
     }
   }
@@ -1288,12 +1298,12 @@ plotnet.train <- function(mod_in, nid = T, all_out = T, all_in = T, bias = T, wt
   #uses 'all_out' argument to plot connection lines for all output nodes or a single node
   if(is.logical(all_out))
     mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
+      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val)), 
       1:struct[length(struct)]
     )
   else{
     node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = T, nid = nid, rel_rsc = rel_rsc, 
+    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, 
                 pos_col = pos_col, neg_col = neg_col, all_out = all_out)
   }
   
