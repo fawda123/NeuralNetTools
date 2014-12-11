@@ -2,9 +2,9 @@ Package: NeuralNetTools
 Type: Package
 Title: R package for generic neural network tools
 Version: 1.0.0
-Date: 2014-12-01
-Author: Marcus Beck
-Maintainer: Marcus Beck <mbafs2012@gmail.com>
+Date: 2014-12-10
+Author: Marcus W. Beck [aut, cre]
+Maintainer: Marcus W. Beck <mbafs2012@gmail.com>
 Description: This packages provides functions to aid in the interpretation of
     neural network models created in R.  Functions are available for plotting,
     quantifying variable importance, conducting a sensitivity analysis, and
@@ -21,5 +21,6 @@ Imports:
     scales
 Depends:
     R (>= 3.1.1)
-Authors@R: person("Marcus", "Beck", email = "mbafs2012@gmail.com",
-    role = c("aut", "cre"))
+Authors@R: person(given = "Marcus W.", family = "Beck",
+    role = c("aut","cre"),
+    email = "mbafs2012@gmail.com")
