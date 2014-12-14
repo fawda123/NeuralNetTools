@@ -6,7 +6,9 @@ The development version of this package can be installed from Github:
 
 ```
 install.packages('devtools')
-require(devtools)
+library(devtools)
 install_github('fawda123/NeuralNetTools')
-require(NeuralNetTools)
+library(NeuralNetTools)
 ```
+
+See the documentation for available functions and examples.

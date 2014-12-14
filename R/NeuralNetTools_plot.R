@@ -89,7 +89,8 @@
 #'  
 #' binary_data <- data.frame(expand.grid(c(0, 1), c(0, 1), c(0, 1)), AND, OR)
 #'  
-#' mod <- neuralnet(AND + OR ~ Var1 + Var2 + Var3, binary_data, hidden = c(6, 12, 8), rep = 10, err.fct = 'ce', linear.output = FALSE)
+#' mod <- neuralnet(AND + OR ~ Var1 + Var2 + Var3, binary_data, 
+#'  hidden = c(6, 12, 8), rep = 10, err.fct = 'ce', linear.output = FALSE)
 #'  
 #' plotnet(mod)
 #' 
