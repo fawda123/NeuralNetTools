@@ -1,6 +1,7 @@
 ## Test environments
 * local Windows 7 install, R 3.1.2
-* RedHat Linux, R 3.1.2
+* RHEL 6, R 3.1.2 and Current r-devel (2014-12-14 r67168)
+* 
 * win-builder (devel and release)
 
 ## R CMD check results
