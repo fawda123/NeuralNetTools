@@ -1,4 +1,5 @@
-## README
+[![Build Status](https://travis-ci.org/jhollist/NeuralNetTools.png?branch=master)](https://travis-ci.org/jhollist/NeuralNetTools)
+## NeuralNetTools
 
 This is the development repository for the NeuralNetTools package.  Functions within this package can be used for the interpretation of neural network models created in R, including functions to plot a neural network interpretation diagram, evaluation of variable importance, and a sensitivity analysis of input variables. 
 
