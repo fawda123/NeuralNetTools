@@ -259,7 +259,8 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
             mod_in, 
             vars, 
             steps, 
-            function(val) quantile(val, probs = splits)
+            function(val) quantile(val, probs = splits),
+            resp_name
           )
         }, 
         simplify = FALSE
