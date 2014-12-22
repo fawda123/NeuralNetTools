@@ -127,7 +127,7 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NUL
   
   # matrix multiplication of output layer with connecting hidden layer
   max_i <- length(inp_hid)
-  sum_in <- as.matrix(inp_hid[[max_i]]) %*% matrix(hid_out)
+  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
   
   # recursive matrix multiplication for all remaining hidden layers
   # only for multiple hidden layers
@@ -222,7 +222,7 @@ garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
   
   # matrix multiplication of output layer with connecting hidden layer
   max_i <- length(inp_hid)
-  sum_in <- as.matrix(inp_hid[[max_i]]) %*% matrix(hid_out)
+  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
   
   # recursive matrix multiplication for all remaining hidden layers
   # only for multiple hidden layers
@@ -308,7 +308,7 @@ garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
   
   # matrix multiplication of output layer with connecting hidden layer
   max_i <- length(inp_hid)
-  sum_in <- as.matrix(inp_hid[[max_i]]) %*% matrix(hid_out)
+  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
   
   # recursive matrix multiplication for all remaining hidden layers
   # only for multiple hidden layers
@@ -393,7 +393,7 @@ garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
   
   # matrix multiplication of output layer with connecting hidden layer
   max_i <- length(inp_hid)
-  sum_in <- as.matrix(inp_hid[[max_i]]) %*% matrix(hid_out)
+  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
   
   # recursive matrix multiplication for all remaining hidden layers
   # only for multiple hidden layers
@@ -478,7 +478,7 @@ garson.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab =
   
   # matrix multiplication of output layer with connecting hidden layer
   max_i <- length(inp_hid)
-  sum_in <- as.matrix(inp_hid[[max_i]]) %*% matrix(hid_out)
+  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
   
   # recursive matrix multiplication for all remaining hidden layers
   # only for multiple hidden layers

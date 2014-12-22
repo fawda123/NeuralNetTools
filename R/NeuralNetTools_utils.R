@@ -254,9 +254,11 @@ pred_sens <- function(mat_in, mod_in, var_sel, step_val, fun_in, resp_name){
   mat_out <- data.frame(mat_out)
   names(mat_out) <- names(mat_in)
   
-  mat_cons <- mat_in[, !names(mat_in) %in% var_sel]
+  mat_cons <- mat_in[, !names(mat_in) %in% var_sel, drop = F]
   mat_cons <- apply(mat_cons, 2, fun_in)
-  mat_out[, !names(mat_in) %in% var_sel] <- t(sapply(1:step_val, function(x) mat_cons))
+  mat_cons <- sapply(1:step_val, function(x) mat_cons)
+  if(!'numeric' %in% class(mat_cons)) mat_cons <- t(mat_cons)
+  mat_out[, !names(mat_in) %in% var_sel] <- mat_cons
   
   mat_out[, var_sel] <- seq(min(mat_in[, var_sel]), max(mat_in[, var_sel]), length = step_val)
   

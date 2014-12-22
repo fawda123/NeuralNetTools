@@ -99,9 +99,12 @@ lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 
       dat_names <- try(model.frame(forms,data = eval(mod_in$call$data)))
       resp_name <- as.character(forms)[2]
       var_sens <- names(dat_names)[!names(dat_names) %in% as.character(forms)[2]]
-      mat_in <- dat_names[,!names(dat_names) %in% as.character(forms)[2]]
+      mat_in <- dat_names[,!names(dat_names) %in% as.character(forms)[2], drop = F]
     }
   }
+  
+  # stop if only one input variable
+  if(ncol(mat_in) == 1) stop('Lek profile requires greater than one input variable')
   
   #use 'pred_fun' to get pred vals of response across range of vals for an exp vars
   #loops over all explanatory variables of interest and all split values
@@ -259,7 +262,8 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
             mod_in, 
             vars, 
             steps, 
-            function(val) quantile(val, probs = splits)
+            function(val) quantile(val, probs = splits),
+            resp_name
           )
         }, 
         simplify = FALSE
