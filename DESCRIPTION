@@ -2,7 +2,7 @@ Package: NeuralNetTools
 Type: Package
 Title: Visualization and Analysis Tools for Neural Networks
 Version: 1.0.1
-Date: 2014-12-10
+Date: 2014-01-27
 Author: Marcus W. Beck [aut, cre]
 Maintainer: Marcus W. Beck <mbafs2012@gmail.com>
 Description: Visualization and analysis tools to aid in the interpretation of
@@ -20,7 +20,7 @@ Imports:
     RSNNS,
     scales
 Depends:
-    R (>= 3.1.1)
+    R (>= 3.1.2)
 Authors@R: person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),
     email = "mbafs2012@gmail.com")
