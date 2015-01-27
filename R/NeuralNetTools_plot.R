@@ -107,7 +107,7 @@ plotnet <- function(mod_in, ...) UseMethod('plotnet')
 #' 
 #' @import scales
 #' 
-#' @export plotnet.nnet
+#' @export
 #' 
 #' @method plotnet nnet
 plotnet.nnet <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
@@ -376,7 +376,7 @@ plotnet.nnet <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias
 #' 
 #' @import scales
 #' 
-#' @export plotnet.numeric
+#' @export
 #' 
 #' @method plotnet numeric
 plotnet.numeric <- function(mod_in, struct, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
@@ -638,7 +638,7 @@ plotnet.numeric <- function(mod_in, struct, nid = TRUE, all_out = TRUE, all_in =
 #' 
 #' @import scales
 #' 
-#' @export plotnet.mlp
+#' @export
 #' 
 #' @method plotnet mlp
 plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
@@ -811,7 +811,7 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
 #' 
 #' @import scales
 #' 
-#' @export plotnet.nn
+#' @export
 #' 
 #' @method plotnet nn
 plotnet.nn <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
@@ -1069,7 +1069,7 @@ plotnet.nn <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias =
 #' 
 #' @import scales
 #' 
-#' @export plotnet.train
+#' @export
 #' 
 #' @method plotnet train
 plotnet.train <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){

@@ -11,7 +11,7 @@
 #'
 #' A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined.
 #' 
-#' @export garson
+#' @export
 #' 
 #' @import ggplot2 neuralnet nnet RSNNS
 #' 
@@ -84,7 +84,7 @@ garson <- function(mod_in, out_var, ...) UseMethod('garson')
 #' 
 #' @import ggplot2 scales
 #' 
-#' @export garson.numeric
+#' @export
 #' 
 #' @method garson numeric
 garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
@@ -169,7 +169,7 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NUL
 #' 
 #' @import ggplot2 scales
 #' 
-#' @export garson.nnet
+#' @export
 #' 
 #' @method garson nnet
 garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
@@ -264,7 +264,7 @@ garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
 #'
 #' @import ggplot2 scales
 #' 
-#' @export garson.mlp
+#' @export
 #' 
 #' @method garson mlp
 garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
@@ -350,7 +350,7 @@ garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
 #' 
 #' @import ggplot2 scales
 #' 
-#' @export garson.nn
+#' @export
 #'  
 #' @method garson nn
 garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
@@ -436,7 +436,7 @@ garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
 #' 
 #' @import ggplot2 scales
 #' 
-#' @export garson.train
+#' @export
 #' 
 #' @method garson train
 garson.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){

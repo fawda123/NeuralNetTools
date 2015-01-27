@@ -1,5 +1,7 @@
-## Package update
-This is a package update to v1.0.1, which includes some minor bug fixes.
+## Resubmission for package update
+This is a resubmission for an update that was submitted earlier today (Jan. 27 2015).
+
+I think I have fixed the NOTE that was received on submission regarding the export of unregistered S3 methods.  This included changes to NAMESPACE by adding S3method(print, foo) for a print method for class foo, repeated for each S3 method in my package.
 
 ## Test environments
 * local Windows 7 install, R 3.1.2 

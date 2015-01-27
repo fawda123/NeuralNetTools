@@ -5,7 +5,7 @@
 #' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn} 
 #' @param ... arguments passed to other methods
 #' 
-#' @export neuralweights
+#' @export
 #' 
 #' @import neuralnet nnet RSNNS
 #' 
@@ -59,7 +59,7 @@ neuralweights <-  function(mod_in, ...) UseMethod('neuralweights')
 #' 
 #' @import scales
 #' 
-#' @export neuralweights.numeric
+#' @export
 #' 
 #' @method neuralweights numeric
 neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct, ...){
@@ -95,7 +95,7 @@ neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct, ...){
 #' 
 #' @import scales
 #'
-#' @export neuralweights.nnet
+#' @export
 #'  
 #' @method neuralweights nnet
 neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
@@ -128,7 +128,7 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
 #' 
 #' @import scales reshape2
 #'
-#' @export neuralweights.mlp
+#' @export
 #'
 #' @method neuralweights mlp
 neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
@@ -180,7 +180,7 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
 #'   
 #' @import scales
 #'   
-#' @export neuralweights.nn
+#' @export
 #'
 #' @method neuralweights nn
 neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
@@ -233,7 +233,7 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
 #' 
 #' @return A \code{\link{data.frame}} of predictions and the sequence values of the selected explanatory variable
 #' 
-#' @export pred_sens
+#' @export
 #' 
 #' @examples
 #' 
