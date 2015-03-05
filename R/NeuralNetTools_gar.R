@@ -11,6 +11,8 @@
 #'
 #' A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined.
 #' 
+#' Misleading results may be produced if the neural network was created with a skip-layer using \code{skip = TRUE} with the \code{\link[nnet]{nnet}} function.  Garson's algorithm does not describe the effects of skip layer connections on estimates of variable importance.  As such, these values are removed prior to estimating variable importance.  
+#' 
 #' @export
 #' 
 #' @import ggplot2 neuralnet nnet RSNNS
@@ -178,6 +180,11 @@ garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
   best_wts <- neuralweights(mod_in)
   struct <- best_wts$struct
   best_wts <- best_wts$wts
+  
+  # check for skip layers
+  chk <- grepl('skip-layer', capture.output(mod_in))
+  if(any(chk))
+    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
   
   # weights only if TRUE
   if(wts_only) return(best_wts)
@@ -450,6 +457,11 @@ garson.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab =
   struct <- best_wts$struct
   best_wts <- best_wts$wts
   
+  # check for skip layers
+  chk <- grepl('skip-layer', capture.output(mod_in))
+  if(any(chk))
+    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
+
   # weights only if TRUE
   if(wts_only) return(best_wts)
   

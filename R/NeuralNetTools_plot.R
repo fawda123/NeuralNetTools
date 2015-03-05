@@ -116,6 +116,11 @@ plotnet.nnet <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias
   struct <- wts$struct
   wts <- wts$wts
   
+  # check for skip layers
+  chk <- grepl('skip-layer', capture.output(mod_in))
+  if(any(chk))
+    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
+  
   if(wts_only) return(wts)
   
   #circle colors for input, if desired, must be two-vector list, first vector is for input layer
@@ -1080,6 +1085,11 @@ plotnet.train <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bia
   wts <- neuralweights(mod_in)
   struct <- wts$struct
   wts <- wts$wts
+  
+  # check for skip layers
+  chk <- grepl('skip-layer', capture.output(mod_in))
+  if(any(chk))
+    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
   
   if(wts_only) return(wts)
   
