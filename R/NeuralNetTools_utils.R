@@ -12,7 +12,7 @@
 #' @return Returns a two-element list with the first element being a vector indicating the number of nodes in each layer of the neural network and the second element being a named list of weight values for the input model.  
 #' 
 #' @details Each element of the returned list is named using the construct 'layer node', e.g. 'out 1' is the first node of the output layer.  Hidden layers are named using three values for instances with more than one hidden layer, e.g., 'hidden 1 1' is the first node in the first hidden layer, 'hidden 1 2' is the second node in the first hidden layer, 'hidden 2 1' is the first node in the second hidden layer, etc.  The values in each element of the list represent the weights entering the specific node from the preceding layer in sequential order, starting with the bias layer if applicable.  
-#' The function will remove direct weight connections between input and output layers if the neural network was created with a skip-layer using \code{skip = TRUE} with the \code{\link[nnet]{nnet}} function.  This may produce misleading results when evaluating variable performance with the \code{\link{garson}} function.  
+#' The function will remove direct weight connections between input and output layers if the neural network was created with a skip-layer using \code{skip = TRUE} with the \code{\link[nnet]{nnet}}  or \code{\link[caret]{train}} functions.  This may produce misleading results when evaluating variable performance with the \code{\link{garson}} function.  
 #' 
 #' @examples
 #' 
@@ -109,8 +109,9 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   # remove wts from input to output if skip layers present
   chk <- grepl('skip-layer', capture.output(mod_in))
   if(any(chk)){
-    skips <- struct[1] * struct[length(struct)]
-    wts <- wts[-c((length(wts) - skips + 1):length(wts))]
+    coefs <- coef(mod_in)
+    rems <- grepl('^i.*>o', names(coefs))
+    wts <- wts[!rems]
   }
   
   #convert wts to list with appropriate names 

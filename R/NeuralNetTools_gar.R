@@ -11,7 +11,9 @@
 #'
 #' A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined.
 #' 
-#' Misleading results may be produced if the neural network was created with a skip-layer using \code{skip = TRUE} with the \code{\link[nnet]{nnet}} function.  Garson's algorithm does not describe the effects of skip layer connections on estimates of variable importance.  As such, these values are removed prior to estimating variable importance.  
+#' Misleading results may be produced if the neural network was created with a skip-layer using \code{skip = TRUE} with the \code{\link[nnet]{nnet}} or \code{\link[caret]{train}} functions.  Garson's algorithm does not describe the effects of skip layer connections on estimates of variable importance.  As such, these values are removed prior to estimating variable importance.  
+#' 
+#' The algorithm currently only works for neural networks with one hidden layer.  
 #' 
 #' @export
 #' 
@@ -127,27 +129,22 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NUL
   # final layer weights for output
   hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
   
-  # matrix multiplication of output layer with connecting hidden layer
+  # stop if multiple hidden layers
   max_i <- length(inp_hid)
-  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
+  if(max_i > 1) stop('Garsons algorithm not applicable for multiple hidden layers')
   
-  # recursive matrix multiplication for all remaining hidden layers
-  # only for multiple hidden layers
-  if(max_i != 1){ 
-    
-    for(i in (max_i - 1):1) sum_in <- as.matrix(inp_hid[[i]]) %*% sum_in
-    
-    # final contribution vector for all inputs
-    inp_cont <- sum_in    
-    
-  } else {
-    
-    inp_cont <- sum_in
-    
-  }
+  # use garson's algorithm
+  sum_in <- t(inp_hid[[max_i]])
+  sum_in <- apply(sum_in, 2, function(x){
   
-  #get relative contribution
-  rel_imp <- abs(inp_cont)/sum(abs(inp_cont))
+    abs(x) * abs(hid_out)
+    
+  })
+  sum_in <- sum_in/rowSums(sum_in)
+  sum_in <- colSums(sum_in)
+  
+  # get relative contribution
+  rel_imp <- sum_in/sum(sum_in)
   
   if(!bar_plot){
     out <- data.frame(rel_imp)
@@ -227,27 +224,22 @@ garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
   # final layer weights for output
   hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
   
-  # matrix multiplication of output layer with connecting hidden layer
+  # stop if multiple hidden layers
   max_i <- length(inp_hid)
-  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
+  if(max_i > 1) stop('Garsons algorithm not applicable for multiple hidden layers')
   
-  # recursive matrix multiplication for all remaining hidden layers
-  # only for multiple hidden layers
-  if(max_i != 1){ 
-    
-    for(i in (max_i - 1):1) sum_in <- as.matrix(inp_hid[[i]]) %*% sum_in
-    
-    # final contribution vector for all inputs
-    inp_cont <- sum_in    
-    
-  } else {
-    
-    inp_cont <- sum_in
-    
-  }
+  # use garson's algorithm
+  sum_in <- t(inp_hid[[max_i]])
+  sum_in <- apply(sum_in, 2, function(x){
   
-  #get relative contribution
-  rel_imp <- abs(inp_cont)/sum(abs(inp_cont))
+    abs(x) * abs(hid_out)
+    
+  })
+  sum_in <- sum_in/rowSums(sum_in)
+  sum_in <- colSums(sum_in)
+  
+  # get relative contribution
+  rel_imp <- sum_in/sum(sum_in)
   
   if(!bar_plot){
     out <- data.frame(rel_imp)
@@ -313,27 +305,22 @@ garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
   # final layer weights for output
   hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
   
-  # matrix multiplication of output layer with connecting hidden layer
+  # stop if multiple hidden layers
   max_i <- length(inp_hid)
-  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
+  if(max_i > 1) stop('Garsons algorithm not applicable for multiple hidden layers')
   
-  # recursive matrix multiplication for all remaining hidden layers
-  # only for multiple hidden layers
-  if(max_i != 1){ 
-    
-    for(i in (max_i - 1):1) sum_in <- as.matrix(inp_hid[[i]]) %*% sum_in
-    
-    # final contribution vector for all inputs
-    inp_cont <- sum_in    
-    
-  } else {
-    
-    inp_cont <- sum_in
-    
-  }
+  # use garson's algorithm
+  sum_in <- t(inp_hid[[max_i]])
+  sum_in <- apply(sum_in, 2, function(x){
   
-  #get relative contribution
-  rel_imp <- abs(inp_cont)/sum(abs(inp_cont))
+    abs(x) * abs(hid_out)
+    
+  })
+  sum_in <- sum_in/rowSums(sum_in)
+  sum_in <- colSums(sum_in)
+  
+  # get relative contribution
+  rel_imp <- sum_in/sum(sum_in)
   
   if(!bar_plot){
     out <- data.frame(rel_imp)
@@ -397,29 +384,23 @@ garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
   
   # final layer weights for output
   hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
-  
-  # matrix multiplication of output layer with connecting hidden layer
+
+  # stop if multiple hidden layers
   max_i <- length(inp_hid)
-  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
+  if(max_i > 1) stop('Garsons algorithm not applicable for multiple hidden layers')
   
-  # recursive matrix multiplication for all remaining hidden layers
-  # only for multiple hidden layers
-  if(max_i != 1){ 
-    
-    for(i in (max_i - 1):1) sum_in <- as.matrix(inp_hid[[i]]) %*% sum_in
-    
-    # final contribution vector for all inputs
-    inp_cont <- sum_in    
-    
-  } else {
-    
-    inp_cont <- sum_in
-    
-  }
+  # use garson's algorithm
+  sum_in <- t(inp_hid[[max_i]])
+  sum_in <- apply(sum_in, 2, function(x){
   
-  #get relative contribution
-  #inp_cont/sum(inp_cont)
-  rel_imp <- abs(inp_cont)/sum(abs(inp_cont))
+    abs(x) * abs(hid_out)
+    
+  })
+  sum_in <- sum_in/rowSums(sum_in)
+  sum_in <- colSums(sum_in)
+  
+  # get relative contribution
+  rel_imp <- sum_in/sum(sum_in)
   
   if(!bar_plot){
     out <- data.frame(rel_imp)
@@ -488,27 +469,22 @@ garson.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab =
   # final layer weights for output
   hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
   
-  # matrix multiplication of output layer with connecting hidden layer
+  # stop if multiple hidden layers
   max_i <- length(inp_hid)
-  sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
+  if(max_i > 1) stop('Garsons algorithm not applicable for multiple hidden layers')
   
-  # recursive matrix multiplication for all remaining hidden layers
-  # only for multiple hidden layers
-  if(max_i != 1){ 
-    
-    for(i in (max_i - 1):1) sum_in <- as.matrix(inp_hid[[i]]) %*% sum_in
-    
-    # final contribution vector for all inputs
-    inp_cont <- sum_in    
-    
-  } else {
-    
-    inp_cont <- sum_in
-    
-  }
+  # use garson's algorithm
+  sum_in <- t(inp_hid[[max_i]])
+  sum_in <- apply(sum_in, 2, function(x){
   
-  #get relative contribution
-  rel_imp <- abs(inp_cont)/sum(abs(inp_cont))
+    abs(x) * abs(hid_out)
+    
+  })
+  sum_in <- sum_in/rowSums(sum_in)
+  sum_in <- colSums(sum_in)
+  
+  # get relative contribution
+  rel_imp <- sum_in/sum(sum_in)
   
   if(!bar_plot){
     out <- data.frame(rel_imp)
