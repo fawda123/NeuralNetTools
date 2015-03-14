@@ -7,7 +7,7 @@
 \alias{garson.nnet}
 \alias{garson.numeric}
 \alias{garson.train}
-\title{Variable importance for neural networks}
+\title{Variable importance using Garson's algorithm}
 \usage{
 garson(mod_in, out_var, ...)
 
@@ -112,5 +112,7 @@ Garson, G.D. 1991. Interpreting neural network connection weights. Artificial In
 Goh, A.T.C. 1995. Back-propagation neural networks for modeling complex systems. Artificial Intelligence in Engineering. 9(3):143-151.
 
 Olden, J.D., Jackson, D.A. 2002. Illuminating the 'black-box': a randomization approach for understanding variable contributions in artificial neural networks. Ecological Modelling. 154:135-150.
+
+Olden, J.D., Joy, M.K., Death, R.G. 2004. An accurate comparison of methods for quantifying variable importance in artificial neural networks using simulated data. Ecological Modelling. 178:389-397.
 }
 
