@@ -9,27 +9,25 @@
 \alias{garson.train}
 \title{Variable importance using Garson's algorithm}
 \usage{
-garson(mod_in, out_var, ...)
+garson(mod_in, ...)
 
-\method{garson}{numeric}(mod_in, out_var, struct, bar_plot = TRUE,
-  x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...)
-
-\method{garson}{nnet}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
+\method{garson}{numeric}(mod_in, struct, bar_plot = TRUE, x_lab = NULL,
   y_lab = NULL, wts_only = FALSE, ...)
 
-\method{garson}{mlp}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
-  y_lab = NULL, wts_only = FALSE, ...)
+\method{garson}{nnet}(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL,
+  wts_only = FALSE, ...)
 
-\method{garson}{nn}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
-  y_lab = NULL, wts_only = FALSE, ...)
+\method{garson}{mlp}(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL,
+  wts_only = FALSE, ...)
 
-\method{garson}{train}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
+\method{garson}{nn}(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL,
+  wts_only = FALSE, ...)
+
+\method{garson}{train}(mod_in, bar_plot = TRUE, x_lab = NULL,
   y_lab = NULL, wts_only = FALSE, ...)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}}
-
-\item{out_var}{chr string indicating the response variable in the neural network object to be evaluated.  Only one input is allowed for models with more than one response.  Names must be of the form \code{'Y1'}, \code{'Y2'}, etc. if using numeric values as weight inputs for \code{mod_in}.}
 
 \item{...}{arguments passed to other methods}
 
@@ -39,7 +37,7 @@ garson(mod_in, out_var, ...)
 
 \item{x_lab}{chr string of alternative names to be used for explanatory variables in the figure, default is taken from \code{mod_in}}
 
-\item{y_lab}{chr string of alternative names to be used for response variable in the figure, default is taken from \code{out_var}}
+\item{y_lab}{chr string of alternative names to be used for response variable in the figure, otherwise it is taken from the input model}
 
 \item{wts_only}{logical passed to \code{\link{neuralweights}}, default \code{FALSE}}
 }
@@ -50,13 +48,13 @@ A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = FALSE}, 
 Relative importance of input variables in neural networks using Garson's algorithm
 }
 \details{
-The weights that connect variables in a neural network are partially analogous to parameter coefficients in a standard regression model and can be used to describe relationships between variables. The weights dictate the relative influence of information that is processed in the network such that input variables that are not relevant in their correlation with a response variable are suppressed by the weights. The opposite effect is seen for weights assigned to explanatory variables that have strong, positive associations with a response variable. An obvious difference between a neural network and a regression model is that the number of weights is excessive in the former case. This characteristic is advantageous in that it makes neural networks very flexible for modeling non-linear functions with multiple interactions, although interpretation of the effects of specific variables is of course challenging.
+The weights that connect variables in a neural network are partially analogous to parameter coefficients in a standard regression model and can be used to describe relationships between variables. The weights dictate the relative influence of information that is processed in the network such that input variables that are not relevant in their correlation with a response variable are suppressed by the weights. The opposite effect is seen for weights assigned to explanatory variables that have strong positive or negative associations with a response variable. An obvious difference between a neural network and a regression model is that the number of weights is excessive in the former case. This characteristic is advantageous in that it makes neural networks very flexible for modeling non-linear functions with multiple interactions, although interpretation of the effects of specific variables is of course challenging.
 
-A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined.
+A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for a single response variables in a supervised neural network by deconstructing the model weights. The relative importance (or strength of association) of a specific explanatory variable for the response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the response variable are identified. This is repeated for all other explanatory variables until a list of all weights that are specific to each input variable is obtained. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with the response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm indicates relative importance as the absolute magnitude from zero to one such the direction of the response cannot be determined.
 
 Misleading results may be produced if the neural network was created with a skip-layer using \code{skip = TRUE} with the \code{\link[nnet]{nnet}} or \code{\link[caret]{train}} functions.  Garson's algorithm does not describe the effects of skip layer connections on estimates of variable importance.  As such, these values are removed prior to estimating variable importance.
 
-The algorithm currently only works for neural networks with one hidden layer.
+The algorithm currently only works for neural networks with one hidden layer and one response variable.
 }
 \examples{
 ## using numeric input
@@ -64,7 +62,7 @@ The algorithm currently only works for neural networks with one hidden layer.
 wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
 struct <- c(2, 2, 1) #two inputs, two hidden, one output
 
-garson(wts_in, 'Y1', struct)
+garson(wts_in, struct)
 
 ## using nnet
 
@@ -75,7 +73,7 @@ set.seed(123)
 
 mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 
-garson(mod, 'Y1')
+garson(mod)
 
 ## using RSNNS, no bias layers
 
@@ -85,7 +83,7 @@ x <- neuraldat[, c('X1', 'X2', 'X3')]
 y <- neuraldat[, 'Y1']
 mod <- mlp(x, y, size = 5)
 
-garson(mod, 'Y1')
+garson(mod)
 
 ## using neuralnet
 
@@ -93,7 +91,7 @@ library(neuralnet)
 
 mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
 
-garson(mod, 'Y1')
+garson(mod)
 
 ## using caret
 
@@ -102,7 +100,7 @@ library(caret)
 
 mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 
-garson(mod, 'Y1')
+garson(mod)
 
 }
 }

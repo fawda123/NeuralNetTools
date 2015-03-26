@@ -97,7 +97,7 @@
 #' ## color input nodes by relative importance
 #' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 #'  
-#' rel_imp <- garson(mod, 'Y1', bar_plot = FALSE)$rel_imp
+#' rel_imp <- garson(mod, bar_plot = FALSE)$rel_imp
 #' cols <- colorRampPalette(c('lightgreen', 'darkgreen'))(3)[rank(rel_imp)]
 #'  
 #' plotnet(mod, circle_col = list(cols, 'lightblue'))

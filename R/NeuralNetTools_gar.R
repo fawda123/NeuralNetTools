@@ -3,17 +3,16 @@
 #' Relative importance of input variables in neural networks using Garson's algorithm
 #' 
 #' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}
-#' @param out_var chr string indicating the response variable in the neural network object to be evaluated.  Only one input is allowed for models with more than one response.  Names must be of the form \code{'Y1'}, \code{'Y2'}, etc. if using numeric values as weight inputs for \code{mod_in}.
 #' @param ... arguments passed to other methods
 #' 
 #' @details
-#' The weights that connect variables in a neural network are partially analogous to parameter coefficients in a standard regression model and can be used to describe relationships between variables. The weights dictate the relative influence of information that is processed in the network such that input variables that are not relevant in their correlation with a response variable are suppressed by the weights. The opposite effect is seen for weights assigned to explanatory variables that have strong, positive associations with a response variable. An obvious difference between a neural network and a regression model is that the number of weights is excessive in the former case. This characteristic is advantageous in that it makes neural networks very flexible for modeling non-linear functions with multiple interactions, although interpretation of the effects of specific variables is of course challenging.
+#' The weights that connect variables in a neural network are partially analogous to parameter coefficients in a standard regression model and can be used to describe relationships between variables. The weights dictate the relative influence of information that is processed in the network such that input variables that are not relevant in their correlation with a response variable are suppressed by the weights. The opposite effect is seen for weights assigned to explanatory variables that have strong positive or negative associations with a response variable. An obvious difference between a neural network and a regression model is that the number of weights is excessive in the former case. This characteristic is advantageous in that it makes neural networks very flexible for modeling non-linear functions with multiple interactions, although interpretation of the effects of specific variables is of course challenging.
 #'
-#' A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for specific response variables in a supervised neural network by deconstructing the model weights. The basic idea is that the relative importance (or strength of association) of a specific explanatory variable for a specific response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the specific response variable are identified. This is repeated for all other explanatory variables until the analyst has a list of all weights that are specific to each input variable. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm presented in Garson 1991 indicated relative importance as the absolute magnitude from zero to one such the direction of the response could not be determined.
+#' A method described in Garson 1991 (also see Goh 1995) identifies the relative importance of explanatory variables for a single response variables in a supervised neural network by deconstructing the model weights. The relative importance (or strength of association) of a specific explanatory variable for the response variable can be determined by identifying all weighted connections between the nodes of interest. That is, all weights connecting the specific input node that pass through the hidden layer to the response variable are identified. This is repeated for all other explanatory variables until a list of all weights that are specific to each input variable is obtained. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with the response variable in the model (see the appendix in Goh 1995 for a more detailed description). The original algorithm indicates relative importance as the absolute magnitude from zero to one such the direction of the response cannot be determined.  
 #' 
 #' Misleading results may be produced if the neural network was created with a skip-layer using \code{skip = TRUE} with the \code{\link[nnet]{nnet}} or \code{\link[caret]{train}} functions.  Garson's algorithm does not describe the effects of skip layer connections on estimates of variable importance.  As such, these values are removed prior to estimating variable importance.  
 #' 
-#' The algorithm currently only works for neural networks with one hidden layer.  
+#' The algorithm currently only works for neural networks with one hidden layer and one response variable.  
 #' 
 #' @export
 #' 
@@ -37,7 +36,7 @@
 #' wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
 #' struct <- c(2, 2, 1) #two inputs, two hidden, one output 
 #' 
-#' garson(wts_in, 'Y1', struct)
+#' garson(wts_in, struct)
 #' 
 #' ## using nnet
 #' 
@@ -48,7 +47,7 @@
 #' 
 #' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 #'  
-#' garson(mod, 'Y1')  
+#' garson(mod)  
 #' 
 #' ## using RSNNS, no bias layers
 #' 
@@ -58,7 +57,7 @@
 #' y <- neuraldat[, 'Y1']
 #' mod <- mlp(x, y, size = 5)
 #' 
-#' garson(mod, 'Y1')
+#' garson(mod)
 #' 
 #' ## using neuralnet
 #' 
@@ -66,7 +65,7 @@
 #' 
 #' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
 #' 
-#' garson(mod, 'Y1')
+#' garson(mod)
 #' 
 #' ## using caret
 #' 
@@ -75,17 +74,17 @@
 #' 
 #' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 #' 
-#' garson(mod, 'Y1')
+#' garson(mod)
 #' 
 #' }
-garson <- function(mod_in, out_var, ...) UseMethod('garson')
+garson <- function(mod_in, ...) UseMethod('garson')
  
 #' @rdname garson
 #'
 #' @param bar_plot logical indicating if a \code{ggplot} object is returned (default \code{T}), otherwise numeric values are returned
 #' @param struct numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.
 #' @param x_lab chr string of alternative names to be used for explanatory variables in the figure, default is taken from \code{mod_in}
-#' @param y_lab chr string of alternative names to be used for response variable in the figure, default is taken from \code{out_var}
+#' @param y_lab chr string of alternative names to be used for response variable in the figure, otherwise it is taken from the input model
 #' @param wts_only logical passed to \code{\link{neuralweights}}, default \code{FALSE}
 #' 
 #' @import ggplot2 scales
@@ -93,7 +92,7 @@ garson <- function(mod_in, out_var, ...) UseMethod('garson')
 #' @export
 #' 
 #' @method garson numeric
-garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
+garson.numeric <- function(mod_in, struct, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in, struct = struct)
@@ -104,13 +103,13 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NUL
   if(wts_only) return(best_wts)
   
   #get variable names from mod_in object
-  #change to user input if supplied
   x_names <- paste0(rep('X', struct[1]), seq(1:struct[1]))
   y_names <- paste0(rep('Y', struct[3]), seq(1:struct[3]))
   
-  # get index value for response variable to measure
-  out_ind <- as.numeric(gsub('^[A-Z]', '', out_var))
-
+  # stop if more than one y output
+  if(length(y_names) > 1) 
+    stop('Garson only applies to neural networks with one output node')
+  
   #change variables names to user sub 
   if(!is.null(x_lab)){
     if(length(x_names) != length(x_lab)) stop('x_lab length not equal to number of input variables')
@@ -118,9 +117,7 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NUL
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
-  } else {
-    y_names <- y_names[grep(out_var, y_names)]
-  }
+  } 
   
   # organize hidden layer weights for matrix mult
   inp_hid <- best_wts[grep('hidden', names(best_wts))]
@@ -129,7 +126,7 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NUL
   inp_hid <- lapply(inp_hid, function(x) t(do.call('rbind', x))[-1, ])
   
   # final layer weights for output
-  hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
+  hid_out <- best_wts[[grep('out 1', names(best_wts))]][-1]
   
   # stop if multiple hidden layers
   max_i <- length(inp_hid)
@@ -173,7 +170,7 @@ garson.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NUL
 #' @export
 #' 
 #' @method garson nnet
-garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
+garson.nnet <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in)
@@ -203,8 +200,9 @@ garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
     else y_names <- as.character(forms)[2]
   } 
   
-  # get index value for response variable to measure
-  out_ind <- grep(out_var, y_names)
+  # stop if more than one y output
+  if(length(y_names) > 1) 
+    stop('Garson only applies to neural networks with one output node')
   
   #change variables names to user sub 
   if(!is.null(x_lab)){
@@ -213,8 +211,6 @@ garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
-  } else {
-    y_names <- y_names[grep(out_var, y_names)]
   }
   
   # organize hidden layer weights for matrix mult
@@ -224,7 +220,7 @@ garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
   inp_hid <- lapply(inp_hid, function(x) t(do.call('rbind', x))[-1, ])
   
   # final layer weights for output
-  hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
+  hid_out <- best_wts[[grep(paste('out', 1), names(best_wts))]][-1]
   
   # stop if multiple hidden layers
   max_i <- length(inp_hid)
@@ -237,6 +233,7 @@ garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
     abs(x) * abs(hid_out)
     
   })
+  
   sum_in <- sum_in/rowSums(sum_in)
   sum_in <- colSums(sum_in)
   
@@ -268,7 +265,7 @@ garson.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
 #' @export
 #' 
 #' @method garson mlp
-garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
+garson.mlp <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in)
@@ -279,13 +276,13 @@ garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
   if(wts_only) return(best_wts)
   
   #get variable names from mod_in object
-  #change to user input if supplied
   all_names <- mod_in$snnsObject$getUnitDefinitions()
   x_names <- all_names[grep('Input', all_names$unitName), 'unitName']
   y_names <- all_names[grep('Output', all_names$unitName), 'unitName']
 
-  # get index value for response variable to measure
-  out_ind <- grep(out_var, y_names)
+  # stop if more than one y output
+  if(length(y_names) > 1) 
+    stop('Garson only applies to neural networks with one output node')
   
   #change variables names to user sub 
   if(!is.null(x_lab)){
@@ -294,8 +291,6 @@ garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
-  } else {
-    y_names <- y_names[grep(out_var, y_names)]
   }
   
   # organize hidden layer weights for matrix mult
@@ -305,7 +300,7 @@ garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
   inp_hid <- lapply(inp_hid, function(x) t(do.call('rbind', x))[-1, ])
   
   # final layer weights for output
-  hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
+  hid_out <- best_wts[[grep('out 1', names(best_wts))]][-1]
   
   # stop if multiple hidden layers
   max_i <- length(inp_hid)
@@ -349,7 +344,7 @@ garson.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
 #' @export
 #'  
 #' @method garson nn
-garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
+garson.nn <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
   # get model weights
   best_wts <- neuralweights(mod_in)
@@ -364,8 +359,9 @@ garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
   x_names <- mod_in$model.list$variables
   y_names <- mod_in$model.list$response
 
-  # get index value for response variable to measure
-  out_ind <- grep(out_var, y_names)
+  # stop if more than one y output
+  if(length(y_names) > 1) 
+    stop('Garson only applies to neural networks with one output node')
   
   #change variables names to user sub 
   if(!is.null(x_lab)){
@@ -374,9 +370,7 @@ garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
-  } else {
-    y_names <- y_names[grep(out_var, y_names)]
-  }
+  } 
   
   # organize hidden layer weights for matrix mult
   inp_hid <- best_wts[grep('hidden', names(best_wts))]
@@ -385,7 +379,7 @@ garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
   inp_hid <- lapply(inp_hid, function(x) t(do.call('rbind', x))[-1, ])
   
   # final layer weights for output
-  hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
+  hid_out <- best_wts[[grep('out 1', names(best_wts))]][-1]
 
   # stop if multiple hidden layers
   max_i <- length(inp_hid)
@@ -429,11 +423,15 @@ garson.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
 #' @export
 #' 
 #' @method garson train
-garson.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
+garson.train <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...){
   
   y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = TRUE)[[1]]
   mod_in <- mod_in$finalModel
   x_names <- mod_in$xNames
+  
+  # stop if more than one y output
+  if(length(y_names) > 1) 
+    stop('Garson only applies to neural networks with one output node')
   
   # get model weights
   best_wts <- neuralweights(mod_in)
@@ -448,9 +446,6 @@ garson.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab =
   # weights only if TRUE
   if(wts_only) return(best_wts)
   
-  # get index value for response variable to measure
-  out_ind <- grep(out_var, y_names)
-  
   #change variables names to user sub 
   if(!is.null(x_lab)){
     if(length(x_names) != length(x_lab)) stop('x_lab length not equal to number of input variables')
@@ -458,8 +453,6 @@ garson.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab =
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
-  } else {
-    y_names <- y_names[grep(out_var, y_names)]
   }
   
   # organize hidden layer weights for matrix mult
@@ -469,7 +462,7 @@ garson.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab =
   inp_hid <- lapply(inp_hid, function(x) t(do.call('rbind', x))[-1, ])
   
   # final layer weights for output
-  hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
+  hid_out <- best_wts[[grep('out 1', names(best_wts))]][-1]
   
   # stop if multiple hidden layers
   max_i <- length(inp_hid)
