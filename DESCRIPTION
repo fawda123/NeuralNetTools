@@ -1,7 +1,7 @@
 Package: NeuralNetTools
 Type: Package
 Title: Visualization and Analysis Tools for Neural Networks
-Version: 1.2.1
+Version: 1.2.0
 Date: 2015-04-15
 Author: Marcus W. Beck [aut, cre]
 Maintainer: Marcus W. Beck <mbafs2012@gmail.com>
