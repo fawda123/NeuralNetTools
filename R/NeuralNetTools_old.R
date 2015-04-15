@@ -80,7 +80,7 @@
 #'
 #' x <- neuraldat[, c('X1', 'X2', 'X3')]
 #' y <- neuraldat[, 'Y1']
-#' mod <- mlp(x, y, size = c(5, 7, 6), linOut = T)
+#' mod <- mlp(x, y, size = c(5, 7, 6), linOut = TRUE)
 #' 
 #' olden(mod, 'Y1')
 olden <- function(mod_in, out_var, ...) UseMethod('olden')
