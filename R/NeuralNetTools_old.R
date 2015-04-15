@@ -7,7 +7,9 @@
 #' @param ... arguments passed to other methods
 #' 
 #' @details
-#' This method is similar to Garson's algorithm (Garson 1991, modified by Goh 1995) in that the connection weights between layers of a neural network form the basis for determining variabile importance.  However, Olden et al. 2004 describe a connection weights algorithm that consistently out-performed Garson's algorithm in representing the true variable importance in simulated datasets.  This `Olden' method calculates variable importance as the product of the raw input-hidden and hidden-output connection weights between each input and output neuron and sums the product across all hidden neurons.  An advantage of this approach is the relative contributions of each connection weight are maintained as compared to Garson's algorithm which only considers the absolute magnitude. For example, connection weights that change sign (e.g., positive to negative) between the input-hidden to hidden-output layers would have a cancelling effect whereas Garson's algorithm may provide misleading results based on the absolute magnitude.  
+#' This method is similar to Garson's algorithm (Garson 1991, modified by Goh 1995) in that the connection weights between layers of a neural network form the basis for determining variabile importance.  However, Olden et al. 2004 describe a connection weights algorithm that consistently out-performed Garson's algorithm in representing the true variable importance in simulated datasets.  This `Olden' method calculates variable importance as the product of the raw input-hidden and hidden-output connection weights between each input and output neuron and sums the product across all hidden neurons.  An advantage of this approach is the relative contributions of each connection weight are maintained as compared to Garson's algorithm which only considers the absolute magnitude. For example, connection weights that change sign (e.g., positive to negative) between the input-hidden to hidden-output layers would have a cancelling effect whereas Garson's algorithm may provide misleading results based on the absolute magnitude.  An additional advantage is that Olden's algorithm is capable of evaluating neural network with multiple hidden layers wheras Garson's was developed for networks with a single hidden layer.   
+#' 
+#' The importance values assigned to each variable are in units that are proportional to the summed product of the connection weights.  The actual values should only be interpreted based on relative sign and magnitude between explanatory variables.  Comparisons between different models should not be made.
 #' 
 #' @export
 #' 
@@ -73,6 +75,14 @@
 #' olden(mod, 'Y1')
 #' 
 #' }
+#' 
+#' ## multiple hidden layers
+#'
+#' x <- neuraldat[, c('X1', 'X2', 'X3')]
+#' y <- neuraldat[, 'Y1']
+#' mod <- mlp(x, y, size = c(5, 7, 6), linOut = T)
+#' 
+#' olden(mod, 'Y1')
 olden <- function(mod_in, out_var, ...) UseMethod('olden')
  
 #' @rdname olden
