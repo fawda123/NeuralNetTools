@@ -7,9 +7,11 @@
 #' @param ... arguments passed to other methods
 #' 
 #' @details
-#' This method is similar to Garson's algorithm (Garson 1991, modified by Goh 1995) in that the connection weights between layers of a neural network form the basis for determining variabile importance.  However, Olden et al. 2004 describe a connection weights algorithm that consistently out-performed Garson's algorithm in representing the true variable importance in simulated datasets.  This `Olden' method calculates variable importance as the product of the raw input-hidden and hidden-output connection weights between each input and output neuron and sums the product across all hidden neurons.  An advantage of this approach is the relative contributions of each connection weight are maintained as compared to Garson's algorithm which only considers the absolute magnitude. For example, connection weights that change sign (e.g., positive to negative) between the input-hidden to hidden-output layers would have a cancelling effect whereas Garson's algorithm may provide misleading results based on the absolute magnitude.  An additional advantage is that Olden's algorithm is capable of evaluating neural network with multiple hidden layers wheras Garson's was developed for networks with a single hidden layer.   
+#' This method is similar to Garson's algorithm (Garson 1991, modified by Goh 1995) in that the connection weights between layers of a neural network form the basis for determining variable importance.  However, Olden et al. 2004 describe a connection weights algorithm that consistently out-performed Garson's algorithm in representing the true variable importance in simulated datasets.  This `Olden' method calculates variable importance as the product of the raw input-hidden and hidden-output connection weights between each input and output neuron and sums the product across all hidden neurons.  An advantage of this approach is the relative contributions of each connection weight are maintained in terms of both magnitude and sign as compared to Garson's algorithm which only considers the absolute magnitude. For example, connection weights that change sign (e.g., positive to negative) between the input-hidden to hidden-output layers would have a cancelling effect whereas Garson's algorithm may provide misleading results based on the absolute magnitude.  An additional advantage is that Olden's algorithm is capable of evaluating neural networks with multiple hidden layers wheras Garson's was developed for networks with a single hidden layer.   
 #' 
-#' The importance values assigned to each variable are in units that are proportional to the summed product of the connection weights.  The actual values should only be interpreted based on relative sign and magnitude between explanatory variables.  Comparisons between different models should not be made.
+#' The importance values assigned to each variable are in units that are based directly on the summed product of the connection weights.  The actual values should only be interpreted based on relative sign and magnitude between explanatory variables.  Comparisons between different models should not be made.
+#' 
+#' The Olden function also works with networks that have skip layers by adding the input-output connection weights to the final summed product of all input-hidden and hidden-output connections.  This was not described in the original method so interpret with caution. 
 #' 
 #' @export
 #' 
@@ -47,6 +49,14 @@
 #'  
 #' olden(mod, 'Y1')  
 #' 
+#' ## View the difference for a model w/ skip layers
+#' 
+#' set.seed(123)
+#' 
+#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, skip = TRUE)
+#' 
+#' olden(mod, 'Y1')
+#' 
 #' ## using RSNNS, no bias layers
 #' 
 #' library(RSNNS)
@@ -69,7 +79,7 @@
 #' 
 #' \dontrun{
 #' library(caret)
-#' 
+#'
 #' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 #' 
 #' olden(mod, 'Y1')
@@ -136,7 +146,7 @@ olden.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NULL
   # final layer weights for output
   hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
   
- # matrix multiplication of output layer with connecting hidden layer
+  # matrix multiplication of output layer with connecting hidden layer
   max_i <- length(inp_hid)
   sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
   
@@ -189,9 +199,10 @@ olden.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
   
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
-  if(any(chk))
-    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
-  
+  if(any(chk)){
+    skip_wts <- neuralskips(mod_in)
+  }
+    
   # weights only if TRUE
   if(wts_only) return(best_wts)
   
@@ -233,7 +244,7 @@ olden.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
   # final layer weights for output
   hid_out <- best_wts[[grep(paste('out', out_ind), names(best_wts))]][-1]
   
- # matrix multiplication of output layer with connecting hidden layer
+  # matrix multiplication of output layer with connecting hidden layer
   max_i <- length(inp_hid)
   sum_in <- inp_hid[[max_i]] %*% matrix(hid_out)
   
@@ -251,6 +262,9 @@ olden.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
     importance <- sum_in
     
   }
+  
+  # add skip_wts
+  if(any(chk)) sum_in <- skip_wts + sum_in
   
   if(!bar_plot){
     out <- data.frame(importance)
@@ -455,8 +469,9 @@ olden.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
   
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
-  if(any(chk))
-    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
+  if(any(chk)){
+    skip_wts <- neuralskips(mod_in)
+  }
 
   # weights only if TRUE
   if(wts_only) return(best_wts)
@@ -502,6 +517,9 @@ olden.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
     importance <- sum_in
     
   }
+    
+  # add skip_wts
+  if(any(chk)) sum_in <- skip_wts + sum_in
   
   if(!bar_plot){
     out <- data.frame(importance)

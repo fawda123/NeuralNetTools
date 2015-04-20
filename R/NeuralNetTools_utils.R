@@ -279,3 +279,61 @@ pred_sens <- function(mat_in, mod_in, var_sel, step_val, fun_in, resp_name){
   data.frame(out, x_vars)
   
 }
+
+#' Get weights for the skip layer in a neural network
+#'
+#' Get weights for the skip layer in a neural network, only valid for networks created using \code{skip = TRUE} with the \code{\link[nnet]{nnet}} function.
+#'
+#' @param mod_in input object for which an organized model list is desired. 
+#' @param ... arguments passed to other methods
+#' 
+#' @export
+#' 
+#' @return return a numeric vector in sequential order of the weights for the direct connection between input and output layers
+#' 
+#' @details This function is similar to \code{\link{neuralweights}} except only the skip layer weights are returned.
+#' 
+#' @examples
+#' 
+#' data(neuraldat)
+#' set.seed(123)
+#' 
+#' ## using nnet
+#' 
+#' library(nnet)
+#' 
+#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, linout = TRUE, 
+#'  skip = TRUE)
+#'  
+#' neuralskips(mod)  
+#' 
+neuralskips <-  function(mod_in, ...) UseMethod('neuralskips')
+
+#' @rdname neuralskips
+#' 
+#' @import scales
+#'
+#' @export
+#'  
+#' @method neuralskips nnet
+neuralskips.nnet <-  function(mod_in, ...){
+  
+  wts <-  mod_in$wts
+  
+  # get skip layer weights if present, otherwise exit
+  chk <- grepl('skip-layer', capture.output(mod_in))
+  if(any(chk)){
+    
+    coefs <- coef(mod_in)
+    skips <- grepl('^i.*>o', names(coefs))
+    skips <- wts[skips]
+    
+  } else {
+    
+    stop('No skip layer')
+    
+  }
+  
+  return(skips)
+  
+}

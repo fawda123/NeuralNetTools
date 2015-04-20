@@ -29,6 +29,8 @@
 #' 
 #' Olden, J.D., Joy, M.K., Death, R.G. 2004. An accurate comparison of methods for quantifying variable importance in artificial neural networks using simulated data. Ecological Modelling. 178:389-397.
 #' 
+#' @seealso \code{\link{olden}} for a more flexible approach for variable importance
+#' 
 #' @examples
 #' 
 #' ## using numeric input
@@ -180,7 +182,7 @@ garson.nnet <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
   if(any(chk))
-    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
+    stop("Garson's algorithm not applicable for networks with skip layers, use Olden's method")
   
   # weights only if TRUE
   if(wts_only) return(best_wts)
@@ -441,8 +443,8 @@ garson.train <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wt
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
   if(any(chk))
-    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
-
+    stop("Garson's algorithm not applicable for networks with skip layers, use Olden's method")
+  
   # weights only if TRUE
   if(wts_only) return(best_wts)
   
