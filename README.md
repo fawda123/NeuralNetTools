@@ -1,13 +1,13 @@
 
 ## NeuralNetTools
 
-#### *Marcus W. Beck, mbafs2012@gmail.com *
+#### *Marcus W. Beck, mbafs2012@gmail.com*
 
 Linux build: [![Travis-CI Build Status](https://travis-ci.org/fawda123/NeuralNetTools.png?branch=master)](https://travis-ci.org/fawda123/NeuralNetTools)
 
 Windows build: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/fawda123/NeuralNetTools?branch=master)](https://ci.appveyor.com/project/fawda123/NeuralNetTools)
 
-[![RStudio CRAN Downloads](http://cranlogs.r-pkg.org/badges/NeuralNetTools)](http://cranlogs.r-pkg.org/badges/NeuralNetTools)
+[![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/NeuralNetTools)](http://cran.rstudio.com/package=NeuralNetTools)
 
 This is the development repository for the NeuralNetTools package.  Functions within this package can be used for the interpretation of neural network models created in R, including functions to plot a neural network interpretation diagram, evaluation of variable importance, and a sensitivity analysis of input variables. 
 
