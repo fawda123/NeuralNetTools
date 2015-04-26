@@ -134,7 +134,7 @@ olden.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NULL
   if(!is.null(y_lab)){
     y_names <- y_lab
   } else {
-    y_names <- y_names[grep(out_var, y_names)]
+    y_names <- 'Importance' 
   }
   
   # organize hidden layer weights for matrix mult
@@ -177,7 +177,8 @@ olden.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NULL
                                 colour = importance)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   
@@ -232,7 +233,7 @@ olden.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
   if(!is.null(y_lab)){
     y_names <- y_lab
   } else {
-    y_names <- y_names[grep(out_var, y_names)]
+    y_names <- 'Importance' 
   }
   
   # organize hidden layer weights for matrix mult
@@ -278,7 +279,8 @@ olden.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
                                 colour = importance)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   
@@ -318,7 +320,7 @@ olden.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
   if(!is.null(y_lab)){
     y_names <- y_lab
   } else {
-    y_names <- y_names[grep(out_var, y_names)]
+    y_names <- 'Importance' 
   }
   
   # organize hidden layer weights for matrix mult
@@ -361,7 +363,8 @@ olden.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
                                 colour = importance)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   
@@ -400,7 +403,7 @@ olden.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NUL
   if(!is.null(y_lab)){
     y_names <- y_lab
   } else {
-    y_names <- y_names[grep(out_var, y_names)]
+    y_names <- 'Importance' 
   }
   
   # organize hidden layer weights for matrix mult
@@ -443,7 +446,8 @@ olden.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NUL
                                 colour = importance)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   
@@ -487,7 +491,7 @@ olden.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
   if(!is.null(y_lab)){
     y_names <- y_lab
   } else {
-    y_names <- y_names[grep(out_var, y_names)]
+    y_names <- 'Importance'  
   }
   
   # organize hidden layer weights for matrix mult
@@ -533,7 +537,8 @@ olden.train <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = 
                                          colour = importance)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   

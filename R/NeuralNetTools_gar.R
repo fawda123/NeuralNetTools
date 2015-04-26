@@ -119,6 +119,8 @@ garson.numeric <- function(mod_in, struct, bar_plot = TRUE, x_lab = NULL, y_lab 
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
+  } else {
+    y_names <- 'Relative importance'  
   } 
   
   # organize hidden layer weights for matrix mult
@@ -159,7 +161,8 @@ garson.numeric <- function(mod_in, struct, bar_plot = TRUE, x_lab = NULL, y_lab 
                                 colour = rel_imp)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   
@@ -213,6 +216,8 @@ garson.nnet <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
+  } else {
+    y_names <- 'Relative importance'  
   }
   
   # organize hidden layer weights for matrix mult
@@ -254,7 +259,8 @@ garson.nnet <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts
                                 colour = rel_imp)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   
@@ -293,6 +299,8 @@ garson.mlp <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
+  } else {
+    y_names <- 'Relative importance'  
   }
   
   # organize hidden layer weights for matrix mult
@@ -333,7 +341,8 @@ garson.mlp <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_
                                 colour = rel_imp)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   
@@ -372,7 +381,9 @@ garson.nn <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_o
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
-  } 
+  } else {
+    y_names <- 'Relative importance'  
+  }
   
   # organize hidden layer weights for matrix mult
   inp_hid <- best_wts[grep('hidden', names(best_wts))]
@@ -412,7 +423,8 @@ garson.nn <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_o
                                 colour = rel_imp)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   
@@ -455,6 +467,8 @@ garson.train <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wt
   }
   if(!is.null(y_lab)){
     y_names <- y_lab
+  } else {
+    y_names <- 'Relative importance'  
   }
   
   # organize hidden layer weights for matrix mult
@@ -495,7 +509,8 @@ garson.train <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wt
                                          colour = rel_imp)) + 
     geom_bar(stat = 'identity') + 
     scale_x_discrete(element_blank()) +
-    scale_y_continuous(y_names)
+    scale_y_continuous(y_names) +
+    theme(legend.title = element_blank())
   
   return(out_plo)
   
