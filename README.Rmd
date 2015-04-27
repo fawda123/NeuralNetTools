@@ -12,9 +12,9 @@ output:
 
 #### *Marcus W. Beck, mbafs2012@gmail.com*
 
-Linux build: [![Travis-CI Build Status](https://travis-ci.org/fawda123/NeuralNetTools.png?branch=master)](https://travis-ci.org/fawda123/NeuralNetTools)
+Linux build: [![Travis-CI Build Status](http://travis-ci.org/fawda123/NeuralNetTools.png?branch=master)](http://travis-ci.org/fawda123/NeuralNetTools)
 
-Windows build: [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/fawda123/NeuralNetTools?branch=master)](https://ci.appveyor.com/project/fawda123/NeuralNetTools)
+Windows build: [![AppVeyor Build Status](http://ci.appveyor.com/api/projects/status/github/fawda123/NeuralNetTools?branch=master)](http://ci.appveyor.com/project/fawda123/NeuralNetTools)
 
 [![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/grand-total/NeuralNetTools)](http://cran.rstudio.com/package=NeuralNetTools)
 
