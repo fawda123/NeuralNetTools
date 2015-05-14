@@ -7,3 +7,6 @@ cran-comments.md
 .Rhistory
 ^\.travis\.yml$
 ^appveyor\.yml$
+^README_files/.*
+^README_cache/.*
+README.Rmd
