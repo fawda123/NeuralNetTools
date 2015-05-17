@@ -57,6 +57,17 @@
 #' 
 #' lekprofile(mod, exp_in = x)
 #' 
+#' ## using neuralnet
+#' 
+#' \dontrun{
+#' library(neuralnet)
+#' 
+#' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
+#' 
+#' lekprofile(mod)
+#' 
+#' }
+#' 
 #' ## back to nnet, not using formula to create model
 #' ## y variable must a name attribute
 #' 
@@ -290,6 +301,37 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
     scale_size_manual(values = rep(1, length(split_vals)))
   
   return(p)
+  
+}
+
+#' @rdname lekprofile
+#'
+#' @import ggplot2 nnet
+#' 
+#' @export
+#' 
+#' @method lekprofile nn
+lekprofile.nn <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
+
+  # recreate the model using nnet (no predict method for nn)
+  moddat <- mod_in$data
+  modwts <- neuralweights(mod_in)
+  modwts <- unlist(modwts$wts)
+  modsz <- mod_in$call$hidden
+  modfrm <- mod_in$call$formula
+  modlin <- mod_in$call$linear.output
+  modlin2 <- TRUE
+  if(!is.null(modlin)) modlin2 <- modlin
+
+  mod_in <- substitute(
+    nnet(formin, data = moddat, size = modsz, 
+      Wts = modwts, maxit = 0, linout = modlin2, trace = FALSE)
+    , 
+    list(formin = formula(modfrm), modsz = modsz, modwts = modwts, modlin2 = modlin2)
+  )
+  mod_in <- eval(mod_in)
+  
+  lekprofile(mod_in, steps = steps, split_vals = split_vals, val_out = val_out, ...)
   
 }
 
