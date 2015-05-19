@@ -9,9 +9,11 @@
 #' @param ... arguments passed to other methods
 #' 
 #' @details
-#' The Lek profile method is described briefly in Lek et al. 1996 and in more detail in Gevrey et al. 2003. The profile method is fairly generic and can be extended to any statistical model in R with a predict method.  However, it is one of few methods used to evaluate sensitivity in neural networks.  Note that there is no predict method for neuralnet objects from the nn package, so a profile method is not available.  Currently, the default method of this function attempts to find variables names from a generic model object.  The default method of this function has only been tested with \code{\link[stats]{lm}} and may not work with other model types if the variable names cannot be found.
+#' The Lek profile method is described briefly in Lek et al. 1996 and in more detail in Gevrey et al. 2003. The profile method is fairly generic and can be extended to any statistical model in R with a predict method.  However, it is one of few methods used to evaluate sensitivity in neural networks.   The default method of this function attempts to find variables names from a generic model object.  
 #' 
 #' The profile method begins by obtaining model predictions of the response variable across the range of values for the given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum). The final result is a set of response curves for one response variable across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is implemented in in the function by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.
+#' 
+#' Note that there is no predict method for neuralnet objects from the nn package.  The lekprofile method for nn objects uses the nnet package to recreate the input model, which is then used for the sensitivity predictions. 
 #' 
 #' @export
 #' 
@@ -59,14 +61,11 @@
 #' 
 #' ## using neuralnet
 #' 
-#' \dontrun{
 #' library(neuralnet)
 #' 
 #' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
 #' 
 #' lekprofile(mod)
-#' 
-#' }
 #' 
 #' ## back to nnet, not using formula to create model
 #' ## y variable must a name attribute
@@ -323,14 +322,18 @@ lekprofile.nn <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2),
   modlin2 <- TRUE
   if(!is.null(modlin)) modlin2 <- modlin
 
+  # create call for nnet model
   mod_in <- substitute(
     nnet(formin, data = moddat, size = modsz, 
-      Wts = modwts, maxit = 0, linout = modlin2, trace = FALSE)
-    , 
-    list(formin = formula(modfrm), modsz = modsz, modwts = modwts, modlin2 = modlin2)
+      Wts = modwts, maxit = 0, linout = modlin2, trace = FALSE), 
+    list(formin = formula(modfrm), moddat = moddat, modsz = modsz, modwts = modwts, 
+      modlin2 = modlin2)
   )
+  
+  # eval call
   mod_in <- eval(mod_in)
   
+  # pass to lekprofile.nnet
   lekprofile(mod_in, steps = steps, split_vals = split_vals, val_out = val_out, ...)
   
 }
