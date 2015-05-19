@@ -13,7 +13,7 @@
 #' 
 #' The profile method begins by obtaining model predictions of the response variable across the range of values for the given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum). The final result is a set of response curves for one response variable across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is implemented in in the function by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.
 #' 
-#' Note that there is no predict method for neuralnet objects from the nn package.  The lekprofile method for nn objects uses the nnet package to recreate the input model, which is then used for the sensitivity predictions. 
+#' Note that there is no predict method for neuralnet objects from the nn package.  The lekprofile method for nn objects uses the nnet package to recreate the input model, which is then used for the sensitivity predictions.  This approach only works for networks with one hidden layer. 
 #' 
 #' @export
 #' 
@@ -322,6 +322,10 @@ lekprofile.nn <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2),
   modlin2 <- TRUE
   if(!is.null(modlin)) modlin2 <- modlin
 
+  # stop if multiple hidden layers - nnet can only do one input
+  # mlp can do this but does not accept starting weights
+  if(length(modsz) > 1) stop('Cannot use lekprofile with multiple hidden layers')
+  
   # create call for nnet model
   mod_in <- substitute(
     nnet(formin, data = moddat, size = modsz, 

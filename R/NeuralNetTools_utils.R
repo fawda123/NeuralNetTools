@@ -68,10 +68,6 @@ neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct, ...){
   
   wts <-  mod_in
   
-  # sanity check
-  if(length(wts) != struct[1]*struct[2]+struct[2]*struct[3]+struct[3]+struct[2])
-    stop('Incorrect length of weight matrix for given network structure')
-  
   if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), c(1, rel_rsc))
   
   #convert wts to list with appropriate names 

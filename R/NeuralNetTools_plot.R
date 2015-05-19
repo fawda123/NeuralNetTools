@@ -94,6 +94,16 @@
 #'  
 #' plotnet(mod)
 #' 
+#' ## recreate the previous example with numeric inputs
+#' 
+#' # get the weights and structure in the right format
+#' wts <- neuralweights(mod)
+#' struct <- wts$struct
+#' wts <- unlist(wts$wts)
+#'
+#' # plot
+#' plotnet(wts, struct = struct)
+#' 
 #' ## color input nodes by relative importance
 #' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 #'  
@@ -386,10 +396,6 @@ plotnet.nnet <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias
 #' @method plotnet numeric
 plotnet.numeric <- function(mod_in, struct, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
   
-  if(is.null(struct)) stop('Three-element vector required for struct')
-  if(length(mod_in) != ((struct[1] * struct[2] + struct[2] * struct[3]) + (struct[3] + struct[2])))
-    stop('Incorrect length of weight matrix for given network structure')
-  
   wts <- neuralweights(mod_in, struct = struct)
   struct <- wts$struct
   wts <- wts$wts
@@ -416,7 +422,7 @@ plotnet.numeric <- function(mod_in, struct, nid = TRUE, all_out = TRUE, all_in =
   #get variable names from mod_in object
   #change to user input if supplied
   x_names <- paste0(rep('X', struct[1]), seq(1:struct[1]))
-  y_names <- paste0(rep('Y', struct[3]), seq(1:struct[3]))
+  y_names <- paste0(rep('Y', struct[length(struct)]), seq(1:struct[length(struct)]))
 
   #change variables names to user sub 
   if(!is.null(x_lab)){

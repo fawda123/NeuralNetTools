@@ -158,6 +158,16 @@ mod <- neuralnet(AND + OR ~ Var1 + Var2 + Var3, binary_data,
 
 plotnet(mod)
 
+## recreate the previous example with numeric inputs
+
+# get the weights and structure in the right format
+wts <- neuralweights(mod)
+struct <- wts$struct
+wts <- unlist(wts$wts)
+
+# plot
+plotnet(wts, struct = struct)
+
 ## color input nodes by relative importance
 mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 
