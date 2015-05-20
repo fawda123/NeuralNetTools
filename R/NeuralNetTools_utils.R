@@ -45,6 +45,18 @@
 #' 
 #' neuralweights(mod)
 #' 
+#' \dontrun{
+#' # pruned model using code from RSSNS pruning demo
+#' pruneFuncParams <- list(max_pr_error_increase = 10.0, pr_accepted_error = 1.0, 
+#'  no_of_pr_retrain_cycles = 1000, min_error_to_stop = 0.01, init_matrix_value = 1e-6, 
+#'  input_pruning = TRUE, hidden_pruning = TRUE)
+#' mod <- mlp(x, y, size = 5, pruneFunc = "OptimalBrainSurgeon", 
+#'  pruneFuncParams = pruneFuncParams)
+#' 
+#' neuralweights(mod2)
+#' 
+#' }
+#' 
 #' ## using neuralnet
 #' 
 #' library(neuralnet)
@@ -133,7 +145,7 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
 
 #' @rdname neuralweights
 #' 
-#' @import scales reshape2
+#' @import scales reshape2 tidyr
 #'
 #' @export
 #'
@@ -143,7 +155,35 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
   struct <-  c(mod_in$nInputs, mod_in$archParams$size, mod_in$nOutputs)
   hid.num <-  length(struct) - 2
   wts <-  mod_in$snnsObject$getCompleteWeightMatrix()
+  
+  # recreate weight matrix if pruned network
+  if('pruneFunc' %in% names(mod_in)){
     
+    # get all node names using naming convention from mlp
+    inp_nms <- grep('^Input', colnames(wts), value = TRUE)
+    out_nms <- grep('^Output', colnames(wts), value = TRUE)
+    uni.hids <-  paste0('Hidden_', 1 + seq(1, hid.num))
+    hid_nms <- NULL
+    for(i in 1:length(uni.hids)){ 
+      hid_nms <- c(hid_nms, paste0(uni.hids[i], '_', 1:struct[i + 1]))
+    }
+    all_nms <- c(inp_nms, hid_nms, out_nms)
+    all_nms <- expand.grid(all_nms, all_nms)
+    all_nms <- data.frame(all_nms)
+    names(all_nms) <- c('keyrow', 'key')
+    
+    # wts in long form, merge with all names, NA to zero, back to matrix
+    wts <- data.frame(wts, keyrow = row.names(wts))
+    wts <- gather(wts, 'key', 'value',-keyrow)
+    wts <- merge(all_nms, wts, by = c('key', 'keyrow'), all.x = TRUE)
+    wts[is.na(wts$value), 'value'] <- 0
+    wts <- spread(wts, 'keyrow', 'value')
+    wts$key <- NULL
+    wts <- as.matrix(wts)
+    rownames(wts) <- colnames(wts)
+    wts <- t(wts)  
+  }
+
   #get all input - hidden and hidden - hidden wts
   inps <-  wts[grep('Input', row.names(wts)), grep('Hidden_2', colnames(wts)), drop = FALSE]
   inps <-  melt(rbind(rep(NA, ncol(inps)), inps))$value
