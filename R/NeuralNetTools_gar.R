@@ -324,6 +324,7 @@ garson.mlp <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_
     
   })
   sum_in <- sum_in/rowSums(sum_in)
+  sum_in[is.na(sum_in)] <- 0
   sum_in <- colSums(sum_in)
   
   # get relative contribution

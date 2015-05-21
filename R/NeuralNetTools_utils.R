@@ -309,7 +309,7 @@ pred_sens <- function(mat_in, mod_in, var_sel, step_val, fun_in, resp_name){
   
   mat_out[, var_sel] <- seq(min(mat_in[, var_sel]), max(mat_in[, var_sel]), length = step_val)
   
-  out <- data.frame(predict(mod_in, new = as.data.frame(mat_out)))
+  out <- data.frame(predict(mod_in, newdata = as.data.frame(mat_out)))
   names(out) <- resp_name
   x_vars <- mat_out[, var_sel]
   data.frame(out, x_vars)
