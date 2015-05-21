@@ -75,7 +75,7 @@ pruneFuncParams <- list(max_pr_error_increase = 10.0, pr_accepted_error = 1.0,
 mod <- mlp(x, y, size = 5, pruneFunc = "OptimalBrainSurgeon",
  pruneFuncParams = pruneFuncParams)
 
-neuralweights(mod2)
+neuralweights(mod)
 
 }
 

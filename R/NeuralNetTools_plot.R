@@ -64,6 +64,17 @@
 #' mod <- mlp(x, y, size = 5)
 #' 
 #' plotnet(mod)
+#'
+#' \dontrun{
+#' # pruned model using code from RSSNS pruning demo
+#' pruneFuncParams <- list(max_pr_error_increase = 10.0, pr_accepted_error = 1.0, 
+#'  no_of_pr_retrain_cycles = 1000, min_error_to_stop = 0.01, init_matrix_value = 1e-6, 
+#'  input_pruning = TRUE, hidden_pruning = TRUE)
+#' mod <- mlp(x, y, size = 5, pruneFunc = "OptimalBrainSurgeon", 
+#'  pruneFuncParams = pruneFuncParams)
+#' 
+#' plotnet(mod)
+#' }
 #' 
 #' ## using neuralnet
 #' 
@@ -741,8 +752,7 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
       cols <- rep(pos_col, struct[layer1])
       cols[wts<0] <- neg_col
       
-      if(nid) segments(x0, y0, x1, y1, col = cols, lwd = wts_rs)
-      else segments(x0, y0, x1, y1)
+      if('pruneFunc' %in% names(mod_in)) cols[wts == 0] <- NA
       
     }
     
@@ -762,11 +772,13 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
       
       cols <- rep(pos_col, struct[layer2])
       cols[wts<0] <- neg_col
-      
-      if(nid) segments(x0, y0, x1, y1, col = cols, lwd = wts_rs)
-      else segments(x0, y0, x1, y1)
+
+      if('pruneFunc' %in% names(mod_in)) cols[wts == 0] <- NA
       
     }
+    
+    if(nid) segments(x0, y0, x1, y1, col = cols, lwd = wts_rs)
+    else segments(x0, y0, x1, y1)
     
   }
   

@@ -53,7 +53,7 @@
 #' mod <- mlp(x, y, size = 5, pruneFunc = "OptimalBrainSurgeon", 
 #'  pruneFuncParams = pruneFuncParams)
 #' 
-#' neuralweights(mod2)
+#' neuralweights(mod)
 #' 
 #' }
 #' 
