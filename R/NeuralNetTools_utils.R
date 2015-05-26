@@ -174,7 +174,7 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
     
     # wts in long form, merge with all names, NA to zero, back to matrix
     wts <- data.frame(wts, keyrow = row.names(wts))
-    wts <- gather(wts, 'key', 'value',-keyrow)
+    wts <- gather(wts, 'key', 'value',-ncol(wts))
     wts <- merge(all_nms, wts, by = c('key', 'keyrow'), all.x = TRUE)
     wts[is.na(wts$value), 'value'] <- 0
     wts <- spread(wts, 'keyrow', 'value')

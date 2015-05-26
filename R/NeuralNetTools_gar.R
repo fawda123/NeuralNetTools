@@ -18,7 +18,7 @@
 #' 
 #' @import ggplot2 neuralnet nnet RSNNS
 #' 
-#' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = FALSE}, otherwise a \code{data.frame} of relative importance values for each input variable.
+#' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = FALSE}, otherwise a \code{data.frame} of relative importance values for each input variable.  The default aesthetics for \code{\link[ggplot2]{ggplot}} can be further modified, as shown with the examples.
 #' 
 #' @references
 #' Garson, G.D. 1991. Interpreting neural network connection weights. Artificial Intelligence Expert. 6(4):46-51.
@@ -79,6 +79,17 @@
 #' garson(mod)
 #' 
 #' }
+#' 
+#' ## modify the plot using ggplot2 syntax
+#' library(ggplot2)
+#' 
+#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
+#' 
+#' cols <- heat.colors(10)
+#' garson(mod) +
+#'   scale_y_continuous('Rel. Importance', limits = c(-1, 1)) + 
+#'   scale_fill_gradientn(colours = cols) + 
+#'   scale_colour_gradientn(colours = cols)
 garson <- function(mod_in, ...) UseMethod('garson')
  
 #' @rdname garson
