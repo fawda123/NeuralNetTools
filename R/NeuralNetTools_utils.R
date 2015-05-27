@@ -7,8 +7,6 @@
 #' 
 #' @export
 #' 
-#' @import neuralnet nnet RSNNS
-#' 
 #' @return Returns a two-element list with the first element being a vector indicating the number of nodes in each layer of the neural network and the second element being a named list of weight values for the input model.  
 #' 
 #' @details Each element of the returned list is named using the construct 'layer node', e.g. 'out 1' is the first node of the output layer.  Hidden layers are named using three values for instances with more than one hidden layer, e.g., 'hidden 1 1' is the first node in the first hidden layer, 'hidden 1 2' is the second node in the first hidden layer, 'hidden 2 1' is the first node in the second hidden layer, etc.  The values in each element of the list represent the weights entering the specific node from the preceding layer in sequential order, starting with the bias layer if applicable.  For example, the elements in a list item for 'hidden 1 1' of a neural network with a 3 5 1 structure (3 inputs, 5 hidden nodes, 1 output) would have four values indicating the weights in sequence from the bias layer, first input layer, second input layer, and third input layer going to the first hidden node.    

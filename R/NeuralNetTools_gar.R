@@ -16,7 +16,7 @@
 #' 
 #' @export
 #' 
-#' @import ggplot2 neuralnet nnet RSNNS
+#' @import ggplot2
 #' 
 #' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = FALSE}, otherwise a \code{data.frame} of relative importance values for each input variable.  The default aesthetics for \code{\link[ggplot2]{ggplot}} can be further modified, as shown with the examples.
 #' 
@@ -100,8 +100,6 @@ garson <- function(mod_in, ...) UseMethod('garson')
 #' @param y_lab chr string of alternative names to be used for response variable in the figure, otherwise it is taken from the input model
 #' @param wts_only logical passed to \code{\link{neuralweights}}, default \code{FALSE}
 #' 
-#' @import ggplot2 scales
-#' 
 #' @export
 #' 
 #' @method garson numeric
@@ -180,8 +178,6 @@ garson.numeric <- function(mod_in, struct, bar_plot = TRUE, x_lab = NULL, y_lab 
 }
 
 #' @rdname garson
-#' 
-#' @import ggplot2 scales
 #' 
 #' @export
 #' 
@@ -278,8 +274,6 @@ garson.nnet <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts
 }
 
 #' @rdname garson
-#'
-#' @import ggplot2 scales
 #' 
 #' @export
 #' 
@@ -362,8 +356,6 @@ garson.mlp <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_
 
 #' @rdname garson
 #' 
-#' @import ggplot2 scales
-#' 
 #' @export
 #'  
 #' @method garson nn
@@ -443,8 +435,6 @@ garson.nn <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_o
 }
 
 #' @rdname garson
-#' 
-#' @import ggplot2 scales
 #' 
 #' @export
 #' 

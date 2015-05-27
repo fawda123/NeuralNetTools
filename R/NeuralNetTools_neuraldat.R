@@ -12,5 +12,4 @@
 #'   ...
 #' }
 #' 
-#' @import nnet RSNNS neuralnet
 "neuraldat"

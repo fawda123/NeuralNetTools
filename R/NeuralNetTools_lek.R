@@ -17,7 +17,7 @@
 #' 
 #' @export
 #' 
-#' @import ggplot2 neuralnet nnet RSNNS 
+#' @import ggplot2 nnet
 #' 
 #' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  FALSE}, otherwise a \code{data.frame} in long form showing the predicted responses at different values of the explanatory varibales. 
 #' 
@@ -87,8 +87,6 @@
 lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 
 #' @rdname lekprofile
-#'
-#' @import ggplot2 
 #' 
 #' @export
 #' 
@@ -178,8 +176,6 @@ lekprofile.nnet <- function(mod_in,steps = 100, split_vals = seq(0, 1, by = 0.2)
 #'
 #' @param exp_in \code{matrix} or \code{data.frame} of input variables used to create the model 
 #' 
-#' @import ggplot2 
-#' 
 #' @export
 #' 
 #' @method lekprofile mlp
@@ -236,8 +232,6 @@ lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, b
 }
 
 #' @rdname lekprofile
-#'
-#' @import ggplot2 
 #' 
 #' @export
 #' 
@@ -305,7 +299,7 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
 
 #' @rdname lekprofile
 #'
-#' @import ggplot2 nnet
+#' @import nnet
 #' 
 #' @export
 #' 

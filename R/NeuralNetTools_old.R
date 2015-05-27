@@ -15,7 +15,7 @@
 #' 
 #' @export
 #' 
-#' @import ggplot2 neuralnet nnet RSNNS
+#' @import ggplot2
 #' 
 #' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = FALSE}, otherwise a \code{data.frame} of relative importance values for each input variable.
 #' 
@@ -103,8 +103,6 @@ olden <- function(mod_in, out_var, ...) UseMethod('olden')
 #' @param y_lab chr string of alternative names to be used for response variable in the figure, default is taken from \code{out_var}
 #' @param wts_only logical passed to \code{\link{neuralweights}}, default \code{FALSE}
 #' 
-#' @import ggplot2 scales
-#' 
 #' @export
 #' 
 #' @method olden numeric
@@ -185,8 +183,6 @@ olden.numeric <- function(mod_in, out_var, struct, bar_plot = TRUE, x_lab = NULL
 }
 
 #' @rdname olden
-#' 
-#' @import ggplot2 scales
 #' 
 #' @export
 #' 
@@ -287,8 +283,6 @@ olden.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
 }
 
 #' @rdname olden
-#'
-#' @import ggplot2 scales
 #' 
 #' @export
 #' 
@@ -372,8 +366,6 @@ olden.mlp <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NU
 
 #' @rdname olden
 #' 
-#' @import ggplot2 scales
-#' 
 #' @export
 #'  
 #' @method olden nn
@@ -454,8 +446,6 @@ olden.nn <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = NUL
 }
 
 #' @rdname olden
-#' 
-#' @import ggplot2 scales
 #' 
 #' @export
 #' 

@@ -126,8 +126,6 @@ plotnet <- function(mod_in, ...) UseMethod('plotnet')
 
 #' @rdname plotnet
 #' 
-#' @import scales
-#' 
 #' @export
 #' 
 #' @method plotnet nnet
@@ -400,8 +398,6 @@ plotnet.nnet <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias
 #'
 #' @param struct  numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.
 #' 
-#' @import scales
-#' 
 #' @export
 #' 
 #' @method plotnet numeric
@@ -658,8 +654,6 @@ plotnet.numeric <- function(mod_in, struct, nid = TRUE, all_out = TRUE, all_in =
 
 #' @rdname plotnet
 #' 
-#' @import scales
-#' 
 #' @export
 #' 
 #' @method plotnet mlp
@@ -831,8 +825,6 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
 }
 
 #' @rdname plotnet
-#' 
-#' @import scales
 #' 
 #' @export
 #' 
@@ -1089,8 +1081,6 @@ plotnet.nn <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias =
 }
 
 #' @rdname plotnet
-#' 
-#' @import scales
 #' 
 #' @export
 #' 
