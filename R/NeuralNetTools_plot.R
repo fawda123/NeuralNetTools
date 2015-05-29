@@ -6,7 +6,7 @@
 #' @param nid	logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}
 #' @param all_out	chr string indicating names of response variables for which connections are plotted, default all
 #' @param all_in	chr string indicating names of input variables for which connections are plotted, default all
-#' @param bias	logical value indicating if bias nodes and connections are plotted, not applicable for networks from \code{\link[RSNNS]{mlp}} function, default \code{TRUE}
+#' @param bias	logical value indicating if bias nodes and connections are plotted, default \code{TRUE}
 #' @param wts_only	logical value indicating if connections weights are returned rather than a plot, default \code{FALSE}
 #' @param rel_rsc	numeric value indicating maximum width of connection lines, default 5
 #' @param circle_cex	numeric value indicating size of nodes, default 5
@@ -21,6 +21,8 @@
 #' @param pos_col	chr string indicating color of positive connection weights, default \code{'black'}
 #' @param neg_col	chr string indicating color of negative connection weights, default \code{'grey'}
 #' @param bord_col chr string indicating border color around nodes, default \code{'lightblue'}
+#' @param prune_col chr string indicating color of pruned connections, otherwise not shown
+#' @param prune_lty line type for pruned connections, passed to \code{\link[graphics]{segments}}
 #' @param max_sp	logical value indicating if space between nodes in each layer is maximized, default \code{FALSE}
 #' @param ...	additional arguments passed to plot
 #' 
@@ -74,6 +76,7 @@
 #'  pruneFuncParams = pruneFuncParams)
 #' 
 #' plotnet(mod)
+#' plotnet(mod, prune_col = 'lightblue')
 #' }
 #' 
 #' ## using neuralnet
@@ -657,7 +660,7 @@ plotnet.numeric <- function(mod_in, struct, nid = TRUE, all_out = TRUE, all_in =
 #' @export
 #' 
 #' @method plotnet mlp
-plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
+plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', prune_col = NULL, prune_lty = 'dashed', max_sp = FALSE, ...){
 
   wts <- neuralweights(mod_in)
   struct <- wts$struct
@@ -746,7 +749,14 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
       cols <- rep(pos_col, struct[layer1])
       cols[wts<0] <- neg_col
       
-      if('pruneFunc' %in% names(mod_in)) cols[wts == 0] <- NA
+      # remove pruned connections or color of prune_col not null
+      # line type dashed
+      ltype <- rep(par('lty'), length(wts))
+      if('pruneFunc' %in% names(mod_in)){
+        if(is.null(prune_col)) cols[wts == 0] <- NA
+        else cols[wts == 0] <- prune_col
+        ltype[wts == 0] <- prune_lty
+      }
       
     }
     
@@ -767,12 +777,18 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
       cols <- rep(pos_col, struct[layer2])
       cols[wts<0] <- neg_col
 
-      if('pruneFunc' %in% names(mod_in)) cols[wts == 0] <- NA
+      # remove pruned connections or color of prune_col not null, linetype dashed
+      ltype <- rep(par('lty'), length(wts))
+      if('pruneFunc' %in% names(mod_in)){
+        if(is.null(prune_col)) cols[wts == 0] <- NA
+        else cols[wts == 0] <- prune_col
+        ltype[wts == 0] <- prune_lty
+      }
       
     }
     
-    if(nid) segments(x0, y0, x1, y1, col = cols, lwd = wts_rs)
-    else segments(x0, y0, x1, y1)
+    if(nid) segments(x0, y0, x1, y1, col = cols, lwd = wts_rs, lty = ltype)
+    else segments(x0, y0, x1, y1, lty = ltype)
     
   }
   
