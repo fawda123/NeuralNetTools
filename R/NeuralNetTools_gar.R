@@ -147,11 +147,13 @@ garson.numeric <- function(mod_in, struct, bar_plot = TRUE, x_lab = NULL, y_lab 
   
   # use garson's algorithm
   sum_in <- t(inp_hid[[max_i]])
+  dimsum <- dim(sum_in)
   sum_in <- apply(sum_in, 2, function(x){
   
     abs(x) * abs(hid_out)
     
   })
+  sum_in <- matrix(sum_in, nrow = dimsum[1], ncol = dimsum[2], byrow = FALSE)
   sum_in <- sum_in/rowSums(sum_in)
   sum_in <- colSums(sum_in)
   
@@ -242,12 +244,13 @@ garson.nnet <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts
   
   # use garson's algorithm
   sum_in <- t(inp_hid[[max_i]])
+  dimsum <- dim(sum_in)
   sum_in <- apply(sum_in, 2, function(x){
   
     abs(x) * abs(hid_out)
     
   })
-  
+  sum_in <- matrix(sum_in, nrow = dimsum[1], ncol = dimsum[2], byrow = FALSE)
   sum_in <- sum_in/rowSums(sum_in)
   sum_in <- colSums(sum_in)
   
@@ -323,11 +326,13 @@ garson.mlp <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_
   
   # use garson's algorithm
   sum_in <- t(inp_hid[[max_i]])
+  dimsum <- dim(sum_in)
   sum_in <- apply(sum_in, 2, function(x){
   
     abs(x) * abs(hid_out)
     
   })
+  sum_in <- matrix(sum_in, nrow = dimsum[1], ncol = dimsum[2], byrow = FALSE)
   sum_in <- sum_in/rowSums(sum_in)
   sum_in[is.na(sum_in)] <- 0
   sum_in <- colSums(sum_in)
@@ -404,11 +409,13 @@ garson.nn <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wts_o
   
   # use garson's algorithm
   sum_in <- t(inp_hid[[max_i]])
+  dimsum <- dim(sum_in)
   sum_in <- apply(sum_in, 2, function(x){
   
     abs(x) * abs(hid_out)
     
   })
+  sum_in <- matrix(sum_in, nrow = dimsum[1], ncol = dimsum[2], byrow = FALSE)
   sum_in <- sum_in/rowSums(sum_in)
   sum_in <- colSums(sum_in)
   
@@ -488,11 +495,13 @@ garson.train <- function(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, wt
   
   # use garson's algorithm
   sum_in <- t(inp_hid[[max_i]])
+  dimsum <- dim(sum_in)
   sum_in <- apply(sum_in, 2, function(x){
   
     abs(x) * abs(hid_out)
     
   })
+  sum_in <- matrix(sum_in, nrow = dimsum[1], ncol = dimsum[2], byrow = FALSE)
   sum_in <- sum_in/rowSums(sum_in)
   sum_in <- colSums(sum_in)
   
