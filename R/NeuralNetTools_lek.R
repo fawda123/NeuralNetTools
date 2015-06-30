@@ -87,6 +87,8 @@
 lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 
 #' @rdname lekprofile
+#'
+#' @import ggplot2 
 #' 
 #' @export
 #' 
@@ -151,7 +153,7 @@ lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 
   #ggplot object
   p <- ggplot2::ggplot(lek_vals, aes_string(x = 'Explanatory', y = 'Response', group = 'Splits')) + 
     geom_line(aes_string(colour = 'Splits', linetype = 'Splits', size = 'Splits')) + 
-    facet_grid(resp_name ~ exp_name) +
+    facet_grid(resp_name ~ exp_name, scales = 'free_x') +
     scale_linetype_manual(values = rep('solid', length(split_vals))) +
     scale_size_manual(values = rep(1, length(split_vals)))
   
@@ -175,6 +177,8 @@ lekprofile.nnet <- function(mod_in,steps = 100, split_vals = seq(0, 1, by = 0.2)
 #' @rdname lekprofile
 #'
 #' @param exp_in \code{matrix} or \code{data.frame} of input variables used to create the model 
+#' 
+#' @import ggplot2 
 #' 
 #' @export
 #' 
@@ -223,7 +227,7 @@ lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, b
   #ggplot object
   p <- ggplot2::ggplot(lek_vals, aes_string(x = 'Explanatory', y = 'Response', group = 'Splits')) + 
     geom_line(aes_string(colour = 'Splits', linetype = 'Splits', size = 'Splits')) + 
-    facet_grid(resp_name ~ exp_name) +
+    facet_grid(resp_name ~ exp_name, scales = 'free_x') +
     scale_linetype_manual(values = rep('solid', length(split_vals))) +
     scale_size_manual(values = rep(1, length(split_vals)))
   
@@ -232,6 +236,8 @@ lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, b
 }
 
 #' @rdname lekprofile
+#'
+#' @import ggplot2 
 #' 
 #' @export
 #' 
@@ -289,7 +295,7 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
   #ggplot object
   p <- ggplot2::ggplot(lek_vals, aes_string(x = 'Explanatory', y = 'Response', group = 'Splits')) + 
     geom_line(aes_string(colour = 'Splits', linetype = 'Splits', size = 'Splits')) + 
-    facet_grid(resp_name ~ exp_name) +
+    facet_grid(resp_name ~ exp_name, scales = 'free_x') +
     scale_linetype_manual(values = rep('solid', length(split_vals))) +
     scale_size_manual(values = rep(1, length(split_vals)))
   
@@ -299,7 +305,7 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
 
 #' @rdname lekprofile
 #'
-#' @import nnet
+#' @import ggplot2 nnet
 #' 
 #' @export
 #' 
