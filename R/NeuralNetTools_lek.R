@@ -4,6 +4,7 @@
 #' 
 #' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{nnet} or \code{mlp}
 #' @param steps numeric value indicating number of observations to evaluate for each explanatory variable from minimum to maximum value, default 100
+#' @param var_sel optional chr string of explanatory variables to evaluate, defaults to all
 #' @param split_vals numeric vector indicating quantile values at which to hold other explanatory variables constant
 #' @param val_out logical value indicating if actual sensitivity values are returned rather than a plot, default \code{FALSE}
 #' @param ... arguments passed to other methods
@@ -93,8 +94,8 @@ lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 #' @export
 #' 
 #' @method lekprofile default
-lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
-  
+lekprofile.default <- function(mod_in, steps = 100, var_sel = NULL, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
+      
   ##
   #sort out exp and resp names based on object type of call to mod_in
   #get matrix for exp vars
@@ -114,6 +115,9 @@ lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 
       mat_in <- dat_names[,!names(dat_names) %in% as.character(forms)[2], drop = F]
     }
   }
+  
+  # subset var_sens if var_sel is not empy
+  if(!is.null(var_sel)) var_sens <- var_sens[var_sens %in% var_sel]
   
   # stop if only one input variable
   if(ncol(mat_in) == 1) stop('Lek profile requires greater than one input variable')
@@ -168,9 +172,9 @@ lekprofile.default <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 
 #' @export
 #' 
 #' @method lekprofile nnet
-lekprofile.nnet <- function(mod_in,steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
+lekprofile.nnet <- function(mod_in, steps = 100, var_sel = NULL, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
   
-  lekprofile.default(mod_in, steps, split_vals, val_out)
+  lekprofile.default(mod_in, steps, var_sel, split_vals, val_out)
 
 }
 
@@ -183,7 +187,7 @@ lekprofile.nnet <- function(mod_in,steps = 100, split_vals = seq(0, 1, by = 0.2)
 #' @export
 #' 
 #' @method lekprofile mlp
-lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
+lekprofile.mlp <- function(mod_in, exp_in, var_sel = NULL, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
 
   ##
   #sort out exp and resp names based on object type of call to mod_in
@@ -193,6 +197,9 @@ lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, b
   names(mat_in) <- paste0('X', seq(1, mod_in$nInputs))
   var_sens <- names(mat_in)
 
+  # subset var_sens if var_sel is not empy
+  if(!is.null(var_sel)) var_sens <- var_sens[var_sens %in% var_sel]
+  
   #use 'pred_fun' to get pred vals of response across range of vals for an exp vars
   #loops over all explanatory variables of interest and all split values
   lek_vals <- sapply(
@@ -242,7 +249,7 @@ lekprofile.mlp <- function(mod_in, exp_in, steps = 100, split_vals = seq(0, 1, b
 #' @export
 #' 
 #' @method lekprofile train
-lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
+lekprofile.train <- function(mod_in, steps = 100, var_sel = NULL, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
   
   # input data, x_names, and y_names
   mat_in <- mod_in$trainingData
@@ -260,6 +267,9 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
   #get matrix for exp vars
   resp_name <- y_names
   var_sens <- names(mat_in)
+  
+  # subset var_sens if var_sel is not empy
+  if(!is.null(var_sel)) var_sens <- var_sens[var_sens %in% var_sel]
   
   #use 'pred_fun' to get pred vals of response across range of vals for an exp vars
   #loops over all explanatory variables of interest and all split values
@@ -310,7 +320,7 @@ lekprofile.train <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.
 #' @export
 #' 
 #' @method lekprofile nn
-lekprofile.nn <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
+lekprofile.nn <- function(mod_in, steps = 100, var_sel = NULL, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
 
   # recreate the model using nnet (no predict method for nn)
   moddat <- mod_in$data
@@ -338,7 +348,7 @@ lekprofile.nn <- function(mod_in, steps = 100, split_vals = seq(0, 1, by = 0.2),
   mod_in <- eval(mod_in)
   
   # pass to lekprofile.nnet
-  lekprofile(mod_in, steps = steps, split_vals = split_vals, val_out = val_out, ...)
+  lekprofile(mod_in, steps = steps, var_sel = var_sel, split_vals = split_vals, val_out = val_out, ...)
   
 }
 
