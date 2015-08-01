@@ -41,7 +41,7 @@ Please submit any bug reports (or suggestions) using the [issues](https://github
 
 
 
-Four core functions are available to plot (`plot` as additional methods to the generic function), evaluate variable importance (`garson`, `olden`), and conduct a simple sensitivity analysis (`lekprofile`).  A sample dataset is also provided for use with the examples.  The functions have S3 methods developed for neural networks from the following packages: [nnet](http://cran.r-project.org/web/packages/nnet/index.html), [neuralnet](http://cran.r-project.org/web/packages/neuralnet/index.html), [RSNNS](http://cran.r-project.org/web/packages/RSNNS/index.html), and [caret](http://cran.r-project.org/web/packages/caret/index.html).  Numeric inputs that describe model weights are also acceptable for most of the functions. A full package descriptions is available in the online [manual](http://cran.r-project.org/web/packages/NeuralNetTools/NeuralNetTools.pdf).
+Four core functions are available to plot (`plotnet`), evaluate variable importance (`garson`, `olden`), and conduct a simple sensitivity analysis (`lekprofile`).  A sample dataset is also provided for use with the examples.  The functions have S3 methods developed for neural networks from the following packages: [nnet](http://cran.r-project.org/web/packages/nnet/index.html), [neuralnet](http://cran.r-project.org/web/packages/neuralnet/index.html), [RSNNS](http://cran.r-project.org/web/packages/RSNNS/index.html), and [caret](http://cran.r-project.org/web/packages/caret/index.html).  Numeric inputs that describe model weights are also acceptable for most of the functions. A full package descriptions is available in the online [manual](http://cran.r-project.org/web/packages/NeuralNetTools/NeuralNetTools.pdf).
  
 Start by loading the package and the sample dataset.
 
@@ -52,7 +52,7 @@ library(NeuralNetTools)
 data(neuraldat)
 ```
 
-The `plot` function plots a neural network as a simple network or as a neural interpretation diagram (NID). The default settings are to plot as NID with positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled as I1 through In for n input variables. One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn. The output layer is plotted last with nodes labeled as O1 through On. Bias nodes connected to the hidden and output layers are also shown. 
+The `plotnet` function plots a neural network as a simple network or as a neural interpretation diagram (NID). The default settings are to plot as NID with positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled as I1 through In for n input variables. One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn. The output layer is plotted last with nodes labeled as O1 through On. Bias nodes connected to the hidden and output layers are also shown. 
 
 
 ```r
@@ -62,7 +62,7 @@ mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 10)
 
 # plot
 par(mar = numeric(4))
-plot(mod)
+plotnet(mod)
 ```
 
 ![](README_files/figure-html/unnamed-chunk-6-1.png) 
