@@ -564,7 +564,7 @@ layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FAL
 #' @param mod_in neural network model object
 #' @param nid logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}
 #' @param rel_rsc numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
-#' @param all_out chr string indicating names of input variables for which connections are plotted, default all
+#' @param all_out chr string indicating names of response variables for which connections are plotted, default all
 #' @param pos_col chr string indicating color of positive connection weights, default \code{'black'}
 #' @param neg_col chr string indicating color of negative connection weights, default \code{'grey'}
 #' @param struct numeric vector for network structure

@@ -2,6 +2,7 @@
 % Please edit documentation in R/NeuralNetTools_plot.R
 \name{plotnet}
 \alias{plotnet}
+\alias{plotnet.default}
 \alias{plotnet.mlp}
 \alias{plotnet.nn}
 \alias{plotnet.nnet}
@@ -11,45 +12,35 @@
 \usage{
 plotnet(mod_in, ...)
 
-\method{plotnet}{nnet}(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE,
-  bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5,
-  node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL,
-  line_stag = NULL, cex_val = 1, alpha_val = 1,
-  circle_col = "lightblue", pos_col = "black", neg_col = "grey",
-  bord_col = "lightblue", max_sp = FALSE, ...)
-
-\method{plotnet}{numeric}(mod_in, struct, nid = TRUE, all_out = TRUE,
-  all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5,
-  circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL,
-  y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1,
-  circle_col = "lightblue", pos_col = "black", neg_col = "grey",
-  bord_col = "lightblue", max_sp = FALSE, ...)
-
-\method{plotnet}{mlp}(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE,
-  wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE,
-  var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL,
+\method{plotnet}{default}(mod_in, x_names, y_names, struct = NULL,
+  nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, rel_rsc = 5,
+  circle_cex = 5, node_labs = TRUE, var_labs = TRUE, line_stag = NULL,
   cex_val = 1, alpha_val = 1, circle_col = "lightblue",
   pos_col = "black", neg_col = "grey", bord_col = "lightblue",
-  prune_col = NULL, prune_lty = "dashed", max_sp = FALSE, ...)
+  max_sp = FALSE, prune_col = NULL, prune_lty = "dashed", ...)
 
-\method{plotnet}{nn}(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE,
-  bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5,
-  node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL,
-  line_stag = NULL, cex_val = 1, alpha_val = 1,
-  circle_col = "lightblue", pos_col = "black", neg_col = "grey",
-  bord_col = "lightblue", max_sp = FALSE, ...)
+\method{plotnet}{nnet}(mod_in, x_names = NULL, y_names = NULL, ...)
 
-\method{plotnet}{train}(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE,
-  bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5,
-  node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL,
-  line_stag = NULL, cex_val = 1, alpha_val = 1,
-  circle_col = "lightblue", pos_col = "black", neg_col = "grey",
-  bord_col = "lightblue", max_sp = FALSE, ...)
+\method{plotnet}{numeric}(mod_in, struct, x_names = NULL, y_names = NULL,
+  ...)
+
+\method{plotnet}{mlp}(mod_in, x_names = NULL, y_names = NULL,
+  prune_col = NULL, prune_lty = "dashed", ...)
+
+\method{plotnet}{nn}(mod_in, x_names = NULL, y_names = NULL, ...)
+
+\method{plotnet}{train}(mod_in, x_names = NULL, y_names = NULL, ...)
 }
 \arguments{
 \item{mod_in}{neural network object or numeric vector of weights}
 
 \item{...}{additional arguments passed to plot}
+
+\item{x_names}{chr string indicating names for input variables, default from model object}
+
+\item{y_names}{chr string indicating names for output variables, default from model object}
+
+\item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 
 \item{nid}{logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}}
 
@@ -59,8 +50,6 @@ plotnet(mod_in, ...)
 
 \item{bias}{logical value indicating if bias nodes and connections are plotted, default \code{TRUE}}
 
-\item{wts_only}{logical value indicating if connections weights are returned rather than a plot, default \code{FALSE}}
-
 \item{rel_rsc}{numeric value indicating maximum width of connection lines, default 5}
 
 \item{circle_cex}{numeric value indicating size of nodes, default 5}
@@ -68,10 +57,6 @@ plotnet(mod_in, ...)
 \item{node_labs}{logical value indicating if labels are plotted directly on nodes, default \code{TRUE}}
 
 \item{var_labs}{logical value indicating if variable names are plotted next to nodes, default \code{TRUE}}
-
-\item{x_lab}{chr string indicating names for input variables, default from model object}
-
-\item{y_lab}{chr string indicating names for output variables, default from model object}
 
 \item{line_stag}{numeric value that specifies distance of connection weights from nodes}
 
@@ -88,8 +73,6 @@ plotnet(mod_in, ...)
 \item{bord_col}{chr string indicating border color around nodes, default \code{'lightblue'}}
 
 \item{max_sp}{logical value indicating if space between nodes in each layer is maximized, default \code{FALSE}}
-
-\item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 
 \item{prune_col}{chr string indicating color of pruned connections, otherwise not shown}
 

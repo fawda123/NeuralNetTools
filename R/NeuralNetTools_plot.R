@@ -3,17 +3,16 @@
 #' Plot a neural interpretation diagram for a neural network object
 #' 
 #' @param mod_in neural network object or numeric vector of weights
+#' @param x_names chr string indicating names for input variables, default from model object
+#' @param y_names	chr string indicating names for output variables, default from model object
 #' @param nid	logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}
 #' @param all_out	chr string indicating names of response variables for which connections are plotted, default all
 #' @param all_in	chr string indicating names of input variables for which connections are plotted, default all
 #' @param bias	logical value indicating if bias nodes and connections are plotted, default \code{TRUE}
-#' @param wts_only	logical value indicating if connections weights are returned rather than a plot, default \code{FALSE}
 #' @param rel_rsc	numeric value indicating maximum width of connection lines, default 5
 #' @param circle_cex	numeric value indicating size of nodes, default 5
 #' @param node_labs	logical value indicating if labels are plotted directly on nodes, default \code{TRUE}
 #' @param var_labs logical value indicating if variable names are plotted next to nodes, default \code{TRUE}
-#' @param x_lab	chr string indicating names for input variables, default from model object
-#' @param y_lab	chr string indicating names for output variables, default from model object
 #' @param line_stag	numeric value that specifies distance of connection weights from nodes
 #' @param cex_val	numeric value indicating size of text labels, default 1
 #' @param alpha_val	numeric value (0-1) indicating transparency of connections, default 1
@@ -128,147 +127,16 @@
 plotnet <- function(mod_in, ...) UseMethod('plotnet')
 
 #' @rdname plotnet
-#' 
-#' @export
-#' 
-#' @method plotnet nnet
-plotnet.nnet <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
-  
-  wts <- neuralweights(mod_in)
-  struct <- wts$struct
-  wts <- wts$wts
-  
-  # check for skip layers
-  chk <- grepl('skip-layer', capture.output(mod_in))
-  if(any(chk))
-    warning('Skip layer used, line scaling is proportional to weights in current plot')
-  
-  if(wts_only) return(wts)
-  
-  #circle colors for input, if desired, must be two-vector list, first vector is for input layer
-  if(is.list(circle_col)){
-    circle_col_inp <- circle_col[[1]]
-    circle_col <- circle_col[[2]]
-  }
-  else circle_col_inp <- circle_col
-  
-  #initiate plotting
-  x_range <- c(0, 100)
-  y_range <- c(0, 100)
-  #these are all proportions from 0-1
-  if(is.null(line_stag)) line_stag <- 0.011 * circle_cex/2
-  layer_x <- seq(0.17, 0.9, length = length(struct))
-  bias_x <- layer_x[-length(layer_x)] + diff(layer_x)/2
-  bias_y <- 0.95
-  circle_cex <- circle_cex
-  
-  #get variable names from mod_in object
-  #change to user input if supplied
-  if(is.null(mod_in$call$formula)){
-    x_names <- colnames(eval(mod_in$call$x))
-    y_names <- colnames(eval(mod_in$call$y))
-  }
-  else{
-    forms <- eval(mod_in$call$formula)
-    x_names <- mod_in$coefnames
-    facts <- attr(terms(mod_in), 'factors')
-    y_check <- mod_in$fitted
-    if(ncol(y_check)>1) y_names <- colnames(y_check)
-    else y_names <- as.character(forms)[2]
-  } 
-  #change variables names to user sub 
-  if(!is.null(x_lab)){
-    if(length(x_names) != length(x_lab)) stop('x_lab length not equal to number of input variables')
-    else x_names <- x_lab
-  }
-  if(!is.null(y_lab)){
-    if(length(y_names) != length(y_lab)) stop('y_lab length not equal to number of output variables')
-    else y_names <- y_lab
-  }
-  
-  #initiate plot
-  plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '')
-  
-  #use functions to plot connections between layers
-  #bias lines
-  if(bias) bias_lines(bias_x, bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct, y_range = y_range, layer_x = layer_x, line_stag = line_stag)
-
-  #layer lines,  makes use of arguments to plot all or for individual layers
-  #starts with input - hidden
-  #uses 'all_in' argument to plot connection lines for all input nodes or a single node
-  if(is.logical(all_in)){  
-    mapply(
-      function(x) layer_lines(mod_in, x, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, 
-        all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), 
-        neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, 
-        line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct),
-      1:struct[1]
-    )
-  }
-  else{
-    node_in <- which(x_names == all_in)
-    layer_lines(mod_in, node_in, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, all_in = all_in, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
-      x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct)
-  }
-  
-  #connections between hidden layers
-  lays <- split(c(1, rep(2:(length(struct) - 1), each = 2), length(struct)), 
-              f = rep(1:(length(struct) - 1), each = 2))
-  lays <- lays[-c(1, (length(struct) - 1))]
-  for(lay in lays){
-    for(node in 1:struct[lay[1]]){
-      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
-      x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct)
-    }
-  }
-  #lines for hidden - output
-  #uses 'all_out' argument to plot connection lines for all output nodes or a single node
-  if(is.logical(all_out))
-    mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct), 
-      1:struct[length(struct)]
-    )
-  else{
-    node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, pos_col = pos_col, neg_col = neg_col, all_out = all_out,  x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct)
-  }
-  
-  #use functions to plot nodes
-  for(i in 1:length(struct)){
-    in_col <- circle_col
-    layer_name <- 'H'
-    if(i == 1) { layer_name <- 'I'; in_col <- circle_col_inp}
-    if(i == length(struct)) layer_name <- 'O'
-    layer_points(struct[i], layer_x[i], x_range, layer_name, cex_val, circle_cex, bord_col, in_col, 
-      node_labs, line_stag, var_labs, x_names, y_names, max_sp = max_sp, struct = struct, 
-      y_range = y_range
-      )
-  }
-  
-  if(bias) bias_points(bias_x, bias_y, 'B', node_labs, x_range, 
-    y_range, circle_cex, cex_val, bord_col, circle_col)
-  
-}
-
-#' @rdname plotnet
 #'
-#' @param struct  numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.
-#' 
 #' @export
-#' 
-#' @method plotnet numeric
-plotnet.numeric <- function(mod_in, struct, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
-  
+#'
+#' @method plotnet default
+plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, prune_col = NULL, prune_lty = 'dashed', ...){
+
   wts <- neuralweights(mod_in, struct = struct)
   struct <- wts$struct
   wts <- wts$wts
   
-  if(wts_only) return(wts)
-  
   #circle colors for input, if desired, must be two-vector list, first vector is for input layer
   if(is.list(circle_col)){
     circle_col_inp <- circle_col[[1]]
@@ -285,135 +153,6 @@ plotnet.numeric <- function(mod_in, struct, nid = TRUE, all_out = TRUE, all_in =
   bias_x <- layer_x[-length(layer_x)] + diff(layer_x)/2
   bias_y <- 0.95
   circle_cex <- circle_cex
-  
-  #get variable names from mod_in object
-  #change to user input if supplied
-  x_names <- paste0(rep('X', struct[1]), seq(1:struct[1]))
-  y_names <- paste0(rep('Y', struct[length(struct)]), seq(1:struct[length(struct)]))
-
-  #change variables names to user sub 
-  if(!is.null(x_lab)){
-    if(length(x_names) != length(x_lab)) stop('x_lab length not equal to number of input variables')
-    else x_names <- x_lab
-  }
-  if(!is.null(y_lab)){
-    if(length(y_names) != length(y_lab)) stop('y_lab length not equal to number of output variables')
-    else y_names <- y_lab
-  }
-  
-  #initiate plot
-  plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '')
-  
-  #use functions to plot connections between layers
-  #bias lines
-  if(bias) bias_lines(bias_x, bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct, y_range = y_range, layer_x = layer_x, line_stag = line_stag)
-
-  #layer lines,  makes use of arguments to plot all or for individual layers
-  #starts with input - hidden
-  #uses 'all_in' argument to plot connection lines for all input nodes or a single node
-  if(is.logical(all_in)){  
-    mapply(
-      function(x) layer_lines(mod_in, x, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, 
-        all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), 
-        neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, 
-        line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct),
-      1:struct[1]
-    )
-  }
-  else{
-    node_in <- which(x_names == all_in)
-    layer_lines(mod_in, node_in, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, all_in = all_in, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
-      x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct)
-  }
-  
-  #connections between hidden layers
-  lays <- split(c(1, rep(2:(length(struct) - 1), each = 2), length(struct)), 
-              f = rep(1:(length(struct) - 1), each = 2))
-  lays <- lays[-c(1, (length(struct) - 1))]
-  for(lay in lays){
-    for(node in 1:struct[lay[1]]){
-      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
-      x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct)
-    }
-  }
-  #lines for hidden - output
-  #uses 'all_out' argument to plot connection lines for all output nodes or a single node
-  if(is.logical(all_out))
-    mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct), 
-      1:struct[length(struct)]
-    )
-  else{
-    node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, pos_col = pos_col, neg_col = neg_col, all_out = all_out,  x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct)
-  }
-  
-  #use functions to plot nodes
-  for(i in 1:length(struct)){
-    in_col <- circle_col
-    layer_name <- 'H'
-    if(i == 1) { layer_name <- 'I'; in_col <- circle_col_inp}
-    if(i == length(struct)) layer_name <- 'O'
-    layer_points(struct[i], layer_x[i], x_range, layer_name, cex_val, circle_cex, bord_col, in_col, 
-      node_labs, line_stag, var_labs, x_names, y_names, max_sp = max_sp, struct = struct, 
-      y_range = y_range
-      )
-  }
-  
-  if(bias) bias_points(bias_x, bias_y, 'B', node_labs, x_range, 
-    y_range, circle_cex, cex_val, bord_col, circle_col)
-  
-}
-
-#' @rdname plotnet
-#' 
-#' @export
-#' 
-#' @method plotnet mlp
-plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', prune_col = NULL, prune_lty = 'dashed', max_sp = FALSE, ...){
-
-  wts <- neuralweights(mod_in)
-  struct <- wts$struct
-  wts <- wts$wts
-  
-  if(wts_only) return(wts)
-  
-  #circle colors for input, if desired, must be two-vector list, first vector is for input layer
-  if(is.list(circle_col)){
-    circle_col_inp <- circle_col[[1]]
-    circle_col <- circle_col[[2]]
-  }
-  else circle_col_inp <- circle_col
-  
-  #initiate plotting
-  x_range <- c(0, 100)
-  y_range <- c(0, 100)
-  #these are all proportions from 0-1
-  if(is.null(line_stag)) line_stag <- 0.011 * circle_cex/2
-  layer_x <- seq(0.17, 0.9, length = length(struct))
-  circle_cex <- circle_cex
-  
-  #get variable names from mod_in object
-  #change to user input if supplied
-  all_names <- mod_in$snnsObject$getUnitDefinitions()
-  x_names <- all_names[grep('Input', all_names$unitName), 'unitName']
-  y_names <- all_names[grep('Output', all_names$unitName), 'unitName']
-
-  #change variables names to user sub 
-  if(!is.null(x_lab)){
-    if(length(x_names) != length(x_lab)) stop('x_lab length not equal to number of input variables')
-    else x_names <- x_lab
-  }
-  if(!is.null(y_lab)){
-    if(length(y_names) != length(y_lab)) stop('y_lab length not equal to number of output variables')
-    else y_names <- y_lab
-  }
-  
-  bias <- FALSE
   
   #initiate plot
   plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '')
@@ -431,7 +170,7 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
         all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), 
         neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, 
         line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, 
-        prune_col = prune_col),
+        prune_col = prune_col, prune_lty = prune_lty),
       1:struct[1]
     )
   }
@@ -440,7 +179,7 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
     layer_lines(mod_in, node_in, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, all_in = all_in, 
       pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
       x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct, prune_col = prune_col)
+      max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty)
   }
   
   #connections between hidden layers
@@ -450,21 +189,21 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
   for(lay in lays){
     for(node in 1:struct[lay[1]]){
       layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
-      x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct, prune_col = prune_col)
+        pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
+        x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
+        max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty)
     }
   }
   #lines for hidden - output
   #uses 'all_out' argument to plot connection lines for all output nodes or a single node
   if(is.logical(all_out))
     mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col), 
+      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty), 
       1:struct[length(struct)]
     )
   else{
     node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, pos_col = pos_col, neg_col = neg_col, all_out = all_out,  x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col)
+    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, pos_col = pos_col, neg_col = neg_col,  x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty)
   }
   
   #use functions to plot nodes
@@ -481,6 +220,80 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
   
   if(bias) bias_points(bias_x, bias_y, 'B', node_labs, x_range, 
     y_range, circle_cex, cex_val, bord_col, circle_col)
+  
+}
+
+#' @rdname plotnet
+#' 
+#' @export
+#' 
+#' @method plotnet nnet
+plotnet.nnet <- function(mod_in, x_names = NULL, y_names = NULL, ...){
+  
+  # check for skip layers
+  chk <- grepl('skip-layer', capture.output(mod_in))
+  if(any(chk))
+    warning('Skip layer used, line scaling is proportional to weights in current plot')
+  
+  #get variable names from mod_in object
+  #change to user input if supplied
+  if(is.null(mod_in$call$formula)){
+    xlabs <- colnames(eval(mod_in$call$x))
+    ylabs <- colnames(eval(mod_in$call$y))
+  }
+  else{
+    forms <- eval(mod_in$call$formula)
+    xlabs <- mod_in$coefnames
+    facts <- attr(terms(mod_in), 'factors')
+    y_check <- mod_in$fitted
+    if(ncol(y_check)>1) ylabs <- colnames(y_check)
+    else ylabs <- as.character(forms)[2]
+  } 
+  if(is.null(x_names)) x_names <- xlabs
+  if(is.null(y_names)) y_names <- ylabs
+
+  plotnet.default(mod_in, x_names = x_names, y_names = y_names, ...)
+
+}
+
+#' @rdname plotnet
+#'
+#' @param struct  numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.
+#' 
+#' @export
+#' 
+#' @method plotnet numeric
+plotnet.numeric <- function(mod_in, struct, x_names = NULL, y_names = NULL, ...){
+
+  #get variable names from mod_in object
+  #change to user input if supplied
+  if(is.null(x_names))
+    x_names <- paste0(rep('X', struct[1]), seq(1:struct[1]))
+  if(is.null(y_names))
+    y_names <- paste0(rep('Y', struct[length(struct)]), seq(1:struct[length(struct)]))
+
+  plotnet.default(mod_in, struct = struct, x_names = x_names, y_names = y_names, ...)
+ 
+}
+
+#' @rdname plotnet
+#' 
+#' @export
+#' 
+#' @method plotnet mlp
+plotnet.mlp <- function(mod_in, x_names = NULL, y_names = NULL, prune_col = NULL, prune_lty = 'dashed', ...){
+
+  #get variable names from mod_in object
+  all_names <- mod_in$snnsObject$getUnitDefinitions()
+  if(is.null(x_names))
+    x_names <- all_names[grep('Input', all_names$unitName), 'unitName']
+  if(is.null(y_names))
+    y_names <- all_names[grep('Output', all_names$unitName), 'unitName']
+  
+  bias <- FALSE
+  
+  plotnet.default(mod_in, x_names = x_names, y_names = y_names, bias = bias, prune_col = prune_col, 
+    prune_lty = prune_lty, ...)
   
 }
 
@@ -489,112 +302,16 @@ plotnet.mlp <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, wts_o
 #' @export
 #' 
 #' @method plotnet nn
-plotnet.nn <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
-  
-  wts <- neuralweights(mod_in)
-  struct <- wts$struct
-  wts <- wts$wts
-  
-  if(wts_only) return(wts)
-  
-  #circle colors for input, if desired, must be two-vector list, first vector is for input layer
-  if(is.list(circle_col)){
-    circle_col_inp <- circle_col[[1]]
-    circle_col <- circle_col[[2]]
-  }
-  else circle_col_inp <- circle_col
-  
-  #initiate plotting
-  x_range <- c(0, 100)
-  y_range <- c(0, 100)
-  #these are all proportions from 0-1
-  if(is.null(line_stag)) line_stag <- 0.011 * circle_cex/2
-  layer_x <- seq(0.17, 0.9, length = length(struct))
-  bias_x <- layer_x[-length(layer_x)] + diff(layer_x)/2
-  bias_y <- 0.95
-  circle_cex <- circle_cex
+plotnet.nn <- function(mod_in, x_names = NULL, y_names = NULL, ...){
   
   #get variable names from mod_in object
-  #change to user input if supplied
-  x_names <- mod_in$model.list$variables
-  y_names <- mod_in$model.list$respons
+  if(is.null(x_names))
+    x_names <- mod_in$model.list$variables
+  if(is.null(y_names))
+    y_names <- mod_in$model.list$respons
 
-  #change variables names to user sub 
-  if(!is.null(x_lab)){
-    if(length(x_names) != length(x_lab)) stop('x_lab length not equal to number of input variables')
-    else x_names <- x_lab
-  }
-  if(!is.null(y_lab)){
-    if(length(y_names) != length(y_lab)) stop('y_lab length not equal to number of output variables')
-    else y_names <- y_lab
-  }
-  
-  #initiate plot
-  plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '')
-  
-  #use functions to plot connections between layers
-  #bias lines
-  if(bias) bias_lines(bias_x, bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct, y_range = y_range, layer_x = layer_x, line_stag = line_stag)
+  plotnet.default(mod_in, x_names = x_names, y_names = y_names, ...)
 
-  #layer lines,  makes use of arguments to plot all or for individual layers
-  #starts with input - hidden
-  #uses 'all_in' argument to plot connection lines for all input nodes or a single node
-  if(is.logical(all_in)){  
-    mapply(
-      function(x) layer_lines(mod_in, x, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, 
-        all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), 
-        neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, 
-        line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct),
-      1:struct[1]
-    )
-  }
-  else{
-    node_in <- which(x_names == all_in)
-    layer_lines(mod_in, node_in, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, all_in = all_in, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
-      x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct)
-  }
-  
-  #connections between hidden layers
-  lays <- split(c(1, rep(2:(length(struct) - 1), each = 2), length(struct)), 
-              f = rep(1:(length(struct) - 1), each = 2))
-  lays <- lays[-c(1, (length(struct) - 1))]
-  for(lay in lays){
-    for(node in 1:struct[lay[1]]){
-      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
-      x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct)
-    }
-  }
-  #lines for hidden - output
-  #uses 'all_out' argument to plot connection lines for all output nodes or a single node
-  if(is.logical(all_out))
-    mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct), 
-      1:struct[length(struct)]
-    )
-  else{
-    node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, pos_col = pos_col, neg_col = neg_col, all_out = all_out,  x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct)
-  }
-  
-  #use functions to plot nodes
-  for(i in 1:length(struct)){
-    in_col <- circle_col
-    layer_name <- 'H'
-    if(i == 1) { layer_name <- 'I'; in_col <- circle_col_inp}
-    if(i == length(struct)) layer_name <- 'O'
-    layer_points(struct[i], layer_x[i], x_range, layer_name, cex_val, circle_cex, bord_col, in_col, 
-      node_labs, line_stag, var_labs, x_names, y_names, max_sp = max_sp, struct = struct, 
-      y_range = y_range
-      )
-  }
-  
-  if(bias) bias_points(bias_x, bias_y, 'B', node_labs, x_range, 
-    y_range, circle_cex, cex_val, bord_col, circle_col)
-  
 }
 
 #' @rdname plotnet
@@ -602,113 +319,19 @@ plotnet.nn <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias =
 #' @export
 #' 
 #' @method plotnet train
-plotnet.train <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, wts_only = FALSE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, x_lab = NULL, y_lab = NULL, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, ...){
+plotnet.train <- function(mod_in, x_names = NULL, y_names = NULL, ...){
   
-  y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = TRUE)[[1]]
+  if(is.null(y_names))
+    y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = TRUE)[[1]]
   mod_in <- mod_in$finalModel
-  x_names <- mod_in$xNames
-  wts <- neuralweights(mod_in)
-  struct <- wts$struct
-  wts <- wts$wts
-  
+  if(is.null(x_names))
+    x_names <- mod_in$xNames
+
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
   if(any(chk))
     warning('Skip layer used, line scaling is proportional to weights in current plot')
   
-  if(wts_only) return(wts)
-  
-  #circle colors for input, if desired, must be two-vector list, first vector is for input layer
-  if(is.list(circle_col)){
-    circle_col_inp <- circle_col[[1]]
-    circle_col <- circle_col[[2]]
-  }
-  else circle_col_inp <- circle_col
-  
-  #initiate plotting
-  x_range <- c(0, 100)
-  y_range <- c(0, 100)
-  #these are all proportions from 0-1
-  if(is.null(line_stag)) line_stag <- 0.011 * circle_cex/2
-  layer_x <- seq(0.17, 0.9, length = length(struct))
-  bias_x <- layer_x[-length(layer_x)] + diff(layer_x)/2
-  bias_y <- 0.95
-  circle_cex <- circle_cex
-  
-  #change variables names to user sub 
-  if(!is.null(x_lab)){
-    if(length(x_names) != length(x_lab)) stop('x_lab length not equal to number of input variables')
-    else x_names <- x_lab
-  }
-  if(!is.null(y_lab)){
-    if(length(y_names) != length(y_lab)) stop('y_lab length not equal to number of output variables')
-    else y_names <- y_lab
-  }
-  
-  #initiate plot
-  plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '')
-  
-  #use functions to plot connections between layers
-  #bias lines
-  if(bias) bias_lines(bias_x, bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct, y_range = y_range, layer_x = layer_x, line_stag = line_stag)
-
-  #layer lines,  makes use of arguments to plot all or for individual layers
-  #starts with input - hidden
-  #uses 'all_in' argument to plot connection lines for all input nodes or a single node
-  if(is.logical(all_in)){  
-    mapply(
-      function(x) layer_lines(mod_in, x, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, 
-        all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), 
-        neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, 
-        line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct),
-      1:struct[1]
-    )
-  }
-  else{
-    node_in <- which(x_names == all_in)
-    layer_lines(mod_in, node_in, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, all_in = all_in, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
-      x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct)
-  }
-  
-  #connections between hidden layers
-  lays <- split(c(1, rep(2:(length(struct) - 1), each = 2), length(struct)), 
-              f = rep(1:(length(struct) - 1), each = 2))
-  lays <- lays[-c(1, (length(struct) - 1))]
-  for(lay in lays){
-    for(node in 1:struct[lay[1]]){
-      layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
-      x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-      max_sp = max_sp, struct = struct)
-    }
-  }
-  #lines for hidden - output
-  #uses 'all_out' argument to plot connection lines for all output nodes or a single node
-  if(is.logical(all_out))
-    mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct), 
-      1:struct[length(struct)]
-    )
-  else{
-    node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, pos_col = pos_col, neg_col = neg_col, all_out = all_out,  x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct)
-  }
-  
-  #use functions to plot nodes
-  for(i in 1:length(struct)){
-    in_col <- circle_col
-    layer_name <- 'H'
-    if(i == 1) { layer_name <- 'I'; in_col <- circle_col_inp}
-    if(i == length(struct)) layer_name <- 'O'
-    layer_points(struct[i], layer_x[i], x_range, layer_name, cex_val, circle_cex, bord_col, in_col, 
-      node_labs, line_stag, var_labs, x_names, y_names, max_sp = max_sp, struct = struct, 
-      y_range = y_range
-      )
-  }
-  
-  if(bias) bias_points(bias_x, bias_y, 'B', node_labs, x_range, 
-    y_range, circle_cex, cex_val, bord_col, circle_col)
+  plotnet.default(mod_in, x_names = x_names, y_names = y_names, ...)
   
 }
