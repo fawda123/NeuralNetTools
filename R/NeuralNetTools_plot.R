@@ -141,7 +141,7 @@ plotnet.nnet <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bias
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
   if(any(chk))
-    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
+    warning('Skip layer used, line scaling is proportional to weights in current plot')
   
   if(wts_only) return(wts)
   
@@ -1113,7 +1113,7 @@ plotnet.train <- function(mod_in, nid = TRUE, all_out = TRUE, all_in = TRUE, bia
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
   if(any(chk))
-    warning('Skip layer used, results may be inaccurate because input and output connections are removed')
+    warning('Skip layer used, line scaling is proportional to weights in current plot')
   
   if(wts_only) return(wts)
   
