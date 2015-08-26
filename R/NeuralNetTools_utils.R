@@ -371,3 +371,267 @@ neuralskips.nnet <-  function(mod_in, ...){
   return(skips)
   
 }
+
+#' Get y locations for layers in \code{\link{plotnet}}
+#' 
+#' Get y locations for input, hidden, output layers in \code{\link{plotnet}} 
+#'
+#' @param lyr numeric indicating layer for getting y locations
+#' @param max_sp logical indicating if space is maximized in plot
+#' @param struct numeric vector for network structure
+#' @param y_range numeric vector indicating limits of y axis
+#' 
+get_ys <- function(lyr, max_sp, struct, y_range){
+  
+  if(max_sp){ 
+    spacing <- diff(c(0 * diff(y_range), 0.9 * diff(y_range)))/lyr
+  } else {
+    spacing <- diff(c(0 * diff(y_range), 0.9 * diff(y_range)))/max(struct)
+  }
+  
+  out <- seq(0.5 * (diff(y_range) + spacing * (lyr - 1)), 0.5 * (diff(y_range) - spacing * (lyr - 1)), 
+      length = lyr)
+  
+  return(out)
+  
+}
+
+#' Plot neural network nodes
+#' 
+#' Plot neural network nodes in \code{\link{plotnet}}
+#'
+#' @param layer specifies which layer, integer from \code{struct}
+#' @param x_loc indicates x location for layer, integer from \code{layer_x}
+#' @param x_range numeric for total range of x-axis
+#' @param layer_name string indicating text to put in node
+#' @param cex_val numeric indicating size of point text
+#' @param circle_cex numeric indcating size of circles
+#' @param bord_col chr string indicating border color around nodes, default \code{lightblue}
+#' @param in_col chr string indicating interior color of nodes
+#' @param node_labs logical indicating if node labels are to be plotted
+#' @param line_stag numeric indicating distance between of text from nodes
+#' @param var_labs chr string for variable labels
+#' @param x_names chr string for alternative names of input nodes
+#' @param y_names chr string for alternative names of output nodes
+#' @param ... values passed to \code{\link{get_ys}}
+#' 
+layer_points <- function(layer, x_loc, x_range, layer_name, cex_val, circle_cex, bord_col, in_col, node_labs, line_stag, var_labs, x_names, y_names, ...){
+  
+  x <- rep(x_loc * diff(x_range), layer)
+  y <- get_ys(layer, ...)
+  points(x, y, pch = 21, cex = circle_cex, col = bord_col, bg = in_col)
+  if(node_labs) text(x, y, paste(layer_name, 1:layer, sep = ''), cex = cex_val)
+  if(layer_name == 'I' & var_labs) text(x - line_stag * diff(x_range), y, x_names, pos = 2, cex = cex_val)      
+  if(layer_name == 'O' & var_labs) text(x + line_stag * diff(x_range), y, y_names, pos = 4, cex = cex_val)
+  
+}
+
+#' Plot bias points
+#' 
+#' Plot bias points in \code{\link{plotnet}}
+#' 
+#' @param bias_x numeric vector of values for x locations
+#' @param bias_y numeric vector for y location
+#' @param layer_name string indicating text to put in node
+#' @param node_labs logical indicating of node labels are included
+#' @param x_range numeric of x axis range for base plot
+#' @param y_range numeric of y axis range for base plot
+#' @param circle_cex numeric value indicating size of nodes, default 5
+#' @param cex_val numeric value indicating size of text labels, default 1
+#' @param bord_col chr string indicating border color around nodes, default \code{'lightblue'}
+#' @param circle_col chr string indicating color of nodes
+#' 
+bias_points <- function(bias_x, bias_y, layer_name, node_labs, x_range, y_range, circle_cex, cex_val, bord_col, circle_col){
+  for(val in 1:length(bias_x)){
+    points(
+      diff(x_range) * bias_x[val], 
+      bias_y * diff(y_range), 
+      pch = 21, col = bord_col, bg = circle_col, cex = circle_cex
+    )
+    if(node_labs)
+      text(
+        diff(x_range) * bias_x[val], 
+        bias_y * diff(y_range), 
+        paste(layer_name, val, sep = ''), 
+        cex = cex_val
+      )
+  }
+}
+
+#' Plot connection weights
+#' 
+#' Plot connection weights in \code{\link{plotnet}}
+#'  
+#' @param mod_in neural network model object
+#' @param h_layer numeric indicating which connections to plot for the layer
+#' @param layer1 numeric indicating order of first layer (for multiple hiden layers)
+#' @param layer2 numeric indicating order of second layer (for multiple hiden layers)
+#' @param out_layer logical indicating if the lines are for the output layer
+#' @param nid logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}
+#' @param rel_rsc numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
+#' @param all_in chr string indicating names of input variables for which connections are plotted, default all
+#' @param pos_col chr string indicating color of positive connection weights, default \code{'black'}
+#' @param neg_col chr string indicating color of negative connection weights, default \code{'grey'}
+#' @param x_range numeric of x axis range for base plot
+#' @param y_range numeric of y axis range for base plot
+#' @param line_stag numeric value that specifies distance of connection weights from nodes
+#' @param x_names chr string for names of input variables
+#' @param layer_x numeric indicating locations of layers on x axis
+#' @param struct numeric vector for network structure
+#' @param max_sp logical indicating if space is maximized in plot
+#' @param prune_col chr string indicating color of pruned connections, otherwise not shown
+#' @param prune_lty line type for pruned connections, passed to \code{\link[graphics]{segments}}
+#' 
+layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE, nid, rel_rsc, all_in, pos_col, neg_col, x_range, y_range, line_stag, x_names, layer_x, struct, max_sp, prune_col = NULL, prune_lty = 'dashed'){
+
+  x0 <- rep(layer_x[layer1] * diff(x_range) + line_stag * diff(x_range), struct[layer1])
+  x1 <- rep(layer_x[layer2] * diff(x_range) - line_stag * diff(x_range), struct[layer1])
+  
+  if(out_layer == TRUE){
+    
+    y0 <- get_ys(struct[layer1], max_sp, struct, y_range)
+    y1 <- rep(get_ys(struct[layer2], max_sp, struct, y_range)[h_layer], struct[layer1])
+    src_str <- paste('out', h_layer)
+    
+    if(inherits(mod_in, c('numeric', 'integer'))){
+      wts <- neuralweights(mod_in, struct = struct)$wts
+      wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)$wts
+    } else {
+      wts <- neuralweights(mod_in)$wts
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
+    }
+    wts <- wts[grep(src_str, names(wts))][[1]][-1]
+    wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]][-1]
+    
+    cols <- rep(pos_col, struct[layer1])
+    cols[wts<0] <- neg_col
+    
+    # remove pruned connections or color of prune_col not null, linetype dashed
+    ltype <- rep(par('lty'), length(wts))
+    if('pruneFunc' %in% names(mod_in)){
+      if(is.null(prune_col)) cols[wts == 0] <- NA
+      else cols[wts == 0] <- prune_col
+      ltype[wts == 0] <- prune_lty
+    }
+    
+  }
+  
+  else{
+    
+    if(is.logical(all_in)) all_in <- h_layer
+    else all_in <- which(x_names == all_in)
+    
+    y0 <- rep(get_ys(struct[layer1], max_sp, struct, y_range)[all_in], struct[2])
+    y1 <- get_ys(struct[layer2], max_sp, struct, y_range)
+    src_str <- paste('hidden', layer1)
+    
+    if(inherits(mod_in, c('numeric', 'integer'))){
+      wts <- neuralweights(mod_in, struct = struct)$wts
+      wts <- unlist(lapply(wts[grep(src_str, names(wts))], function(x) x[all_in + 1]))
+      wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)$wts
+      wts_rs <- unlist(lapply(wts_rs[grep(src_str, names(wts_rs))], function(x) x[all_in + 1]))
+    } else {
+      wts <- neuralweights(mod_in)$wts
+      wts <- unlist(lapply(wts[grep(src_str, names(wts))], function(x) x[all_in + 1]))
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
+      wts_rs <- unlist(lapply(wts_rs[grep(src_str, names(wts_rs))], function(x) x[all_in + 1]))
+    }
+    
+    cols <- rep(pos_col, struct[layer2])
+    cols[wts<0] <- neg_col
+    
+    # remove pruned connections or color of prune_col not null, linetype dashed
+    ltype <- rep(par('lty'), length(wts))
+    if('pruneFunc' %in% names(mod_in)){
+      if(is.null(prune_col)) cols[wts == 0] <- NA
+      else cols[wts == 0] <- prune_col
+      ltype[wts == 0] <- prune_lty
+    }
+          
+  }
+  
+  if(nid) segments(x0, y0, x1, y1, col = cols, lwd = wts_rs, lty = ltype)
+  else segments(x0, y0, x1, y1, lty = ltype)
+  
+}
+
+#' Plot connection weights for bias lines
+#' 
+#' Plot connection weights for bias lines in \code{\link{plotnet}}
+#'
+#' @param bias_x numeric vector x axis locations for bias lines
+#' @param bias_y numeric vector y axis locations for bias lines
+#' @param mod_in neural network model object
+#' @param nid logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}
+#' @param rel_rsc numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
+#' @param all_out chr string indicating names of input variables for which connections are plotted, default all
+#' @param pos_col chr string indicating color of positive connection weights, default \code{'black'}
+#' @param neg_col chr string indicating color of negative connection weights, default \code{'grey'}
+#' @param struct numeric vector for network structure
+#' @param y_names chr string for names of output variables
+#' @param x_range numeric of x axis range for base plot
+#' @param y_range numeric of x axis range for base plot
+#' @param layer_x numeric indicating locations of layers on x axis
+#' @param line_stag numeric value that specifies distance of connection weights from nodes
+#' @param max_sp logical indicating if space is maximized in plot
+bias_lines <- function(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, neg_col, struct, y_names, x_range, y_range, layer_x, line_stag, max_sp){
+  
+  if(is.logical(all_out)) all_out <- 1:struct[length(struct)]
+  else all_out <- which(y_names == all_out)
+  
+  for(val in 1:length(bias_x)){
+    
+    if(inherits(mod_in, c('numeric', 'integer'))){
+      wts <- neuralweights(mod_in, struct = struct)$wts
+      wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)$wts
+    } else {
+      wts <- neuralweights(mod_in)$wts
+      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
+    }
+    
+    if(val != length(bias_x)){
+      wts <- wts[grep('out', names(wts), invert = TRUE)]
+      wts_rs <- wts_rs[grep('out', names(wts_rs), invert = TRUE)]
+      sel_val <- grep(val, substr(names(wts_rs), 8, 8))
+      wts <- wts[sel_val]
+      wts_rs <- wts_rs[sel_val]
+    }
+    
+    else{
+      wts <- wts[grep('out', names(wts))]
+      wts_rs <- wts_rs[grep('out', names(wts_rs))]
+    }
+    
+    cols <- rep(pos_col, length(wts))
+    cols[unlist(lapply(wts, function(x) x[1]))<0] <- neg_col
+    wts_rs <- unlist(lapply(wts_rs, function(x) x[1]))
+    
+    if(nid == FALSE){
+      wts_rs <- rep(1, struct[val + 1])
+      cols <- rep('black', struct[val + 1])
+    }
+    
+    if(val != length(bias_x)){
+      segments(
+        rep(diff(x_range) * bias_x[val] + diff(x_range) * line_stag, struct[val + 1]), 
+        rep(bias_y * diff(y_range), struct[val + 1]), 
+        rep(diff(x_range) * layer_x[val + 1] - diff(x_range) * line_stag, struct[val + 1]), 
+        get_ys(struct[val + 1], max_sp, struct, y_range), 
+        lwd = wts_rs, 
+        col = cols
+      )
+    }
+    
+    else{
+      segments(
+        rep(diff(x_range) * bias_x[val] + diff(x_range) * line_stag, struct[val + 1]), 
+        rep(bias_y * diff(y_range), struct[val + 1]), 
+        rep(diff(x_range) * layer_x[val + 1] - diff(x_range) * line_stag, struct[val + 1]), 
+        get_ys(struct[val + 1], max_sp, struct, y_range)[all_out], 
+        lwd = wts_rs[all_out], 
+        col = cols[all_out]
+      )
+    }
+    
+  }
+}
