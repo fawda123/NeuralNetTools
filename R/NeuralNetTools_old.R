@@ -261,7 +261,7 @@ olden.nnet <- function(mod_in, out_var, bar_plot = TRUE, x_lab = NULL, y_lab = N
   }
   
   # add skip_wts
-  if(any(chk)) sum_in <- skip_wts + sum_in
+  if(any(chk)) sum_in <- unlist(skip_wts) + sum_in
   
   if(!bar_plot){
     out <- data.frame(importance)

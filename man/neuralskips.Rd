@@ -17,7 +17,7 @@ neuralskips(mod_in, ...)
 \item{rel_rsc}{numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.  Scaling is relative to all weights, not just those in the primary network.}
 }
 \value{
-return a numeric vector in sequential order of the weights for the direct connection between input and output layers
+Returns a list of connections for each output node, where each element of the list is the connection for each input node in sequential order to the respective output node.  The first weight in each element is not the bias connection, unlike the results for \code{\link{neuralweights}}.
 }
 \description{
 Get weights for the skip layer in a neural network, only valid for networks created using \code{skip = TRUE} with the \code{\link[nnet]{nnet}} function.

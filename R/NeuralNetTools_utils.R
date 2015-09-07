@@ -124,10 +124,12 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   #convert wts to list with appropriate names 
   hid_struct <-  struct[ -c(length(struct))]
   row_nms <-  NULL
-  for(i in 1:length(hid_struct)){
-    if(is.na(hid_struct[i + 1])) break
-    row_nms <-  c(row_nms, rep(paste('hidden', i, seq(1:hid_struct[i + 1])), each = 1 + hid_struct[i]))
-  }
+  if(hid_struct[2] != 0) # only get hidden layer names if hidden layer exists
+    for(i in 1:length(hid_struct)){
+      if(is.na(hid_struct[i + 1])) break
+      row_nms <-  c(row_nms, rep(paste('hidden', i, seq(1:hid_struct[i + 1])), each = 1 + hid_struct[i]))
+    }
+  # always get output names
   row_nms <-  c(
     row_nms, 
     rep(paste('out', seq(1:struct[length(struct)])), each = 1 + struct[length(struct) - 1])
@@ -323,7 +325,7 @@ pred_sens <- function(mat_in, mod_in, var_sel, step_val, fun_in, resp_name){
 #' 
 #' @export
 #' 
-#' @return return a numeric vector in sequential order of the weights for the direct connection between input and output layers
+#' @return Returns a list of connections for each output node, where each element of the list is the connection for each input node in sequential order to the respective output node.  The first weight in each element is not the bias connection, unlike the results for \code{\link{neuralweights}}.
 #' 
 #' @details This function is similar to \code{\link{neuralweights}} except only the skip layer weights are returned.
 #' 
@@ -354,6 +356,7 @@ neuralskips <-  function(mod_in, ...) UseMethod('neuralskips')
 #' @method neuralskips nnet
 neuralskips.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   
+  struct <- mod_in$n
   wts <-  mod_in$wts
   
   if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), c(1, rel_rsc))
@@ -372,7 +375,14 @@ neuralskips.nnet <-  function(mod_in, rel_rsc = NULL, ...){
     
   }
   
-  return(skips)
+  # assign names and as list, otherwise weights not plotted correctly for multiple outputs
+  row_nms <- rep(paste('out', seq(1:struct[length(struct)])), each = struct[1])
+  
+  out_ls <-  data.frame(skips, row_nms)
+  out_ls$row_nms <-  factor(row_nms, levels = unique(row_nms), labels = unique(row_nms))
+  out_ls <-  split(out_ls$skips, f = out_ls$row_nms)
+  
+  return(out_ls)
   
 }
 
@@ -516,6 +526,8 @@ layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FAL
         
         wts <- neuralskips(mod_in)
         wts_rs <- neuralskips(mod_in, rel_rsc)
+        wts <- wts[grep(src_str, names(wts))][[1]] # these do not include bias 
+        wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]]
       
       # otherwise get normal connects
       } else {

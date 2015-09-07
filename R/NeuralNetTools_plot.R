@@ -38,7 +38,7 @@
 #' @details
 #'  This function plots a neural network as a neural interpretation diagram as in Ozesmi and Ozesmi (1999). Options to plot without color-coding or shading of weights are also provided.  The default settings plot positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled arbitrarily as I1 through In for n input variables.  One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn.  The output layer is plotted last with nodes labeled as O1 through On.  Bias nodes connected to the hidden and output layers are also shown.  Neural networks created using \code{\link[RSNNS]{mlp}} do not show bias layers.
 #' 
-#' A primary network and a skip layer network can be plotted for \code{\link[nnet]{nnet}} models with a skip layer connection.  The default is to plot the primary network, whereas the skip layer network can be viewed with \code{skip = TRUE}.  If \code{nid = TRUE}, the line widths for both the primary and skip layer plots are relative to all weights.  Viewing both plots is recommended to see which network has larger relative weights. 
+#' A primary network and a skip layer network can be plotted for \code{\link[nnet]{nnet}} models with a skip layer connection.  The default is to plot the primary network, whereas the skip layer network can be viewed with \code{skip = TRUE}.  If \code{nid = TRUE}, the line widths for both the primary and skip layer plots are relative to all weights.  Viewing both plots is recommended to see which network has larger relative weights.  Plotting a network with only a skip layer (i.e., no hidden layer, \code{size = 0}) will include bias connections to the output layer, whereas these are not included in the plot of the skip layer if \code{size} is greater than zero.
 #'  
 #' @examples 
 #' ## using numeric input
@@ -167,7 +167,10 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
   plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '')
   
   # warning if nnet hidden is zero
-  if(struct[2] == 0) warning('No hidden layer, plotting skip layer only')
+  if(struct[2] == 0){
+    warning('No hidden layer, plotting skip layer only with bias connections')
+    skip <- TRUE
+  }
   
   # subroutine for skip layer connections in nnet
   if(any(skip)){
@@ -190,6 +193,14 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
           y_range = y_range
         )
         
+      }
+      
+      # bias node
+      if(bias & struct[2] == 0){
+        layer_x <- rep(layer_x[length(layer_x)], length(layer_x)) # repeat this for last layer
+        bias_points(max(bias_x), bias_y, 'B', node_labs, x_range, 
+          y_range, circle_cex, cex_val, bord_col, circle_col)
+        bias_lines(max(bias_x), bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct[2:length(struct)], y_range = y_range, layer_x = layer_x, line_stag = line_stag)
       }
       
     })
@@ -271,11 +282,7 @@ plotnet.nnet <- function(mod_in, x_names = NULL, y_names = NULL, skip = FALSE, .
   
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
-  if(any(chk)){
-    warning('Skip layer used, line scaling is proportional to all weights including skip layer.')
-  } else {
-    skip <- FALSE
-  }
+  if(!any(chk)) skip <- FALSE
   
   #get variable names from mod_in object
   #change to user input if supplied
@@ -371,11 +378,7 @@ plotnet.train <- function(mod_in, x_names = NULL, y_names = NULL, skip = FALSE, 
 
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
-  if(any(chk)){
-    warning('Skip layer used, line scaling is proportional to all weights including skip layer.')
-  } else {
-    skip <- FALSE
-  }
+  if(!any(chk)) skip <- FALSE
 
   plotnet.default(mod_in, x_names = x_names, y_names = y_names, skip = skip, ...)
   
