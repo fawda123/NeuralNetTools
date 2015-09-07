@@ -200,7 +200,7 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
         layer_x <- rep(layer_x[length(layer_x)], length(layer_x)) # repeat this for last layer
         bias_points(max(bias_x), bias_y, 'B', node_labs, x_range, 
           y_range, circle_cex, cex_val, bord_col, circle_col)
-        bias_lines(max(bias_x), bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct[2:length(struct)], y_range = y_range, layer_x = layer_x, line_stag = line_stag)
+        bias_lines(max(bias_x), bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct[c(1, length(struct))], y_range = y_range, layer_x = layer_x, line_stag = line_stag)
       }
       
     })
