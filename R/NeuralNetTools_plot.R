@@ -22,7 +22,8 @@
 #' @param bord_col chr string indicating border color around nodes, default \code{'lightblue'}
 #' @param prune_col chr string indicating color of pruned connections, otherwise not shown
 #' @param prune_lty line type for pruned connections, passed to \code{\link[graphics]{segments}}
-#' @param max_sp	logical value indicating if space between nodes in each layer is maximized, default \code{FALSE}
+#' @param max_sp logical value indicating if space between nodes in each layer is maximized, default \code{FALSE}
+#' @param skip logical if skip layer connections are plotted instead of the primary network
 #' @param ...	additional arguments passed to plot
 #' 
 #' @export
@@ -37,6 +38,8 @@
 #' @details
 #'  This function plots a neural network as a neural interpretation diagram as in Ozesmi and Ozesmi (1999). Options to plot without color-coding or shading of weights are also provided.  The default settings plot positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled arbitrarily as I1 through In for n input variables.  One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn.  The output layer is plotted last with nodes labeled as O1 through On.  Bias nodes connected to the hidden and output layers are also shown.  Neural networks created using \code{\link[RSNNS]{mlp}} do not show bias layers.
 #' 
+#' A primary network and a skip layer network can be plotted for \code{\link[nnet]{nnet}} models with a skip layer connection.  The default is to plot the primary network, whereas the skip layer network can be viewed with \code{skip = TRUE}.  If \code{nid = TRUE}, the line widths for both the primary and skip layer plots are relative to all weights.  Viewing both plots is recommended to see which network has larger relative weights. 
+#'  
 #' @examples 
 #' ## using numeric input
 #' 
@@ -55,6 +58,12 @@
 #' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 #'  
 #' plotnet(mod)  
+#' 
+#' ## plot the skip layer from nnet model
+#'
+#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, skip = TRUE)
+#'
+#' plotnet(mod, skip = TRUE)  
 #' 
 #' ## using RSNNS, no bias layers
 #' 
@@ -131,7 +140,7 @@ plotnet <- function(mod_in, ...) UseMethod('plotnet')
 #' @export
 #'
 #' @method plotnet default
-plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, prune_col = NULL, prune_lty = 'dashed', ...){
+plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, rel_rsc = 5, circle_cex = 5, node_labs = TRUE, var_labs = TRUE, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, prune_col = NULL, prune_lty = 'dashed', skip = NULL, ...){
 
   wts <- neuralweights(mod_in, struct = struct)
   struct <- wts$struct
@@ -156,6 +165,36 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
   
   #initiate plot
   plot(x_range, y_range, type = 'n', axes = FALSE, ylab = '', xlab = '')
+  
+  # warning if nnet hidden is zero
+  if(struct[2] == 0) warning('No hidden layer, plotting skip layer only')
+  
+  # subroutine for skip layer connections in nnet
+  if(any(skip)){
+    
+    return({ # use this to exit
+      
+      # plot connections usign layer lines with skip TRUE
+      mapply(
+        function(x) layer_lines(mod_in, x, layer1 = 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty, skip = skip), 
+        1:struct[length(struct)]
+      )
+      
+      # plot only input, output nodes
+      for(i in c(1, length(struct))){
+        in_col <- circle_col
+        if(i == 1) { layer_name <- 'I'; in_col <- circle_col_inp}
+        if(i == length(struct)) layer_name <- 'O'
+        layer_points(struct[i], layer_x[i], x_range, layer_name, cex_val, circle_cex, bord_col, in_col, 
+          node_labs, line_stag, var_labs, x_names, y_names, max_sp = max_sp, struct = struct, 
+          y_range = y_range
+        )
+        
+      }
+      
+    })
+    
+  }
   
   #use functions to plot connections between layers
   #bias lines
@@ -191,19 +230,19 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
       layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
         pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
         x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
-        max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty)
+        max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty, skip = skip)
     }
   }
   #lines for hidden - output
   #uses 'all_out' argument to plot connection lines for all output nodes or a single node
   if(is.logical(all_out))
     mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty), 
+      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty, skip = skip), 
       1:struct[length(struct)]
     )
   else{
     node_in <- which(y_names == all_out)
-    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, pos_col = pos_col, neg_col = neg_col,  x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty)
+    layer_lines(mod_in, node_in, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, pos_col = pos_col, neg_col = neg_col,  x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty, skip = skip)
   }
   
   #use functions to plot nodes
@@ -228,12 +267,15 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
 #' @export
 #' 
 #' @method plotnet nnet
-plotnet.nnet <- function(mod_in, x_names = NULL, y_names = NULL, ...){
+plotnet.nnet <- function(mod_in, x_names = NULL, y_names = NULL, skip = FALSE, ...){
   
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
-  if(any(chk))
-    warning('Skip layer used, line scaling is proportional to weights in current plot')
+  if(any(chk)){
+    warning('Skip layer used, line scaling is proportional to all weights including skip layer.')
+  } else {
+    skip <- FALSE
+  }
   
   #get variable names from mod_in object
   #change to user input if supplied
@@ -252,7 +294,7 @@ plotnet.nnet <- function(mod_in, x_names = NULL, y_names = NULL, ...){
   if(is.null(x_names)) x_names <- xlabs
   if(is.null(y_names)) y_names <- ylabs
 
-  plotnet.default(mod_in, x_names = x_names, y_names = y_names, ...)
+  plotnet.default(mod_in, x_names = x_names, y_names = y_names, skip = skip, ...)
 
 }
 
@@ -272,7 +314,7 @@ plotnet.numeric <- function(mod_in, struct, x_names = NULL, y_names = NULL, ...)
   if(is.null(y_names))
     y_names <- paste0(rep('Y', struct[length(struct)]), seq(1:struct[length(struct)]))
 
-  plotnet.default(mod_in, struct = struct, x_names = x_names, y_names = y_names, ...)
+  plotnet.default(mod_in, struct = struct, x_names = x_names, y_names = y_names, skip = FALSE, ...)
  
 }
 
@@ -293,7 +335,7 @@ plotnet.mlp <- function(mod_in, x_names = NULL, y_names = NULL, prune_col = NULL
   bias <- FALSE
   
   plotnet.default(mod_in, x_names = x_names, y_names = y_names, bias = bias, prune_col = prune_col, 
-    prune_lty = prune_lty, ...)
+    prune_lty = prune_lty, skip = FALSE, ...)
   
 }
 
@@ -310,7 +352,7 @@ plotnet.nn <- function(mod_in, x_names = NULL, y_names = NULL, ...){
   if(is.null(y_names))
     y_names <- mod_in$model.list$respons
 
-  plotnet.default(mod_in, x_names = x_names, y_names = y_names, ...)
+  plotnet.default(mod_in, x_names = x_names, y_names = y_names, skip = FALSE, ...)
 
 }
 
@@ -319,7 +361,7 @@ plotnet.nn <- function(mod_in, x_names = NULL, y_names = NULL, ...){
 #' @export
 #' 
 #' @method plotnet train
-plotnet.train <- function(mod_in, x_names = NULL, y_names = NULL, ...){
+plotnet.train <- function(mod_in, x_names = NULL, y_names = NULL, skip = FALSE, ...){
   
   if(is.null(y_names))
     y_names <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = TRUE)[[1]]
@@ -329,9 +371,12 @@ plotnet.train <- function(mod_in, x_names = NULL, y_names = NULL, ...){
 
   # check for skip layers
   chk <- grepl('skip-layer', capture.output(mod_in))
-  if(any(chk))
-    warning('Skip layer used, line scaling is proportional to weights in current plot')
-  
-  plotnet.default(mod_in, x_names = x_names, y_names = y_names, ...)
+  if(any(chk)){
+    warning('Skip layer used, line scaling is proportional to all weights including skip layer.')
+  } else {
+    skip <- FALSE
+  }
+
+  plotnet.default(mod_in, x_names = x_names, y_names = y_names, skip = skip, ...)
   
 }

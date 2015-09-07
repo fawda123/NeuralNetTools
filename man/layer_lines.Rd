@@ -6,7 +6,7 @@
 \usage{
 layer_lines(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE,
   nid, rel_rsc, all_in, pos_col, neg_col, x_range, y_range, line_stag, x_names,
-  layer_x, struct, max_sp, prune_col = NULL, prune_lty = "dashed")
+  layer_x, struct, max_sp, prune_col = NULL, prune_lty = "dashed", skip)
 }
 \arguments{
 \item{mod_in}{neural network model object}
@@ -46,6 +46,8 @@ layer_lines(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE,
 \item{prune_col}{chr string indicating color of pruned connections, otherwise not shown}
 
 \item{prune_lty}{line type for pruned connections, passed to \code{\link[graphics]{segments}}}
+
+\item{skip}{logical to plot connections for skip layer}
 }
 \description{
 Plot connection weights in \code{\link{plotnet}}

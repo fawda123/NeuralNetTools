@@ -7,12 +7,14 @@
 \usage{
 neuralskips(mod_in, ...)
 
-\method{neuralskips}{nnet}(mod_in, ...)
+\method{neuralskips}{nnet}(mod_in, rel_rsc = NULL, ...)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.}
 
 \item{...}{arguments passed to other methods}
+
+\item{rel_rsc}{numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.  Scaling is relative to all weights, not just those in the primary network.}
 }
 \value{
 return a numeric vector in sequential order of the weights for the direct connection between input and output layers

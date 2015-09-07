@@ -346,13 +346,17 @@ neuralskips <-  function(mod_in, ...) UseMethod('neuralskips')
 #' @rdname neuralskips
 #' 
 #' @import scales
+#' 
+#' @param rel_rsc numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.  Scaling is relative to all weights, not just those in the primary network. 
 #'
 #' @export
 #'  
 #' @method neuralskips nnet
-neuralskips.nnet <-  function(mod_in, ...){
+neuralskips.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   
   wts <-  mod_in$wts
+  
+  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), c(1, rel_rsc))
   
   # get skip layer weights if present, otherwise exit
   chk <- grepl('skip-layer', capture.output(mod_in))
@@ -481,11 +485,15 @@ bias_points <- function(bias_x, bias_y, layer_name, node_labs, x_range, y_range,
 #' @param max_sp logical indicating if space is maximized in plot
 #' @param prune_col chr string indicating color of pruned connections, otherwise not shown
 #' @param prune_lty line type for pruned connections, passed to \code{\link[graphics]{segments}}
+#' @param skip logical to plot connections for skip layer
 #' 
-layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE, nid, rel_rsc, all_in, pos_col, neg_col, x_range, y_range, line_stag, x_names, layer_x, struct, max_sp, prune_col = NULL, prune_lty = 'dashed'){
+layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE, nid, rel_rsc, all_in, pos_col, neg_col, x_range, y_range, line_stag, x_names, layer_x, struct, max_sp, prune_col = NULL, prune_lty = 'dashed', skip){
 
   x0 <- rep(layer_x[layer1] * diff(x_range) + line_stag * diff(x_range), struct[layer1])
   x1 <- rep(layer_x[layer2] * diff(x_range) - line_stag * diff(x_range), struct[layer1])
+  
+  # see if skip layer is presnet in nnet
+  chk <- grepl('skip-layer', capture.output(mod_in))
   
   if(out_layer == TRUE){
     
@@ -493,16 +501,34 @@ layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FAL
     y1 <- rep(get_ys(struct[layer2], max_sp, struct, y_range)[h_layer], struct[layer1])
     src_str <- paste('out', h_layer)
     
+    # get weights for numeric, otherwise use different method for neuralweights
     if(inherits(mod_in, c('numeric', 'integer'))){
+      
       wts <- neuralweights(mod_in, struct = struct)$wts
       wts_rs <- neuralweights(mod_in, rel_rsc, struct = struct)$wts
+      wts <- wts[grep(src_str, names(wts))][[1]][-1]
+      wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]][-1]
+      
     } else {
-      wts <- neuralweights(mod_in)$wts
-      wts_rs <- neuralweights(mod_in, rel_rsc)$wts
+      
+      # get skip weights if both TRUE
+      if(skip & any(chk)){
+        
+        wts <- neuralskips(mod_in)
+        wts_rs <- neuralskips(mod_in, rel_rsc)
+      
+      # otherwise get normal connects
+      } else {
+        
+        wts <- neuralweights(mod_in)$wts
+        wts_rs <- neuralweights(mod_in, rel_rsc)$wts
+        wts <- wts[grep(src_str, names(wts))][[1]][-1]
+        wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]][-1]
+        
+      }
+      
     }
-    wts <- wts[grep(src_str, names(wts))][[1]][-1]
-    wts_rs <- wts_rs[grep(src_str, names(wts_rs))][[1]][-1]
-    
+
     cols <- rep(pos_col, struct[layer1])
     cols[wts<0] <- neg_col
     
