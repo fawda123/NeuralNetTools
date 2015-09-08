@@ -686,3 +686,38 @@ bias_lines <- function(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, n
     
   }
 }
+
+######
+#' Create optional barplot for \code{\link{lekprofile}} splits
+#' 
+#' Create optional barplot of constant values of each variable for each split used with \code{\link{lekprofile}}
+#'
+#' @param grps \code{\link[base]{data.frame}} of values for each variable in each group used to create splits in \code{\link{lekprofile}}
+#' 
+#' @import ggplot2
+#' 
+#' @return A \code{\link[ggplot2]{ggplot}} object
+#'
+#' @export
+#' 
+#' @examples 
+#' ## enters used with kmeans clustering
+#' x <- neuraldat[, c('X1', 'X2', 'X3')]
+#' grps <- kmeans(x, 6)$center
+#' 
+#' lekgrps(grps)
+lekgrps <- function(grps){
+  
+  # add split columns, make long form
+  grps <- as.data.frame(grps)
+  grps$Splits <- factor(1:nrow(grps))
+  grps <- tidyr::gather(grps, 'variable', 'value', -ncol(grps))
+
+  p <- ggplot(grps, aes_string(x = 'Splits', y = 'value', fill = 'variable')) +
+    geom_bar(stat = 'identity') + 
+    theme(legend.title = element_blank()) + 
+    scale_y_continuous('Constant values')
+  
+  return(p)
+  
+}

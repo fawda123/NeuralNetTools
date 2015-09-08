@@ -9,6 +9,7 @@
 #' @param steps numeric value indicating number of observations to evaluate for each explanatory variable from minimum to maximum value, default 100
 #' @param split_vals numeric vector indicating quantile values at which to hold other explanatory variables constant
 #' @param val_out logical value indicating if actual sensitivity values are returned rather than a plot, default \code{FALSE}
+#' @param split_show logical if a barplot is returned that shows the values at which explanatory variables were held constant while not being evaluated
 #' @param ... arguments passed to other methods
 #' 
 #' @details
@@ -18,11 +19,9 @@
 #' 
 #' An alternative implementation of the profile method is to group the unevaluated explanatory variables using groupings defined by the statistical properties of the data.  Covariance among predictors may present unlikely scenarios if holding all unevaluated variables at the same level.  To address this issue, the function provides an option to hold unevalutaed variable at mean values defined by natural clusters in the data.  \code{\link[stats]{kmeans}} clustering is used on the input \code{data.frame} of explanatory variables if the argument passed to \code{split_vals} is an integer value greater than one.  The centers of the clusters are then used as constant values for the unevaluated variables.  An arbitrary grouping scheme can also be passed to \code{split_vals} as a \code{data.frame} where the user can specify exact values for holding each value constant (see the examples). 
 #' 
-#' For all plots, the legend with the 'splits' label indicates the colors that correspond to each group.  The groups describe the values at which unevaluated explanatory variables were held constant, either as specific quantiles, set mean values based on clustering, or in the arbitrary grouping defined by the user. 
+#' For all plots, the legend with the 'splits' label indicates the colors that correspond to each group.  The groups describe the values at which unevaluated explanatory variables were held constant, either as specific quantiles, group assignments based on clustering, or in the arbitrary grouping defined by the user.  The constant values of each explanatory variable for each split can be viewed as a barplot by using \code{split_show = TRUE}.
 #' 
 #' Note that there is no predict method for neuralnet objects from the nn package.  The lekprofile method for nn objects uses the nnet package to recreate the input model, which is then used for the sensitivity predictions.  This approach only works for networks with one hidden layer. 
-#' 
-#' Finally, an alternative plot of grouping means...
 #' 
 #' @export
 #' 
@@ -108,7 +107,7 @@ lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 #' @export
 #' 
 #' @method lekprofile default
-lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
+lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, split_show = FALSE, ...){
   
   # subset xall if xsel is not empy
   if(is.null(xsel)) xsel <- names(xvars)
@@ -145,7 +144,10 @@ lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, sp
     names(grps) <- names(xvars)
     
   }
-    
+
+  # return bar plot for split values
+  if(split_show) return(lekgrps(grps))
+  
   #use 'pred_fun' to get pred vals of response across range of vals for an exp vars
   #loops over all explanatory variables of interest and all split values
   lek_vals <- sapply(
