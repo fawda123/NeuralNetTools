@@ -11,35 +11,33 @@
 \usage{
 lekprofile(mod_in, ...)
 
-\method{lekprofile}{default}(mod_in, steps = 100, var_sel = NULL,
+\method{lekprofile}{default}(mod_in, xvars, ynms, xsel = NULL, steps = 100,
   split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...)
 
-\method{lekprofile}{nnet}(mod_in, steps = 100, var_sel = NULL,
-  split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...)
+\method{lekprofile}{nnet}(mod_in, ...)
 
-\method{lekprofile}{mlp}(mod_in, exp_in, var_sel = NULL, steps = 100,
-  split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...)
+\method{lekprofile}{mlp}(mod_in, xvars, ...)
 
-\method{lekprofile}{train}(mod_in, steps = 100, var_sel = NULL,
-  split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...)
+\method{lekprofile}{train}(mod_in, ...)
 
-\method{lekprofile}{nn}(mod_in, steps = 100, var_sel = NULL,
-  split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...)
+\method{lekprofile}{nn}(mod_in, ...)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{nnet} or \code{mlp}}
 
 \item{...}{arguments passed to other methods}
 
-\item{steps}{numeric value indicating number of observations to evaluate for each explanatory variable from minimum to maximum value, default 100}
+\item{xvars}{\code{\link[base]{data.frame}} of explanatory variables used to create the input model}
 
-\item{var_sel}{optional chr string of explanatory variables to evaluate, defaults to all}
+\item{ynms}{chr string of response variable names for model}
+
+\item{xsel}{chr string of names of explanatory variables to plot, defaults to all}
+
+\item{steps}{numeric value indicating number of observations to evaluate for each explanatory variable from minimum to maximum value, default 100}
 
 \item{split_vals}{numeric vector indicating quantile values at which to hold other explanatory variables constant}
 
 \item{val_out}{logical value indicating if actual sensitivity values are returned rather than a plot, default \code{FALSE}}
-
-\item{exp_in}{\code{matrix} or \code{data.frame} of input variables used to create the model}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  FALSE}, otherwise a \code{data.frame} in long form showing the predicted responses at different values of the explanatory varibales.
@@ -55,14 +53,6 @@ The profile method begins by obtaining model predictions of the response variabl
 Note that there is no predict method for neuralnet objects from the nn package.  The lekprofile method for nn objects uses the nnet package to recreate the input model, which is then used for the sensitivity predictions.  This approach only works for networks with one hidden layer.
 }
 \examples{
-## a simple lm
-
-data(neuraldat)
-
-mod <- lm(Y1 ~ X1 + X2 + X3, data = neuraldat)
-
-lekprofile(mod)
-
 ## using nnet
 
 library(nnet)
@@ -82,7 +72,7 @@ y <- neuraldat[, 'Y1', drop = FALSE]
 
 mod <- mlp(x, y, size = 5)
 
-lekprofile(mod, exp_in = x)
+lekprofile(mod, xvars = x)
 
 ## using neuralnet
 

@@ -271,7 +271,7 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
 #' @param var_sel chr string of explanatory variable to select
 #' @param step_val number of values to sequence range of selected explanatory variable
 #' @param fun_in function defining the method of holding explanatory variables constant
-#' @param resp_name chr string of response variable names for correct labelling
+#' @param ynms chr string of response variable names for correct labelling
 #'
 #'@details
 #' Gets predicted output for a model's response variable based on matrix of explanatory variables that are restricted following Lek's profile method. The selected explanatory variable is sequenced across a range of values. All other explanatory variables are held constant at the value specified by \code{fun_in}.
@@ -295,7 +295,7 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
 #' 
 #' mat_in <- neuraldat[, c('X1', 'X2', 'X3')]
 #' pred_sens(mat_in, mod, 'X1', 100, function(x) quantile(x, 0.5), 'Y1')
-pred_sens <- function(mat_in, mod_in, var_sel, step_val, fun_in, resp_name){
+pred_sens <- function(mat_in, mod_in, var_sel, step_val, fun_in, ynms){
   
   mat_out <- matrix(nrow = step_val, ncol = ncol(mat_in), dimnames = list(c(1:step_val)))
   mat_out <- data.frame(mat_out)
@@ -310,7 +310,7 @@ pred_sens <- function(mat_in, mod_in, var_sel, step_val, fun_in, resp_name){
   mat_out[, var_sel] <- seq(min(mat_in[, var_sel]), max(mat_in[, var_sel]), length = step_val)
   
   out <- data.frame(predict(mod_in, newdata = as.data.frame(mat_out)))
-  names(out) <- resp_name
+  names(out) <- ynms
   x_vars <- mat_out[, var_sel]
   data.frame(out, x_vars)
   

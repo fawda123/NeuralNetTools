@@ -4,7 +4,7 @@
 \alias{pred_sens}
 \title{Predicted values for Lek profile method}
 \usage{
-pred_sens(mat_in, mod_in, var_sel, step_val, fun_in, resp_name)
+pred_sens(mat_in, mod_in, var_sel, step_val, fun_in, ynms)
 }
 \arguments{
 \item{mat_in}{\code{data.frame} of only the explanatory variables used to create model}
@@ -17,7 +17,7 @@ pred_sens(mat_in, mod_in, var_sel, step_val, fun_in, resp_name)
 
 \item{fun_in}{function defining the method of holding explanatory variables constant}
 
-\item{resp_name}{chr string of response variable names for correct labelling}
+\item{ynms}{chr string of response variable names for correct labelling}
 }
 \value{
 A \code{\link{data.frame}} of predictions and the sequence values of the selected explanatory variable
