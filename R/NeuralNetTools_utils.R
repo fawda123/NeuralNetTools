@@ -270,15 +270,15 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
 #' @param mod_in any model object with a predict method
 #' @param var_sel chr string of explanatory variable to select
 #' @param step_val number of values to sequence range of selected explanatory variable
-#' @param fun_in function defining the method of holding explanatory variables constant
+#' @param grps matrix of values for holding explanatory values constant, one column per variable and one row per split
 #' @param ynms chr string of response variable names for correct labelling
 #'
 #'@details
-#' Gets predicted output for a model's response variable based on matrix of explanatory variables that are restricted following Lek's profile method. The selected explanatory variable is sequenced across a range of values. All other explanatory variables are held constant at the value specified by \code{fun_in}.
+#' Gets predicted output for a model's response variable based on matrix of explanatory variables that are restricted following Lek's profile method. The selected explanatory variable is sequenced across a range of values. All other explanatory variables are held constant at the values in \code{grps}.
 #' 
 #' @seealso lekprofile
 #' 
-#' @return A \code{\link{data.frame}} of predictions and the sequence values of the selected explanatory variable
+#' @return A \code{\link[base]{list}} of predictions where each element is a \code{\link[base]{data.frame}} with the predicted value of the response and the values of the explanatory variable defined by \code{var_sel}.  Each element of the list corresponds to a group defined by the rows in \code{grps} at which the other explanatory variables were held constant.
 #' 
 #' @export
 #' 
@@ -294,25 +294,38 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
 #' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 #' 
 #' mat_in <- neuraldat[, c('X1', 'X2', 'X3')]
-#' pred_sens(mat_in, mod, 'X1', 100, function(x) quantile(x, 0.5), 'Y1')
-pred_sens <- function(mat_in, mod_in, var_sel, step_val, fun_in, ynms){
+#' grps <- apply(mat_in, 2, quantile, seq(0, 1, by = 0.2))
+#' 
+#' pred_sens(mat_in, mod, 'X1', 100, grps, 'Y1')
+pred_sens <- function(mat_in, mod_in, var_sel, step_val, grps, ynms){
+
+  # exp variable to evaluate across its range
+  chngs <- range(mat_in[, var_sel, drop = FALSE], na.rm = TRUE)
+  chngs <- data.frame(seq(chngs[1], chngs[2], length = step_val))
+  names(chngs) <- var_sel
   
-  mat_out <- matrix(nrow = step_val, ncol = ncol(mat_in), dimnames = list(c(1:step_val)))
-  mat_out <- data.frame(mat_out)
-  names(mat_out) <- names(mat_in)
+  # constant values exp variables not to evaluate
+  const <- grps[, !names(mat_in) %in% var_sel]
+  rownames(const) <- 1:nrow(const)
+    
+  # iterate across rows of const, combine with chngs, get preds
+  out <- apply(const, 1, function(x) {
+    
+    topred <- as.data.frame(rbind(x))[rep(1, step_val), ]
+    topred <- cbind(chngs, topred)
+    
+    preds <- data.frame(predict(mod_in, newdata = topred))
+    names(preds) <- ynms
+    
+    x_vars <- topred[, var_sel]
+    preds <- data.frame(preds, x_vars)
+    rownames(preds) <- 1:step_val
+    
+    return(preds)
   
-  mat_cons <- mat_in[, !names(mat_in) %in% var_sel, drop = F]
-  mat_cons <- apply(mat_cons, 2, fun_in)
-  mat_cons <- sapply(1:step_val, function(x) mat_cons)
-  if(!'numeric' %in% class(mat_cons)) mat_cons <- t(mat_cons)
-  mat_out[, !names(mat_in) %in% var_sel] <- mat_cons
-  
-  mat_out[, var_sel] <- seq(min(mat_in[, var_sel]), max(mat_in[, var_sel]), length = step_val)
-  
-  out <- data.frame(predict(mod_in, newdata = as.data.frame(mat_out)))
-  names(out) <- ynms
-  x_vars <- mat_out[, var_sel]
-  data.frame(out, x_vars)
+  })
+    
+  return(out)
   
 }
 

@@ -12,17 +12,23 @@
 #' @param ... arguments passed to other methods
 #' 
 #' @details
-#' The Lek profile method is described briefly in Lek et al. 1996 and in more detail in Gevrey et al. 2003. The profile method is fairly generic and can be extended to any statistical model in R with a predict method.  However, it is one of few methods used to evaluate sensitivity in neural networks.   The default method of this function attempts to find variables names from a generic model object.  
+#' The Lek profile method is described briefly in Lek et al. 1996 and in more detail in Gevrey et al. 2003. The profile method is fairly generic and can be extended to any statistical model in R with a predict method.  However, it is one of few methods used to evaluate sensitivity in neural networks.
 #' 
-#' The profile method begins by obtaining model predictions of the response variable across the range of values for the given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum). The final result is a set of response curves for one response variable across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is implemented in in the function by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.
+#' The profile method can be used to evaluate the effect of explanatory variables by returning a plot of the predicted response across the range of values for each separate variable.  The original profile method evaluated the effects of each variable while holding the remaining expalanatory variables at different quantiles (e.g., minimum, 20th percentile, maximum).  This is implemented in in the function by creating a matrix of values for explanatory variables where the number of rows is the number of observations and the number of columns is the number of explanatory variables. All explanatory variables are held at their mean (or other constant value) while the variable of interest is sequenced from its minimum to maximum value across the range of observations. This matrix (or data frame) is then used to predict values of the response variable from a fitted model object. This is repeated for each explanatory variable to obtain all response curves.  Values passed to \code{split_vals} must range from zero to one to define the quantiles for holding unevalauted explanatory variables. 
+#' 
+#' An alternative implementation of the profile method is to group the unevaluated explanatory variables using groupings defined by the statistical properties of the data.  Covariance among predictors may present unlikely scenarios if holding all unevaluated variables at the same level.  To address this issue, the function provides an option to hold unevalutaed variable at mean values defined by natural clusters in the data.  \code{\link[stats]{kmeans}} clustering is used on the input \code{data.frame} of explanatory variables if the argument passed to \code{split_vals} is an integer value greater than one.  The centers of the clusters are then used as constant values for the unevaluated variables.  An arbitrary grouping scheme can also be passed to \code{split_vals} as a \code{data.frame} where the user can specify exact values for holding each value constant (see the examples). 
+#' 
+#' For all plots, the legend with the 'splits' label indicates the colors that correspond to each group.  The groups describe the values at which unevaluated explanatory variables were held constant, either as specific quantiles, set mean values based on clustering, or in the arbitrary grouping defined by the user. 
 #' 
 #' Note that there is no predict method for neuralnet objects from the nn package.  The lekprofile method for nn objects uses the nnet package to recreate the input model, which is then used for the sensitivity predictions.  This approach only works for networks with one hidden layer. 
+#' 
+#' Finally, an alternative plot of grouping means...
 #' 
 #' @export
 #' 
 #' @import ggplot2 nnet
 #' 
-#' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  FALSE}, otherwise a \code{data.frame} in long form showing the predicted responses at different values of the explanatory varibales. 
+#' @return A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  FALSE}, otherwise a two-element \code{list} is returned with a \code{data.frame} in long form showing the predicted responses at different values of the explanatory variables and the grouping scheme that was used to hold unevaluated variables constant. 
 #' 
 #' @references
 #' Lek, S., Delacoste, M., Baran, P., Dimopoulos, I., Lauga, J., Aulagnier, S. 1996. Application of neural networks to modelling nonlinear relationships in Ecology. Ecological Modelling. 90:39-52.
@@ -79,6 +85,20 @@
 #' lekprofile(mod)
 #' 
 #' }
+#' 
+#' ## group by clusters instead of sequencing by quantiles
+#' 
+#' mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
+#'  
+#' lekprofile(mod, split_vals = 6) # six clusters
+#' 
+#' ## enter an arbitrary grouping scheme for the split values
+#' ## i.e. hold all values at 0.5
+#' split_vals <- rbind(rep(0.5, length = ncol(x)))
+#' split_vals <- data.frame(split_vals)
+#' names(split_vals) <- names(split_vals)
+#' 
+#' lekprofile(mod, split_vals = split_vals, xsel = 'X3')
 lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 
 #' @rdname lekprofile
@@ -90,50 +110,62 @@ lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 #' @method lekprofile default
 lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, split_vals = seq(0, 1, by = 0.2), val_out = FALSE, ...){
   
-  
   # subset xall if xsel is not empy
   if(is.null(xsel)) xsel <- names(xvars)
   
   # stop if only one input variable
   if(ncol(xvars) == 1) stop('Lek profile requires greater than one input variable')
   
+  # standard lekprofile method using quantile splits or clusters
+  if(inherits(split_vals, c('numeric', 'integer'))){
+  
+    # quantile approach
+    if(all(split_vals <= 1)){
+      
+      grps <- apply(xvars, 2, quantile, split_vals)
+      grps <- as.data.frame(rbind(grps))
+
+    # kmeans approach      
+    } else {
+      
+      # sanity checks for integer, one value
+      if(length(split_vals) > 1) stop('split_vals must have length equal to one if an integer')
+      if(split_vals%%1 != 0) stop('split_vals must be an integer greater than one')
+    
+      # get means of cluster centers
+      grps <- kmeans(xvars, centers = split_vals)$centers
+        
+    }
+    
+  # use matrix or data.frame input for constant values
+  } else {
+    
+    if(ncol(split_vals) != ncol(xvars)) stop('split_vals as matrix must have ncol same as xvars')
+    grps <- split_vals
+    names(grps) <- names(xvars)
+    
+  }
+    
   #use 'pred_fun' to get pred vals of response across range of vals for an exp vars
   #loops over all explanatory variables of interest and all split values
   lek_vals <- sapply(
     xsel, 
-    function(vars){
-      sapply(
-        split_vals, 
-        function(splits){
-          pred_sens(
-            xvars, 
-            mod_in, 
-            vars, 
-            steps, 
-            function(val) quantile(val, probs = splits), 
-            ynms
-          )
-        }, 
-        simplify = FALSE
-      )
-    }, 
+    function(vars) pred_sens(xvars, mod_in, vars, steps, grps, ynms),
     simplify = FALSE  
   )
-  
+
   #melt lek_val list for use with ggplot
   lek_vals <- melt(lek_vals, id.vars = 'x_vars')
-  lek_vals$L2 <- factor(lek_vals$L2, labels = split_vals)
+  lek_vals$L2 <- factor(lek_vals$L2)#, labels = 1:nrow(grps))
   names(lek_vals) <- c('Explanatory', 'resp_name', 'Response', 'Splits', 'exp_name')
-  
+
   #return only values if val_out = TRUE
-  if(val_out) return(lek_vals)
+  if(val_out) return(list(lek_vals, grps))
   
   #ggplot object
   p <- ggplot2::ggplot(lek_vals, aes_string(x = 'Explanatory', y = 'Response', group = 'Splits')) + 
-    geom_line(aes_string(colour = 'Splits', linetype = 'Splits', size = 'Splits')) + 
-    facet_grid(resp_name ~ exp_name, scales = 'free_x') +
-    scale_linetype_manual(values = rep('solid', length(split_vals))) +
-    scale_size_manual(values = rep(1, length(split_vals)))
+    geom_line(aes_string(colour = 'Splits')) + 
+    facet_grid(resp_name ~ exp_name, scales = 'free_x')
   
   return(p)
   

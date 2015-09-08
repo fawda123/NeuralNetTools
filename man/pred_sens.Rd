@@ -4,7 +4,7 @@
 \alias{pred_sens}
 \title{Predicted values for Lek profile method}
 \usage{
-pred_sens(mat_in, mod_in, var_sel, step_val, fun_in, ynms)
+pred_sens(mat_in, mod_in, var_sel, step_val, grps, ynms)
 }
 \arguments{
 \item{mat_in}{\code{data.frame} of only the explanatory variables used to create model}
@@ -15,18 +15,18 @@ pred_sens(mat_in, mod_in, var_sel, step_val, fun_in, ynms)
 
 \item{step_val}{number of values to sequence range of selected explanatory variable}
 
-\item{fun_in}{function defining the method of holding explanatory variables constant}
+\item{grps}{matrix of values for holding explanatory values constant, one column per variable and one row per split}
 
 \item{ynms}{chr string of response variable names for correct labelling}
 }
 \value{
-A \code{\link{data.frame}} of predictions and the sequence values of the selected explanatory variable
+A \code{\link[base]{list}} of predictions where each element is a \code{\link[base]{data.frame}} with the predicted value of the response and the values of the explanatory variable defined by \code{var_sel}.  Each element of the list corresponds to a group defined by the rows in \code{grps} at which the other explanatory variables were held constant.
 }
 \description{
 Get predicted values for Lek Profile method, used iteratively in \code{\link{lekprofile}}
 }
 \details{
-Gets predicted output for a model's response variable based on matrix of explanatory variables that are restricted following Lek's profile method. The selected explanatory variable is sequenced across a range of values. All other explanatory variables are held constant at the value specified by \code{fun_in}.
+Gets predicted output for a model's response variable based on matrix of explanatory variables that are restricted following Lek's profile method. The selected explanatory variable is sequenced across a range of values. All other explanatory variables are held constant at the values in \code{grps}.
 }
 \examples{
 ## using nnet
@@ -39,7 +39,9 @@ set.seed(123)
 mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 
 mat_in <- neuraldat[, c('X1', 'X2', 'X3')]
-pred_sens(mat_in, mod, 'X1', 100, function(x) quantile(x, 0.5), 'Y1')
+grps <- apply(mat_in, 2, quantile, seq(0, 1, by = 0.2))
+
+pred_sens(mat_in, mod, 'X1', 100, grps, 'Y1')
 }
 \seealso{
 lekprofile
