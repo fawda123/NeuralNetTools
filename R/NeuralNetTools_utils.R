@@ -303,20 +303,22 @@ pred_sens <- function(mat_in, mod_in, var_sel, step_val, grps, ynms){
   chngs <- range(mat_in[, var_sel, drop = FALSE], na.rm = TRUE)
   chngs <- data.frame(seq(chngs[1], chngs[2], length = step_val))
   names(chngs) <- var_sel
-  
+
   # constant values exp variables not to evaluate
   const <- grps[, !names(mat_in) %in% var_sel]
   rownames(const) <- 1:nrow(const)
-    
+   
   # iterate across rows of const, combine with chngs, get preds
   out <- apply(const, 1, function(x) {
     
     topred <- as.data.frame(rbind(x))[rep(1, step_val), ]
     topred <- cbind(chngs, topred)
-    
+    row.names(topred) <- 1:nrow(topred)
+    topred <- topred[, names(mat_in)] # this has to be in correct order....
+  
     preds <- data.frame(predict(mod_in, newdata = topred))
     names(preds) <- ynms
-    
+
     x_vars <- topred[, var_sel]
     preds <- data.frame(preds, x_vars)
     rownames(preds) <- 1:step_val
@@ -324,7 +326,7 @@ pred_sens <- function(mat_in, mod_in, var_sel, step_val, grps, ynms){
     return(preds)
   
   })
-    
+   
   return(out)
   
 }

@@ -68,9 +68,9 @@
 #' lekprofile(mod)
 #' 
 #' ## back to nnet, not using formula to create model
-#' ## y variable must a name attribute
+#' ## y variable must have a name attribute
 #' 
-#' mod <- nnet(x, y, data = neuraldat, size = 5)
+#' mod <- nnet(x, y, size = 5)
 #' 
 #' lekprofile(mod)
 #' 
