@@ -112,7 +112,7 @@ olden.default <- function(mod_in, x_names, y_names, out_var = NULL, bar_plot = T
   if(is.null(out_var)) out_var <- y_names[1]
   
   # stop if out_var is not a named variable
-  if(!out_var %in% y_names) stop('out_var not a named response variable')
+  if(!out_var %in% y_names) stop(paste('out_var must match one:', paste(y_names, collapse = ', ')))
   else out_ind <- grep(out_var, y_names)
   
   #change variables names to user sub 
