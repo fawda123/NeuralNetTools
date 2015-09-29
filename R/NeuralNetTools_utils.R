@@ -66,7 +66,7 @@ neuralweights <-  function(mod_in, ...) UseMethod('neuralweights')
 
 #' @rdname neuralweights
 #' 
-#' @param rel_rsc numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
+#' @param rel_rsc numeric indicating the scaling range for the width of connection weights in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
 #' @param struct numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.
 #' 
 #' @import scales
@@ -78,7 +78,7 @@ neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct, ...){
   
   wts <-  mod_in
   
-  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), c(1, rel_rsc))
+  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), rel_rsc)
   
   #convert wts to list with appropriate names 
   hid_struct <-  struct[ -c(length(struct))]
@@ -111,7 +111,7 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   struct <-  mod_in$n
   wts <-  mod_in$wts
   
-  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), c(1, rel_rsc))
+  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), rel_rsc)
   
   # remove wts from input to output if skip layers present
   chk <- grepl('skip-layer', capture.output(mod_in))
@@ -202,7 +202,7 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
   wts <-  c(inps, melt(outs)$value)
   assign('bias', FALSE)
   
-  if(!is.null(rel_rsc)) wts <-  scales::rescale(abs(wts), c(1, rel_rsc))
+  if(!is.null(rel_rsc)) wts <-  scales::rescale(abs(wts), rel_rsc)
   
   #convert wts to list with appropriate names 
   hid_struct <-  struct[ -c(length(struct))]
@@ -241,7 +241,7 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
   )        
   wts <-  unlist(mod_in$weights[[1]])   
   
-  if(!is.null(rel_rsc)) wts <-  scales::rescale(abs(wts), c(1, rel_rsc))
+  if(!is.null(rel_rsc)) wts <-  scales::rescale(abs(wts), rel_rsc)
   
   #convert wts to list with appropriate names 
   hid_struct <-  struct[ -c(length(struct))]
@@ -364,7 +364,7 @@ neuralskips <-  function(mod_in, ...) UseMethod('neuralskips')
 #' 
 #' @import scales
 #' 
-#' @param rel_rsc numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.  Scaling is relative to all weights, not just those in the primary network. 
+#' @param rel_rsc numeric indicating the scaling range for the width of connection weights in a neural interpretation diagram. Default is \code{NULL} for no rescaling.  Scaling is relative to all weights, not just those in the primary network. 
 #'
 #' @export
 #'  
@@ -374,7 +374,7 @@ neuralskips.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   struct <- mod_in$n
   wts <-  mod_in$wts
   
-  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), c(1, rel_rsc))
+  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), rel_rsc)
   
   # get skip layer weights if present, otherwise exit
   chk <- grepl('skip-layer', capture.output(mod_in))
@@ -497,7 +497,7 @@ bias_points <- function(bias_x, bias_y, layer_name, node_labs, x_range, y_range,
 #' @param layer2 numeric indicating order of second layer (for multiple hiden layers)
 #' @param out_layer logical indicating if the lines are for the output layer
 #' @param nid logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}
-#' @param rel_rsc numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
+#' @param rel_rsc numeric indicating the scaling range for the width of connection weights in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
 #' @param all_in chr string indicating names of input variables for which connections are plotted, default all
 #' @param pos_col chr string indicating color of positive connection weights, default \code{'black'}
 #' @param neg_col chr string indicating color of negative connection weights, default \code{'grey'}
@@ -616,7 +616,7 @@ layer_lines <- function(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FAL
 #' @param bias_y numeric vector y axis locations for bias lines
 #' @param mod_in neural network model object
 #' @param nid logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}
-#' @param rel_rsc numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
+#' @param rel_rsc numeric indicating the scaling range for the width of connection weights in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
 #' @param all_out chr string indicating names of response variables for which connections are plotted, default all
 #' @param pos_col chr string indicating color of positive connection weights, default \code{'black'}
 #' @param neg_col chr string indicating color of negative connection weights, default \code{'grey'}

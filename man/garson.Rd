@@ -2,6 +2,7 @@
 % Please edit documentation in R/NeuralNetTools_gar.R
 \name{garson}
 \alias{garson}
+\alias{garson.default}
 \alias{garson.mlp}
 \alias{garson.nn}
 \alias{garson.nnet}
@@ -11,27 +12,27 @@
 \usage{
 garson(mod_in, ...)
 
-\method{garson}{numeric}(mod_in, struct, bar_plot = TRUE, x_lab = NULL,
-  y_lab = NULL, wts_only = FALSE, ...)
+\method{garson}{default}(mod_in, x_names, y_names, bar_plot = TRUE,
+  x_lab = NULL, y_lab = NULL, ...)
 
-\method{garson}{nnet}(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL,
-  wts_only = FALSE, ...)
+\method{garson}{numeric}(mod_in, struct, ...)
 
-\method{garson}{mlp}(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL,
-  wts_only = FALSE, ...)
+\method{garson}{nnet}(mod_in, ...)
 
-\method{garson}{nn}(mod_in, bar_plot = TRUE, x_lab = NULL, y_lab = NULL,
-  wts_only = FALSE, ...)
+\method{garson}{mlp}(mod_in, ...)
 
-\method{garson}{train}(mod_in, bar_plot = TRUE, x_lab = NULL,
-  y_lab = NULL, wts_only = FALSE, ...)
+\method{garson}{nn}(mod_in, ...)
+
+\method{garson}{train}(mod_in, ...)
 }
 \arguments{
-\item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}}
+\item{mod_in}{input model object or a list of model weights as returned from \code{\link{neuralweights}} if using the default method}
 
 \item{...}{arguments passed to other methods}
 
-\item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
+\item{x_names}{chr string of input variable names, obtained from the model object}
+
+\item{y_names}{chr string of response variable names, obtained from the model object}
 
 \item{bar_plot}{logical indicating if a \code{ggplot} object is returned (default \code{T}), otherwise numeric values are returned}
 
@@ -39,7 +40,7 @@ garson(mod_in, ...)
 
 \item{y_lab}{chr string of alternative names to be used for response variable in the figure, otherwise it is taken from the input model}
 
-\item{wts_only}{logical passed to \code{\link{neuralweights}}, default \code{FALSE}}
+\item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = FALSE}, otherwise a \code{data.frame} of relative importance values for each input variable.  The default aesthetics for \code{\link[ggplot2]{ggplot}} can be further modified, as shown with the examples.

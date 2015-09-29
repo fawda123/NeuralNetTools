@@ -16,7 +16,7 @@ bias_lines(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, neg_col,
 
 \item{nid}{logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}}
 
-\item{rel_rsc}{numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.}
+\item{rel_rsc}{numeric indicating the scaling range for the width of connection weights in a neural interpretation diagram. Default is \code{NULL} for no rescaling.}
 
 \item{all_out}{chr string indicating names of response variables for which connections are plotted, default all}
 

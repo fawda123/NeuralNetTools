@@ -21,7 +21,7 @@ layer_lines(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE,
 
 \item{nid}{logical value indicating if neural interpretation diagram is plotted, default \code{TRUE}}
 
-\item{rel_rsc}{numeric value indicating maximum to rescale weights for plotting in a neural interpretation diagram. Default is \code{NULL} for no rescaling.}
+\item{rel_rsc}{numeric indicating the scaling range for the width of connection weights in a neural interpretation diagram. Default is \code{NULL} for no rescaling.}
 
 \item{all_in}{chr string indicating names of input variables for which connections are plotted, default all}
 
