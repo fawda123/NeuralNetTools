@@ -112,7 +112,7 @@ garson.default <- function(mod_in, x_names, y_names, bar_plot = TRUE, x_lab = NU
   if(!is.null(y_lab)){
     y_names <- y_lab
   } else {
-    y_names <- 'Relative importance'  
+    y_names <- 'Importance'  
   } 
   
   # the default method works with weight list
@@ -160,11 +160,11 @@ garson.default <- function(mod_in, x_names, y_names, bar_plot = TRUE, x_lab = NU
   to_plo$x_names <- factor(x_names[order(rel_imp)], levels = x_names[order(rel_imp)])
   out_plo <- ggplot2::ggplot(to_plo, aes(x = x_names, y = rel_imp, fill = rel_imp,
                                 colour = rel_imp)) + 
-    geom_bar(stat = 'identity') + 
+    geom_bar(stat = 'identity', position = 'identity') + 
     scale_x_discrete(element_blank()) +
     scale_y_continuous(y_names) +
-    theme(legend.title = element_blank()) + 
-    theme_bw()
+    theme_bw() +
+    theme(legend.position = 'none')
   
   return(out_plo)
   

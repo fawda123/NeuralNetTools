@@ -82,7 +82,7 @@ The `olden` function is an alternative and more flexible approach to evaluate va
 
 ```r
 # importance of each variable
-olden(mod, 'Y1')
+olden(mod)
 ```
 
 ![](README_files/figure-html/unnamed-chunk-8-1.png) 

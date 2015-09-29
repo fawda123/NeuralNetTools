@@ -2,6 +2,7 @@
 % Please edit documentation in R/NeuralNetTools_old.R
 \name{olden}
 \alias{olden}
+\alias{olden.default}
 \alias{olden.mlp}
 \alias{olden.nn}
 \alias{olden.nnet}
@@ -9,31 +10,31 @@
 \alias{olden.train}
 \title{Variable importance using connection weights}
 \usage{
-olden(mod_in, out_var, ...)
+olden(mod_in, ...)
 
-\method{olden}{numeric}(mod_in, out_var, struct, bar_plot = TRUE,
-  x_lab = NULL, y_lab = NULL, wts_only = FALSE, ...)
+\method{olden}{default}(mod_in, x_names, y_names, out_var = NULL,
+  bar_plot = TRUE, x_lab = NULL, y_lab = NULL, skip_wts = NULL, ...)
 
-\method{olden}{nnet}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
-  y_lab = NULL, wts_only = FALSE, ...)
+\method{olden}{numeric}(mod_in, struct, ...)
 
-\method{olden}{mlp}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
-  y_lab = NULL, wts_only = FALSE, ...)
+\method{olden}{nnet}(mod_in, ...)
 
-\method{olden}{nn}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
-  y_lab = NULL, wts_only = FALSE, ...)
+\method{olden}{mlp}(mod_in, ...)
 
-\method{olden}{train}(mod_in, out_var, bar_plot = TRUE, x_lab = NULL,
-  y_lab = NULL, wts_only = FALSE, ...)
+\method{olden}{nn}(mod_in, ...)
+
+\method{olden}{train}(mod_in, ...)
 }
 \arguments{
-\item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{numeric}, \code{nnet}, \code{mlp}, or \code{nn}}
+\item{mod_in}{input model object or a list of model weights as returned from \code{\link{neuralweights}} if using the default method}
+
+\item{...}{arguments passed to or from other methods}
+
+\item{x_names}{chr string of input variable names, obtained from the model object}
+
+\item{y_names}{chr string of response variable names, obtained from the model object}
 
 \item{out_var}{chr string indicating the response variable in the neural network object to be evaluated.  Only one input is allowed for models with more than one response.  Names must be of the form \code{'Y1'}, \code{'Y2'}, etc. if using numeric values as weight inputs for \code{mod_in}.}
-
-\item{...}{arguments passed to other methods}
-
-\item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 
 \item{bar_plot}{logical indicating if a \code{ggplot} object is returned (default \code{T}), otherwise numeric values are returned}
 
@@ -41,7 +42,9 @@ olden(mod_in, out_var, ...)
 
 \item{y_lab}{chr string of alternative names to be used for response variable in the figure, default is taken from \code{out_var}}
 
-\item{wts_only}{logical passed to \code{\link{neuralweights}}, default \code{FALSE}}
+\item{skip_wts}{vector from \code{\link{neuralskips}} for \code{\link[nnet]{nnet}} models with skip-layer connections}
+
+\item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} object for plotting if \code{bar_plot = FALSE}, otherwise a \code{data.frame} of relative importance values for each input variable.
@@ -62,7 +65,7 @@ The Olden function also works with networks that have skip layers by adding the 
 wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
 struct <- c(2, 2, 1) #two inputs, two hidden, one output
 
-olden(wts_in, 'Y1', struct)
+olden(wts_in, struct)
 
 ## using nnet
 
@@ -73,7 +76,7 @@ set.seed(123)
 
 mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 
-olden(mod, 'Y1')
+olden(mod)
 
 ## View the difference for a model w/ skip layers
 
@@ -81,7 +84,7 @@ set.seed(123)
 
 mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, skip = TRUE)
 
-olden(mod, 'Y1')
+olden(mod)
 
 ## using RSNNS, no bias layers
 
@@ -91,7 +94,7 @@ x <- neuraldat[, c('X1', 'X2', 'X3')]
 y <- neuraldat[, 'Y1']
 mod <- mlp(x, y, size = 5)
 
-olden(mod, 'Y1')
+olden(mod)
 
 ## using neuralnet
 
@@ -99,7 +102,7 @@ library(neuralnet)
 
 mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
 
-olden(mod, 'Y1')
+olden(mod)
 
 ## using caret
 
@@ -108,7 +111,7 @@ library(caret)
 
 mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 
-olden(mod, 'Y1')
+olden(mod)
 
 }
 
@@ -118,7 +121,7 @@ x <- neuraldat[, c('X1', 'X2', 'X3')]
 y <- neuraldat[, 'Y1']
 mod <- mlp(x, y, size = c(5, 7, 6), linOut = TRUE)
 
-olden(mod, 'Y1')
+olden(mod)
 }
 \references{
 Garson, G.D. 1991. Interpreting neural network connection weights. Artificial Intelligence Expert. 6(4):46-51.
