@@ -2,18 +2,18 @@
 % Please edit documentation in R/NeuralNetTools_utils.R
 \name{lekgrps}
 \alias{lekgrps}
-\title{Create optional barplot for \code{\link{lekprofile}} splits}
+\title{Create optional barplot for \code{\link{lekprofile}} groups}
 \usage{
 lekgrps(grps)
 }
 \arguments{
-\item{grps}{\code{\link[base]{data.frame}} of values for each variable in each group used to create splits in \code{\link{lekprofile}}}
+\item{grps}{\code{\link[base]{data.frame}} of values for each variable in each group used to create groups in \code{\link{lekprofile}}}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} object
 }
 \description{
-Create optional barplot of constant values of each variable for each split used with \code{\link{lekprofile}}
+Create optional barplot of constant values of each variable for each group used with \code{\link{lekprofile}}
 }
 \examples{
 ## enters used with kmeans clustering

@@ -15,7 +15,7 @@ pred_sens(mat_in, mod_in, var_sel, step_val, grps, ynms)
 
 \item{step_val}{number of values to sequence range of selected explanatory variable}
 
-\item{grps}{matrix of values for holding explanatory values constant, one column per variable and one row per split}
+\item{grps}{matrix of values for holding explanatory values constant, one column per variable and one row per group}
 
 \item{ynms}{chr string of response variable names for correct labelling}
 }

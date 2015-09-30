@@ -270,7 +270,7 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
 #' @param mod_in any model object with a predict method
 #' @param var_sel chr string of explanatory variable to select
 #' @param step_val number of values to sequence range of selected explanatory variable
-#' @param grps matrix of values for holding explanatory values constant, one column per variable and one row per split
+#' @param grps matrix of values for holding explanatory values constant, one column per variable and one row per group
 #' @param ynms chr string of response variable names for correct labelling
 #'
 #'@details
@@ -690,11 +690,11 @@ bias_lines <- function(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, n
 }
 
 ######
-#' Create optional barplot for \code{\link{lekprofile}} splits
+#' Create optional barplot for \code{\link{lekprofile}} groups
 #' 
-#' Create optional barplot of constant values of each variable for each split used with \code{\link{lekprofile}}
+#' Create optional barplot of constant values of each variable for each group used with \code{\link{lekprofile}}
 #'
-#' @param grps \code{\link[base]{data.frame}} of values for each variable in each group used to create splits in \code{\link{lekprofile}}
+#' @param grps \code{\link[base]{data.frame}} of values for each variable in each group used to create groups in \code{\link{lekprofile}}
 #' 
 #' @import ggplot2
 #' 
@@ -712,11 +712,12 @@ lekgrps <- function(grps){
   
   # add split columns, make long form
   grps <- as.data.frame(grps)
-  grps$Splits <- factor(1:nrow(grps))
+  grps$Groups <- factor(1:nrow(grps))
   grps <- tidyr::gather(grps, 'variable', 'value', -ncol(grps))
 
-  p <- ggplot(grps, aes_string(x = 'Splits', y = 'value', fill = 'variable')) +
+  p <- ggplot(grps, aes_string(x = 'Groups', y = 'value', fill = 'variable')) +
     geom_bar(stat = 'identity') + 
+    theme_bw() + 
     theme(legend.title = element_blank()) + 
     scale_y_continuous('Constant values')
   
