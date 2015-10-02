@@ -1,3 +1,4 @@
+library(dplyr)
 
 seed.val <- 2
 set.seed(seed.val)
@@ -25,7 +26,8 @@ norm.fun <- function(x){
   (x - min(x))/(max(x) - min(x)) 
 }
 
-neuraldat <- data.frame(apply(neuraldat, 2, norm.fun))
+# standardize only response variables
+neuraldat <- mutate_each(neuraldat, funs(norm.fun), matches('^Y[0-9]$')) 
 
 save(neuraldat, file = 'data/neuraldat.RData')
 
