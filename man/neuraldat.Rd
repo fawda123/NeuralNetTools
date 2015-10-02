@@ -4,7 +4,7 @@
 \name{neuraldat}
 \alias{neuraldat}
 \title{Simulated dataset for function examples}
-\format{A data frame with 300 rows and 3 variables:
+\format{A data frame with 2000 rows and 3 variables:
 \describe{
   \item{Y1}{numeric}
   \item{Y2}{numeric}
@@ -17,7 +17,7 @@
 neuraldat
 }
 \description{
-A simulated dataset of 300 observations containing two response variables and three explanatory variables.  Explanatory variables were sampled from a standard normal distribution.  Response variables were linear combinations of the explanatory variables.  The response variables Y1 and Y2 are standardized from 0 to 1.
+A simulated dataset of 2000 observations containing two response variables and three explanatory variables.  Explanatory variables were sampled from a standard normal distribution.  Response variables were linear combinations of the explanatory variables.  The response variables Y1 and Y2 are standardized from 0 to 1.
 }
 \keyword{datasets}
 

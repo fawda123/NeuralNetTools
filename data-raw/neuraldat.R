@@ -4,7 +4,7 @@ seed.val <- 2
 set.seed(seed.val)
 
 num.vars <- 3
-num.obs <- 300
+num.obs <- 2000
 
 #input variables
 rand.vars <- matrix(rnorm(num.vars * num.obs), ncol = num.vars)
