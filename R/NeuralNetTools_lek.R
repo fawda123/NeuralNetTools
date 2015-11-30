@@ -48,6 +48,7 @@
 #'  
 #' lekprofile(mod)  
 #' 
+#' \dontrun{
 #' ## using RSNNS, no bias layers
 #' 
 #' library(RSNNS)
@@ -76,14 +77,11 @@
 #' 
 #' ## using caret
 #' 
-#' \dontrun{
 #' library(caret)
 #' 
 #' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 #' 
 #' lekprofile(mod)
-#' 
-#' }
 #' 
 #' ## group by clusters instead of sequencing by quantiles
 #' 
@@ -98,6 +96,7 @@
 #' names(group_vals) <- names(group_vals)
 #' 
 #' lekprofile(mod, group_vals = group_vals, xsel = 'X3')
+#' }
 lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 
 #' @rdname lekprofile

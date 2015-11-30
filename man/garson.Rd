@@ -76,6 +76,7 @@ mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 
 garson(mod)
 
+\dontrun{
 ## using RSNNS, no bias layers
 
 library(RSNNS)
@@ -96,14 +97,11 @@ garson(mod)
 
 ## using caret
 
-\dontrun{
 library(caret)
 
 mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 
 garson(mod)
-
-}
 
 ## modify the plot using ggplot2 syntax
 library(ggplot2)
@@ -115,6 +113,7 @@ garson(mod) +
   scale_y_continuous('Rel. Importance', limits = c(-1, 1)) +
   scale_fill_gradientn(colours = cols) +
   scale_colour_gradientn(colours = cols)
+}
 }
 \references{
 Garson, G.D. 1991. Interpreting neural network connection weights. Artificial Intelligence Expert. 6(4):46-51.

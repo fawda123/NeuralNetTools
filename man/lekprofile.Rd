@@ -70,6 +70,7 @@ mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 
 lekprofile(mod)
 
+\dontrun{
 ## using RSNNS, no bias layers
 
 library(RSNNS)
@@ -98,14 +99,11 @@ lekprofile(mod)
 
 ## using caret
 
-\dontrun{
 library(caret)
 
 mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 
 lekprofile(mod)
-
-}
 
 ## group by clusters instead of sequencing by quantiles
 
@@ -120,6 +118,7 @@ group_vals <- data.frame(group_vals)
 names(group_vals) <- names(group_vals)
 
 lekprofile(mod, group_vals = group_vals, xsel = 'X3')
+}
 }
 \references{
 Lek, S., Delacoste, M., Baran, P., Dimopoulos, I., Lauga, J., Aulagnier, S. 1996. Application of neural networks to modelling nonlinear relationships in Ecology. Ecological Modelling. 90:39-52.

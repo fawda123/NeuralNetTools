@@ -119,6 +119,7 @@ mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, skip = TRUE)
 
 plotnet(mod, skip = TRUE)
 
+\dontrun{
 ## using RSNNS, no bias layers
 
 library(RSNNS)
@@ -129,7 +130,6 @@ mod <- mlp(x, y, size = 5)
 
 plotnet(mod)
 
-\dontrun{
 # pruned model using code from RSSNS pruning demo
 pruneFuncParams <- list(max_pr_error_increase = 10.0, pr_accepted_error = 1.0,
  no_of_pr_retrain_cycles = 1000, min_error_to_stop = 0.01, init_matrix_value = 1e-6,
@@ -139,7 +139,6 @@ mod <- mlp(x, y, size = 5, pruneFunc = "OptimalBrainSurgeon",
 
 plotnet(mod)
 plotnet(mod, prune_col = 'lightblue')
-}
 
 ## using neuralnet
 
@@ -151,13 +150,11 @@ plotnet(mod)
 
 ## using caret
 
-\dontrun{
 library(caret)
 
 mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 
 plotnet(mod)
-}
 
 ## a more complicated network with categorical response
 AND <- c(rep(0, 7), 1)
@@ -187,6 +184,7 @@ rel_imp <- garson(mod, bar_plot = FALSE)$rel_imp
 cols <- colorRampPalette(c('lightgreen', 'darkgreen'))(3)[rank(rel_imp)]
 
 plotnet(mod, circle_col = list(cols, 'lightblue'))
+}
 }
 \references{
 Ozesmi, S.L., Ozesmi, U. 1999. An artificial neural network approach to spatial habitat modeling with interspecific interaction. Ecological Modelling. 116:15-31.

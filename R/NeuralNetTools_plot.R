@@ -65,6 +65,7 @@
 #'
 #' plotnet(mod, skip = TRUE)  
 #' 
+#' \dontrun{
 #' ## using RSNNS, no bias layers
 #' 
 #' library(RSNNS)
@@ -75,7 +76,6 @@
 #' 
 #' plotnet(mod)
 #'
-#' \dontrun{
 #' # pruned model using code from RSSNS pruning demo
 #' pruneFuncParams <- list(max_pr_error_increase = 10.0, pr_accepted_error = 1.0, 
 #'  no_of_pr_retrain_cycles = 1000, min_error_to_stop = 0.01, init_matrix_value = 1e-6, 
@@ -85,7 +85,6 @@
 #' 
 #' plotnet(mod)
 #' plotnet(mod, prune_col = 'lightblue')
-#' }
 #' 
 #' ## using neuralnet
 #' 
@@ -97,13 +96,11 @@
 #' 
 #' ## using caret
 #'
-#' \dontrun{
 #' library(caret)
 #' 
 #' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 #' 
 #' plotnet(mod)
-#' }
 #' 
 #' ## a more complicated network with categorical response
 #' AND <- c(rep(0, 7), 1)
@@ -133,6 +130,7 @@
 #' cols <- colorRampPalette(c('lightgreen', 'darkgreen'))(3)[rank(rel_imp)]
 #'  
 #' plotnet(mod, circle_col = list(cols, 'lightblue'))
+#' }
 plotnet <- function(mod_in, ...) UseMethod('plotnet')
 
 #' @rdname plotnet

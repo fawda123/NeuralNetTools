@@ -78,6 +78,7 @@ mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5)
 
 olden(mod)
 
+\dontrun{
 ## View the difference for a model w/ skip layers
 
 set.seed(123)
@@ -106,14 +107,11 @@ olden(mod)
 
 ## using caret
 
-\dontrun{
 library(caret)
 
 mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 
 olden(mod)
-
-}
 
 ## multiple hidden layers
 
@@ -122,6 +120,7 @@ y <- neuraldat[, 'Y1']
 mod <- mlp(x, y, size = c(5, 7, 6), linOut = TRUE)
 
 olden(mod)
+}
 }
 \references{
 Garson, G.D. 1991. Interpreting neural network connection weights. Artificial Intelligence Expert. 6(4):46-51.

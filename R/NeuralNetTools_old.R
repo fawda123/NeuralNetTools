@@ -55,6 +55,7 @@
 #'  
 #' olden(mod)  
 #' 
+#' \dontrun{
 #' ## View the difference for a model w/ skip layers
 #' 
 #' set.seed(123)
@@ -82,15 +83,12 @@
 #' olden(mod)
 #' 
 #' ## using caret
-#' 
-#' \dontrun{
+#'
 #' library(caret)
 #'
 #' mod <- train(Y1 ~ X1 + X2 + X3, method = 'nnet', data = neuraldat, linout = TRUE)
 #' 
 #' olden(mod)
-#' 
-#' }
 #' 
 #' ## multiple hidden layers
 #'
@@ -99,6 +97,7 @@
 #' mod <- mlp(x, y, size = c(5, 7, 6), linOut = TRUE)
 #' 
 #' olden(mod)
+#' }
 olden <- function(mod_in, ...) UseMethod('olden')
 
 #' @rdname olden

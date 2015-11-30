@@ -33,6 +33,7 @@
 #'  
 #' neuralweights(mod)  
 #' 
+#' \dontrun{
 #' ## using RSNNS, no bias layers
 #' 
 #' library(RSNNS)
@@ -43,7 +44,6 @@
 #' 
 #' neuralweights(mod)
 #' 
-#' \dontrun{
 #' # pruned model using code from RSSNS pruning demo
 #' pruneFuncParams <- list(max_pr_error_increase = 10.0, pr_accepted_error = 1.0, 
 #'  no_of_pr_retrain_cycles = 1000, min_error_to_stop = 0.01, init_matrix_value = 1e-6, 
@@ -53,8 +53,6 @@
 #' 
 #' neuralweights(mod)
 #' 
-#' }
-#' 
 #' ## using neuralnet
 #' 
 #' library(neuralnet)
@@ -62,6 +60,7 @@
 #' mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
 #' 
 #' neuralweights(mod)
+#' }
 neuralweights <-  function(mod_in, ...) UseMethod('neuralweights')
 
 #' @rdname neuralweights
@@ -724,3 +723,8 @@ lekgrps <- function(grps){
   return(p)
   
 }
+
+#' @importFrom graphics par plot points segments text
+#' @importFrom stats coef formula kmeans model.frame predict quantile terms
+#' @importFrom utils capture.output
+NULL
