@@ -9,4 +9,4 @@
 There were no ERRORs, WARNINGs, NOTEs.
 
 ## Downstream dependencies
-None.
+I have also run R CMD check on the RSNNS downstream dependency for NeuralNetTools.  There were no ERRORs, WARNINGs, or NOTEs.
