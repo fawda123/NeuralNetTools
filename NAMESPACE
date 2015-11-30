@@ -41,3 +41,7 @@ import(nnet)
 import(reshape2)
 import(scales)
 import(tidyr)
+importFrom("graphics", "par", "plot", "points", "segments", "text")
+importFrom("stats", "coef", "formula", "kmeans", "model.frame",
+             "predict", "quantile", "terms")
+importFrom("utils", "capture.output")
