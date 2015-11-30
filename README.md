@@ -31,7 +31,7 @@ install.packages('NeuralNetTools')
 
 Please cite this package as follows:
 
-*Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.3.1. http://cran.r-project.org/web/packages/NeuralNetTools/*
+*Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.4.0. http://cran.r-project.org/web/packages/NeuralNetTools/*
 
 ### Bug reports
 

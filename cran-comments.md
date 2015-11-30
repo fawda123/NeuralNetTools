@@ -1,6 +1,6 @@
 ## Test environments
-* local Windows 7 install, R 3.2.0 
-* local Windows 7 install, Current r-devel (2015-04-27 r68264)
+* local Windows 7 install, R 3.2.2 
+* local Windows 7 install, Current r-devel (2015-11-30 r69717)
 * Windows install (on AppVeyor), r-devel (2015-04-23 r68264)
 * ubuntu 12.04 (on travis-ci), R 3.2.0
 * CRAN win-builder (devel and release)

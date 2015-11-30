@@ -7,7 +7,7 @@
 \alias{lekprofile.nn}
 \alias{lekprofile.nnet}
 \alias{lekprofile.train}
-\title{Sensitivity analysis based on Lek's profile method}
+\title{Sensitivity analysis using Lek's profile method}
 \usage{
 lekprofile(mod_in, ...)
 

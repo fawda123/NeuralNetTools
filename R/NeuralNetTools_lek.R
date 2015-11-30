@@ -1,4 +1,4 @@
-#' Sensitivity analysis based on Lek's profile method
+#' Sensitivity analysis using Lek's profile method
 #' 
 #' Conduct a sensitivity analysis of model responses in a neural network to input variables using Lek's profile method
 #' 
@@ -128,8 +128,8 @@ lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, gr
     } else {
       
       # sanity checks for integer, one value
-      if(length(group_vals) > 1) stop('group_vals must have length equal to one if an integer')
-      if(group_vals%%1 != 0) stop('group_vals must be an integer greater than one')
+      if(length(group_vals) > 1) stop('Multiple group_vals must be from 0 and 1')
+      if(any(group_vals%%1 != 0)) stop('group_vals as a single value must be an integer')
     
       # get means of cluster centers
       grps <- kmeans(xvars, centers = group_vals)$centers
