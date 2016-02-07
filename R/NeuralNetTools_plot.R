@@ -26,9 +26,9 @@
 #' @param skip logical if skip layer connections are plotted instead of the primary network
 #' @param ...	additional arguments passed to plot
 #' 
-#' @export
+#' @import ggplot2
 #' 
-#' @import scales
+#' @export
 #' 
 #' @references
 #' Ozesmi, S.L., Ozesmi, U. 1999. An artificial neural network approach to spatial habitat modeling with interspecific interaction. Ecological Modelling. 116:15-31.
@@ -177,7 +177,7 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
       
       # plot connections usign layer lines with skip TRUE
       mapply(
-        function(x) layer_lines(mod_in, x, layer1 = 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty, skip = skip), 
+        function(x) layer_lines(mod_in, x, layer1 = 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = alpha(pos_col, alpha_val), neg_col = alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty, skip = skip), 
         1:struct[length(struct)]
       )
       
@@ -198,7 +198,7 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
         layer_x <- rep(layer_x[length(layer_x)], length(layer_x)) # repeat this for last layer
         bias_points(max(bias_x), bias_y, 'B', node_labs, x_range, 
           y_range, circle_cex, cex_val, bord_col, circle_col)
-        bias_lines(max(bias_x), bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct[c(1, length(struct))], y_range = y_range, layer_x = layer_x, line_stag = line_stag)
+        bias_lines(max(bias_x), bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = alpha(pos_col, alpha_val), neg_col = alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct[c(1, length(struct))], y_range = y_range, layer_x = layer_x, line_stag = line_stag)
       }
       
     })
@@ -207,7 +207,7 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
   
   #use functions to plot connections between layers
   #bias lines
-  if(bias) bias_lines(bias_x, bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct, y_range = y_range, layer_x = layer_x, line_stag = line_stag)
+  if(bias) bias_lines(bias_x, bias_y, mod_in, nid = nid, rel_rsc = rel_rsc, all_out = all_out, pos_col = alpha(pos_col, alpha_val), neg_col = alpha(neg_col, alpha_val), y_names = y_names, x_range = x_range, max_sp = max_sp, struct = struct, y_range = y_range, layer_x = layer_x, line_stag = line_stag)
 
   #layer lines,  makes use of arguments to plot all or for individual layers
   #starts with input - hidden
@@ -215,8 +215,8 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
   if(is.logical(all_in)){  
     mapply(
       function(x) layer_lines(mod_in, x, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, 
-        all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), 
-        neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, 
+        all_in = all_in, pos_col = alpha(pos_col, alpha_val), 
+        neg_col = alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, 
         line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, 
         prune_col = prune_col, prune_lty = prune_lty),
       1:struct[1]
@@ -225,7 +225,7 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
   else{
     node_in <- which(x_names == all_in)
     layer_lines(mod_in, node_in, layer1 = 1, layer2 = 2, nid = nid, rel_rsc = rel_rsc, all_in = all_in, 
-      pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
+      pos_col = alpha(pos_col, alpha_val), neg_col = alpha(neg_col, alpha_val), 
       x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
       max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty)
   }
@@ -237,7 +237,7 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
   for(lay in lays){
     for(node in 1:struct[lay[1]]){
       layer_lines(mod_in, node, layer1 = lay[1], layer2 = lay[2], nid = nid, rel_rsc = rel_rsc, all_in = TRUE, 
-        pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), 
+        pos_col = alpha(pos_col, alpha_val), neg_col = alpha(neg_col, alpha_val), 
         x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x,
         max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty, skip = skip)
     }
@@ -246,7 +246,7 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
   #uses 'all_out' argument to plot connection lines for all output nodes or a single node
   if(is.logical(all_out))
     mapply(
-      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = scales::alpha(pos_col, alpha_val), neg_col = scales::alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty, skip = skip), 
+      function(x) layer_lines(mod_in, x, layer1 = length(struct) - 1, layer2 = length(struct), out_layer = TRUE, nid = nid, rel_rsc = rel_rsc, all_in = all_in, pos_col = alpha(pos_col, alpha_val), neg_col = alpha(neg_col, alpha_val), x_range = x_range, y_range = y_range, line_stag = line_stag, x_names = x_names, layer_x = layer_x, max_sp = max_sp, struct = struct, prune_col = prune_col, prune_lty = prune_lty, skip = skip), 
       1:struct[length(struct)]
     )
   else{

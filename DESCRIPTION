@@ -13,7 +13,7 @@ BugReports: https://github.com/fawda123/NeuralNetTools/issues
 License: CC0
 LazyData: true
 Imports:
-    ggplot2,
+    ggplot2 (>= 2.0.0),
     nnet,
     reshape2,
     scales,
@@ -27,3 +27,4 @@ Depends:
 Authors@R: person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),
     email = "mbafs2012@gmail.com")
+RoxygenNote: 5.0.1

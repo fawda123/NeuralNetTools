@@ -68,8 +68,6 @@ neuralweights <-  function(mod_in, ...) UseMethod('neuralweights')
 #' @param rel_rsc numeric indicating the scaling range for the width of connection weights in a neural interpretation diagram. Default is \code{NULL} for no rescaling.
 #' @param struct numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.
 #' 
-#' @import scales
-#' 
 #' @export
 #' 
 #' @method neuralweights numeric
@@ -77,7 +75,7 @@ neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct, ...){
   
   wts <-  mod_in
   
-  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), rel_rsc)
+  if(!is.null(rel_rsc)) wts <- rescale(abs(wts), rel_rsc)
   
   #convert wts to list with appropriate names 
   hid_struct <-  struct[ -c(length(struct))]
@@ -99,8 +97,6 @@ neuralweights.numeric <-  function(mod_in, rel_rsc = NULL, struct, ...){
 }
 
 #' @rdname neuralweights
-#' 
-#' @import scales
 #'
 #' @export
 #'  
@@ -110,7 +106,7 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   struct <-  mod_in$n
   wts <-  mod_in$wts
   
-  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), rel_rsc)
+  if(!is.null(rel_rsc)) wts <- rescale(abs(wts), rel_rsc)
   
   # remove wts from input to output if skip layers present
   chk <- grepl('skip-layer', capture.output(mod_in))
@@ -144,7 +140,7 @@ neuralweights.nnet <-  function(mod_in, rel_rsc = NULL, ...){
 
 #' @rdname neuralweights
 #' 
-#' @import scales reshape2 tidyr
+#' @import reshape2 tidyr
 #'
 #' @export
 #'
@@ -201,7 +197,7 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
   wts <-  c(inps, melt(outs)$value)
   assign('bias', FALSE)
   
-  if(!is.null(rel_rsc)) wts <-  scales::rescale(abs(wts), rel_rsc)
+  if(!is.null(rel_rsc)) wts <-  rescale(abs(wts), rel_rsc)
   
   #convert wts to list with appropriate names 
   hid_struct <-  struct[ -c(length(struct))]
@@ -224,8 +220,6 @@ neuralweights.mlp <-  function(mod_in, rel_rsc = NULL, ...){
 
 #' @rdname neuralweights
 #'   
-#' @import scales
-#'   
 #' @export
 #'
 #' @method neuralweights nn
@@ -240,7 +234,7 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
   )        
   wts <-  unlist(mod_in$weights[[1]])   
   
-  if(!is.null(rel_rsc)) wts <-  scales::rescale(abs(wts), rel_rsc)
+  if(!is.null(rel_rsc)) wts <-  rescale(abs(wts), rel_rsc)
   
   #convert wts to list with appropriate names 
   hid_struct <-  struct[ -c(length(struct))]
@@ -361,8 +355,6 @@ neuralskips <-  function(mod_in, ...) UseMethod('neuralskips')
 
 #' @rdname neuralskips
 #' 
-#' @import scales
-#' 
 #' @param rel_rsc numeric indicating the scaling range for the width of connection weights in a neural interpretation diagram. Default is \code{NULL} for no rescaling.  Scaling is relative to all weights, not just those in the primary network. 
 #'
 #' @export
@@ -373,7 +365,7 @@ neuralskips.nnet <-  function(mod_in, rel_rsc = NULL, ...){
   struct <- mod_in$n
   wts <-  mod_in$wts
   
-  if(!is.null(rel_rsc)) wts <- scales::rescale(abs(wts), rel_rsc)
+  if(!is.null(rel_rsc)) wts <- rescale(abs(wts), rel_rsc)
   
   # get skip layer weights if present, otherwise exit
   chk <- grepl('skip-layer', capture.output(mod_in))
@@ -725,6 +717,7 @@ lekgrps <- function(grps){
 }
 
 #' @importFrom graphics par plot points segments text
+#' @importFrom scales rescale
 #' @importFrom stats coef formula kmeans model.frame predict quantile terms
 #' @importFrom utils capture.output
 NULL
