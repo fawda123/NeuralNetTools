@@ -93,12 +93,23 @@ Plot a neural interpretation diagram for a neural network object
 This function plots a neural network as a neural interpretation diagram as in Ozesmi and Ozesmi (1999). Options to plot without color-coding or shading of weights are also provided.  The default settings plot positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled arbitrarily as I1 through In for n input variables.  One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn.  The output layer is plotted last with nodes labeled as O1 through On.  Bias nodes connected to the hidden and output layers are also shown.  Neural networks created using \code{\link[RSNNS]{mlp}} do not show bias layers.
 
 A primary network and a skip layer network can be plotted for \code{\link[nnet]{nnet}} models with a skip layer connection.  The default is to plot the primary network, whereas the skip layer network can be viewed with \code{skip = TRUE}.  If \code{nid = TRUE}, the line widths for both the primary and skip layer plots are relative to all weights.  Viewing both plots is recommended to see which network has larger relative weights.  Plotting a network with only a skip layer (i.e., no hidden layer, \code{size = 0}) will include bias connections to the output layer, whereas these are not included in the plot of the skip layer if \code{size} is greater than zero.
+ 
+The numeric method for plotting requires the input weights to be in a specific order given the structure of the network.  An additional argument \code{struct} (from \code{\link{neuralweights}} is also required that lists the number of nodes in the input, hidden, and output layers.  The example below for the numeric input shows the correct weight vector for a simple neural network model with two input variables, one output variable, and one hidden layer with two nodes.  Bias nodes are also connected to the hidden and output layer.  Using the plot syntax of I, H, O, and B for input, hidden, output, and bias to indicate weighted connections between layers, the correct weight order for the \code{mod_in} vector is B1-H1, I1-H1, I2-H1, B1-H2, I1-H2, I2-H2, B2-O1, H1-O1, H2-O1.
 }
 \examples{
 ## using numeric input
 
+# B1-H1, I1-H1, I2-H1, B1-H2, I1-H2, I2-H2, B2-O1, H1-O1, H2-O1.
 wts_in <- c(13.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.56, -0.52, 0.81)
 struct <- c(2, 2, 1) #two inputs, two hidden, one output 
+
+plotnet(wts_in, struct = struct)
+
+# numeric input, two hidden layers
+
+# B1-H11, I1-H11, I2-H11, B1-H12, I1-H12, I2-H12, B2-H21, H11-H21, H12-H21, B2-H22, H11-H22, H12-H22, B3-O1, H21-O1, H22-O1 
+wts_in <- c(1.12, 1.49, 0.16, -0.11, -0.19, -0.16, 0.5, 0.2, -0.12, -0.1, 0.89, 0.9, 0.56, -0.52, 0.81)
+struct <- c(2, 2, 2, 1) # two inputs, two (two nodes each), one output 
 
 plotnet(wts_in, struct = struct)
 
