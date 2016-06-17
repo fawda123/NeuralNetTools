@@ -25,7 +25,7 @@ The development version of this package can be installed from Github:
 ```{r, eval = FALSE}
 install.packages('devtools')
 library(devtools)
-install_github('fawda123/NeuralNetTools')
+install_github('fawda123/NeuralNetTools', ref = 'development')
 ```
 
 The current release can be installed from CRAN:
