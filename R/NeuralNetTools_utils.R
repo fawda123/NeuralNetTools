@@ -686,6 +686,7 @@ bias_lines <- function(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, n
 #' Create optional barplot of constant values of each variable for each group used with \code{\link{lekprofile}}
 #'
 #' @param grps \code{\link[base]{data.frame}} of values for each variable in each group used to create groups in \code{\link{lekprofile}}
+#' @param position chr string indicating bar position (e.g., 'dodge', 'fill', 'stack'), passed to \code{\link[ggplot2]{geom_bar}}
 #' 
 #' @import ggplot2
 #' 
@@ -699,7 +700,7 @@ bias_lines <- function(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, n
 #' grps <- kmeans(x, 6)$center
 #' 
 #' lekgrps(grps)
-lekgrps <- function(grps){
+lekgrps <- function(grps, position = 'dodge'){
   
   # add split columns, make long form
   grps <- as.data.frame(grps)
@@ -707,7 +708,7 @@ lekgrps <- function(grps){
   grps <- tidyr::gather(grps, 'variable', 'value', -ncol(grps))
 
   p <- ggplot(grps, aes_string(x = 'Groups', y = 'value', fill = 'variable')) +
-    geom_bar(stat = 'identity') + 
+    geom_bar(stat = 'identity', position = position) + 
     theme_bw() + 
     theme(legend.title = element_blank()) + 
     scale_y_continuous('Constant values')

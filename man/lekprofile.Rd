@@ -13,7 +13,7 @@ lekprofile(mod_in, ...)
 
 \method{lekprofile}{default}(mod_in, xvars, ynms, xsel = NULL, steps = 100,
   group_vals = seq(0, 1, by = 0.2), val_out = FALSE, group_show = FALSE,
-  ...)
+  position = "dodge", ...)
 
 \method{lekprofile}{nnet}(mod_in, ...)
 
@@ -41,6 +41,8 @@ lekprofile(mod_in, ...)
 \item{val_out}{logical value indicating if actual sensitivity values are returned rather than a plot, default \code{FALSE}}
 
 \item{group_show}{logical if a barplot is returned that shows the values at which explanatory variables were held constant while not being evaluated}
+
+\item{position}{chr string indicating bar position (e.g., 'dodge', 'fill', 'stack'), passed to \code{\link[ggplot2]{geom_bar}}, used if \code{group_show = TRUE}}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  FALSE}, otherwise a two-element \code{list} is returned with a \code{data.frame} in long form showing the predicted responses at different values of the explanatory variables and the grouping scheme that was used to hold unevaluated variables constant.

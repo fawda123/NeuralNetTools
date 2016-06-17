@@ -4,10 +4,12 @@
 \alias{lekgrps}
 \title{Create optional barplot for \code{\link{lekprofile}} groups}
 \usage{
-lekgrps(grps)
+lekgrps(grps, position = "dodge")
 }
 \arguments{
 \item{grps}{\code{\link[base]{data.frame}} of values for each variable in each group used to create groups in \code{\link{lekprofile}}}
+
+\item{position}{chr string indicating bar position (e.g., 'dodge', 'fill', 'stack'), passed to \code{\link[ggplot2]{geom_bar}}}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} object

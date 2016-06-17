@@ -10,6 +10,7 @@
 #' @param group_vals numeric vector indicating quantile values at which to hold other explanatory variables constant
 #' @param val_out logical value indicating if actual sensitivity values are returned rather than a plot, default \code{FALSE}
 #' @param group_show logical if a barplot is returned that shows the values at which explanatory variables were held constant while not being evaluated
+#' @param position chr string indicating bar position (e.g., 'dodge', 'fill', 'stack'), passed to \code{\link[ggplot2]{geom_bar}}, used if \code{group_show = TRUE}
 #' @param ... arguments passed to other methods
 #' 
 #' @details
@@ -106,7 +107,7 @@ lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 #' @export
 #' 
 #' @method lekprofile default
-lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, group_vals = seq(0, 1, by = 0.2), val_out = FALSE, group_show = FALSE, ...){
+lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, group_vals = seq(0, 1, by = 0.2), val_out = FALSE, group_show = FALSE, position = 'dodge', ...){
   
   # subset xall if xsel is not empy
   if(is.null(xsel)) xsel <- names(xvars)
@@ -145,7 +146,7 @@ lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, gr
   }
 
   # return bar plot for group values
-  if(group_show) return(lekgrps(grps))
+  if(group_show) return(lekgrps(grps, position = position))
   
   #use 'pred_fun' to get pred vals of response across range of vals for an exp vars
   #loops over all explanatory variables of interest and all group values
