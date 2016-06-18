@@ -4,7 +4,7 @@
 \alias{pred_sens}
 \title{Predicted values for Lek profile method}
 \usage{
-pred_sens(mat_in, mod_in, var_sel, step_val, grps, ynms)
+pred_sens(mat_in, mod_in, var_sel, step_val, grps, ysel)
 }
 \arguments{
 \item{mat_in}{\code{data.frame} of only the explanatory variables used to create model}
@@ -17,7 +17,7 @@ pred_sens(mat_in, mod_in, var_sel, step_val, grps, ynms)
 
 \item{grps}{matrix of values for holding explanatory values constant, one column per variable and one row per group}
 
-\item{ynms}{chr string of response variable names for correct labelling}
+\item{ysel}{chr string of response variable names for correct labelling}
 }
 \value{
 A \code{\link[base]{list}} of predictions where each element is a \code{\link[base]{data.frame}} with the predicted value of the response and the values of the explanatory variable defined by \code{var_sel}.  Each element of the list corresponds to a group defined by the rows in \code{grps} at which the other explanatory variables were held constant.

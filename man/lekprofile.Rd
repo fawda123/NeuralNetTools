@@ -11,38 +11,43 @@
 \usage{
 lekprofile(mod_in, ...)
 
-\method{lekprofile}{default}(mod_in, xvars, ynms, xsel = NULL, steps = 100,
-  group_vals = seq(0, 1, by = 0.2), val_out = FALSE, group_show = FALSE,
-  position = "dodge", ...)
+\method{lekprofile}{default}(mod_in, xvars, ysel = NULL, xsel = NULL,
+  steps = 100, group_vals = seq(0, 1, by = 0.2), val_out = FALSE,
+  group_show = FALSE, grp_nms = NULL, position = "dodge", ...)
 
-\method{lekprofile}{nnet}(mod_in, ...)
+\method{lekprofile}{nnet}(mod_in, xsel = NULL, ysel = NULL, ...)
 
-\method{lekprofile}{mlp}(mod_in, xvars, ...)
+\method{lekprofile}{mlp}(mod_in, xvars, yvars, xsel = NULL, ysel = NULL,
+  ...)
 
-\method{lekprofile}{train}(mod_in, ...)
+\method{lekprofile}{train}(mod_in, xsel = NULL, ysel = NULL, ...)
 
-\method{lekprofile}{nn}(mod_in, ...)
+\method{lekprofile}{nn}(mod_in, xsel = NULL, ysel = NULL, ...)
 }
 \arguments{
 \item{mod_in}{input object for which an organized model list is desired.  The input can be an object of class \code{nnet} or \code{mlp}}
 
 \item{...}{arguments passed to other methods}
 
-\item{xvars}{\code{\link[base]{data.frame}} of explanatory variables used to create the input model}
+\item{xvars}{\code{\link[base]{data.frame}} of explanatory variables used to create the input model, only needed for \code{mlp} objects}
 
-\item{ynms}{chr string of response variable names for model}
+\item{ysel}{chr string indicating which response variables to plot if more than one, defaults to all}
 
 \item{xsel}{chr string of names of explanatory variables to plot, defaults to all}
 
 \item{steps}{numeric value indicating number of observations to evaluate for each explanatory variable from minimum to maximum value, default 100}
 
-\item{group_vals}{numeric vector indicating quantile values at which to hold other explanatory variables constant}
+\item{group_vals}{numeric vector with values from 0-1 indicating quantile values at which to hold other explanatory variables constant or a single value indicating number of clusters to define grouping scheme, see details}
 
 \item{val_out}{logical value indicating if actual sensitivity values are returned rather than a plot, default \code{FALSE}}
 
 \item{group_show}{logical if a barplot is returned that shows the values at which explanatory variables were held constant while not being evaluated}
 
+\item{grp_nms}{optional chr string of alternative names for groups in legend}
+
 \item{position}{chr string indicating bar position (e.g., 'dodge', 'fill', 'stack'), passed to \code{\link[ggplot2]{geom_bar}}, used if \code{group_show = TRUE}}
+
+\item{yvars}{\code{\link[base]{data.frame}} of explanatory variables used to create the input model, only needed for \code{mlp} objects}
 }
 \value{
 A \code{\link[ggplot2]{ggplot}} object for plotting if \code{val_out  =  FALSE}, otherwise a two-element \code{list} is returned with a \code{data.frame} in long form showing the predicted responses at different values of the explanatory variables and the grouping scheme that was used to hold unevaluated variables constant.
