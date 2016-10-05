@@ -19,6 +19,8 @@
 #' 
 #' The Olden function also works with networks that have skip layers by adding the input-output connection weights to the final summed product of all input-hidden and hidden-output connections.  This was not described in the original method so interpret with caution. 
 #' 
+#' By default, the results are shown only for the first response variable for networks with multiple output nodes.  The plotted response variable can be changed with \code{out_var}.  
+#' 
 #' @export
 #' 
 #' @import ggplot2
@@ -108,7 +110,11 @@ olden <- function(mod_in, ...) UseMethod('olden')
 olden.default <- function(mod_in, x_names, y_names, out_var = NULL, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, skip_wts = NULL, ...){
   
   # get index value for response variable to measure
-  if(is.null(out_var)) out_var <- y_names[1]
+  if(is.null(out_var)){
+    if(length(y_names) > 1)
+      warning('Results for first response variable only, use out_var argument to change')
+    out_var <- y_names[1]
+  }
   
   # stop if out_var is not a named variable
   if(!out_var %in% y_names) stop(paste('out_var must match one:', paste(y_names, collapse = ', ')))

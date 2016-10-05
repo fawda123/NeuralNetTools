@@ -38,7 +38,7 @@ garson(mod_in, ...)
 
 \item{x_lab}{chr string of alternative names to be used for explanatory variables in the figure, default is taken from \code{mod_in}}
 
-\item{y_lab}{chr string of alternative names to be used for response variable in the figure, otherwise it is taken from the input model}
+\item{y_lab}{chr string of alternative name to be used for the y-axis in the figure}
 
 \item{struct}{numeric vector equal in length to the number of layers in the network.  Each number indicates the number of nodes in each layer starting with the input and ending with the output.  An arbitrary number of hidden layers can be included.}
 }
