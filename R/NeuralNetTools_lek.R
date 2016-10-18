@@ -284,7 +284,7 @@ lekprofile.nn <- function(mod_in, xsel = NULL, ysel = NULL, ...){
   modwts <- neuralweights(mod_in)
   modwts <- unlist(modwts$wts)
   modsz <- mod_in$call$hidden
-  modfrm <- mod_in$call$formula
+  modfrm <- eval(mod_in$call$formula)
   modlin <- mod_in$call$linear.output
   modlin2 <- TRUE
   if(!is.null(modlin)) modlin2 <- modlin
