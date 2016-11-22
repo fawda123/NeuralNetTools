@@ -24,7 +24,7 @@
 #' @param prune_lty line type for pruned connections, passed to \code{\link[graphics]{segments}}
 #' @param max_sp logical value indicating if space between nodes in each layer is maximized, default \code{FALSE}
 #' @param skip logical if skip layer connections are plotted instead of the primary network
-#' @param ...	additional arguments passed to plot
+#' @param ...	additional arguments passed to or from other methods
 #' 
 #' @import ggplot2
 #' 

@@ -37,7 +37,7 @@ plotnet(mod_in, ...)
 \arguments{
 \item{mod_in}{neural network object or numeric vector of weights}
 
-\item{...}{additional arguments passed to plot}
+\item{...}{additional arguments passed to or from other methods}
 
 \item{x_names}{chr string indicating names for input variables, default from model object}
 
