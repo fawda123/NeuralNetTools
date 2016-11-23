@@ -57,7 +57,9 @@ This method is similar to Garson's algorithm (Garson 1991, modified by Goh 1995)
 
 The importance values assigned to each variable are in units that are based directly on the summed product of the connection weights.  The actual values should only be interpreted based on relative sign and magnitude between explanatory variables.  Comparisons between different models should not be made.
 
-The Olden function also works with networks that have skip layers by adding the input-output connection weights to the final summed product of all input-hidden and hidden-output connections.  This was not described in the original method so interpret with caution.
+The Olden function also works with networks that have skip layers by adding the input-output connection weights to the final summed product of all input-hidden and hidden-output connections.  This was not described in the original method so interpret with caution. 
+
+By default, the results are shown only for the first response variable for networks with multiple output nodes.  The plotted response variable can be changed with \code{out_var}.
 }
 \examples{
 

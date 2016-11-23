@@ -3,13 +3,16 @@
 #' Conduct a sensitivity analysis of model responses in a neural network to input variables using Lek's profile method
 #' 
 #' @param mod_in input object for which an organized model list is desired.  The input can be an object of class \code{nnet} or \code{mlp}
-#' @param xvars \code{\link[base]{data.frame}} of explanatory variables used to create the input model
-#' @param ynms chr string of response variable names for model
+#' @param xvars \code{\link[base]{data.frame}} of explanatory variables used to create the input model, only needed for \code{mlp} objects
+#' @param yvars \code{\link[base]{data.frame}} of explanatory variables used to create the input model, only needed for \code{mlp} objects
+#' @param ysel chr string indicating which response variables to plot if more than one, defaults to all
 #' @param xsel chr string of names of explanatory variables to plot, defaults to all
 #' @param steps numeric value indicating number of observations to evaluate for each explanatory variable from minimum to maximum value, default 100
-#' @param group_vals numeric vector indicating quantile values at which to hold other explanatory variables constant
+#' @param group_vals numeric vector with values from 0-1 indicating quantile values at which to hold other explanatory variables constant or a single value indicating number of clusters to define grouping scheme, see details
 #' @param val_out logical value indicating if actual sensitivity values are returned rather than a plot, default \code{FALSE}
 #' @param group_show logical if a barplot is returned that shows the values at which explanatory variables were held constant while not being evaluated
+#' @param grp_nms optional chr string of alternative names for groups in legend
+#' @param position chr string indicating bar position (e.g., 'dodge', 'fill', 'stack'), passed to \code{\link[ggplot2]{geom_bar}}, used if \code{group_show = TRUE}
 #' @param ... arguments passed to other methods
 #' 
 #' @details
@@ -106,9 +109,9 @@ lekprofile <- function(mod_in, ...) UseMethod('lekprofile')
 #' @export
 #' 
 #' @method lekprofile default
-lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, group_vals = seq(0, 1, by = 0.2), val_out = FALSE, group_show = FALSE, ...){
-  
-  # subset xall if xsel is not empy
+lekprofile.default <- function(mod_in, xvars, ysel = NULL, xsel = NULL, steps = 100, group_vals = seq(0, 1, by = 0.2), val_out = FALSE, group_show = FALSE, grp_nms = NULL, position = 'dodge', ...){
+
+  # subset xsel if xsel is not empy
   if(is.null(xsel)) xsel <- names(xvars)
   
   # stop if only one input variable
@@ -145,13 +148,13 @@ lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, gr
   }
 
   # return bar plot for group values
-  if(group_show) return(lekgrps(grps))
+  if(group_show) return(lekgrps(grps, position = position, grp_nms = grp_nms))
   
   #use 'pred_fun' to get pred vals of response across range of vals for an exp vars
   #loops over all explanatory variables of interest and all group values
   lek_vals <- sapply(
     xsel, 
-    function(vars) pred_sens(xvars, mod_in, vars, steps, grps, ynms),
+    function(vars) pred_sens(xvars, mod_in, vars, steps, grps, ysel),
     simplify = FALSE  
   )
 
@@ -160,6 +163,17 @@ lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, gr
   lek_vals$L2 <- factor(lek_vals$L2)#, labels = 1:nrow(grps))
   names(lek_vals) <- c('Explanatory', 'resp_name', 'Response', 'Groups', 'exp_name')
 
+  # change factor levels for groups in legend
+  if(!is.null(grp_nms)){
+   
+    uni_grps <- unique(lek_vals$Groups)
+    if(length(grp_nms) != length(uni_grps))
+      stop('grp_nms must have same length as group_vals')
+    
+    lek_vals$Groups <- factor(lek_vals$Groups, levels = uni_grps, labels = grp_nms)
+     
+  }
+  
   #return only values if val_out = TRUE
   if(val_out) return(list(lek_vals, grps))
   
@@ -180,29 +194,33 @@ lekprofile.default <- function(mod_in, xvars, ynms, xsel = NULL, steps = 100, gr
 #' @export
 #' 
 #' @method lekprofile nnet
-lekprofile.nnet <- function(mod_in, ...){
+lekprofile.nnet <- function(mod_in, xsel = NULL, ysel = NULL, ...){
   
   # get exp and resp names from mod_in
   # get matrix for exp vars
   if(is.null(mod_in$call$formula)){
-    
-    ynms <- colnames(eval(mod_in$call$y))
-    if(is.null(ynms)) stop('Response variables must have names attribute') 
-    xall <- colnames(eval(mod_in$call$x))
-    if(is.null(xall)) stop('Input variables must have names attribute')
+     
+    ychk <- colnames(eval(mod_in$call$y))
+    if(is.null(ychk)) stop('Response variables must have names attribute') 
+    xchk <- colnames(eval(mod_in$call$x))
+    if(is.null(xchk)) stop('Input variables must have names attribute')
     xvars <- eval(mod_in$call$x)
     
   } else {
     
     forms <- eval(mod_in$call$formula)
     dat_names <- try(model.frame(forms,data = eval(mod_in$call$data)))
-    ynms <- as.character(forms)[2]
-    xall <- names(dat_names)[!names(dat_names) %in% as.character(forms)[2]]
+    ychk <- as.character(forms)[2]
+    xchk <- names(dat_names)[!names(dat_names) %in% as.character(forms)[2]]
     xvars <- dat_names[, !names(dat_names) %in% as.character(forms)[2], drop = F]
     
   }
 
-  lekprofile.default(mod_in, xvars = xvars, ynms = ynms, ...)
+  # replace xsel, ysel with model values if not provided
+  if(is.null(xsel)) xsel <- xchk
+  if(is.null(ysel)) ysel <- ychk
+
+  lekprofile.default(mod_in, xvars = xvars, ysel = ysel, xsel = xsel, ...)
 
 }
 
@@ -213,16 +231,19 @@ lekprofile.nnet <- function(mod_in, ...){
 #' @export
 #' 
 #' @method lekprofile mlp
-lekprofile.mlp <- function(mod_in, xvars, ...){
+lekprofile.mlp <- function(mod_in, xvars, yvars, xsel = NULL, ysel = NULL, ...){
 
-  # getexp and resp names from mod_in
+  if(!inherits(xvars, 'data.frame')) stop('xvars must be a data.frame')
+  if(!inherits(yvars, 'data.frame')) stop('yvars must be a data.frame')
+  
+  # getexp and resp names from mod_in if not provided
   # get matrix for exp vars
-  ynms <- paste0('Y', seq(1, mod_in$nOutputs))
-  xvars <- data.frame(xvars)
-  names(xvars) <- paste0('X', seq(1, mod_in$nInputs))
-  xall <- names(xvars)
-
-  lekprofile.default(mod_in, xvars = xvars, ynms = ynms, ...)
+  if(is.null(ysel))
+    ysel <- names(yvars)
+  if(is.null(xsel))
+    xsel <- names(xvars)
+  
+  lekprofile.default(mod_in, xvars = xvars, yvars = yvars, xsel = xsel, ysel = ysel, ...)
   
 }
 
@@ -233,17 +254,19 @@ lekprofile.mlp <- function(mod_in, xvars, ...){
 #' @export
 #' 
 #' @method lekprofile train
-lekprofile.train <- function(mod_in, ...){
+lekprofile.train <- function(mod_in, xsel = NULL, ysel = NULL, ...){
   
   # input data, x_names, and y_names
   xvars <- mod_in$trainingData
   xvars <- xvars[, !names(xvars) %in% '.outcome']
-  ynms <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = TRUE)[[1]]
+  ychk <- strsplit(as.character(mod_in$terms[[2]]), ' + ', fixed = TRUE)[[1]]
   mod_in <- mod_in$finalModel
   x_names <- mod_in$xNames
   xvars <- xvars[, x_names]
   
-  lekprofile.default(mod_in, xvars = xvars, ynms = ynms, ...)
+  if(is.null(ysel)) ysel <- ychk
+  
+  lekprofile.default(mod_in, xvars = xvars, xsel = xsel, ysel = ysel, ...)
   
 }
 
@@ -254,14 +277,14 @@ lekprofile.train <- function(mod_in, ...){
 #' @export
 #' 
 #' @method lekprofile nn
-lekprofile.nn <- function(mod_in, ...){
+lekprofile.nn <- function(mod_in, xsel = NULL, ysel = NULL, ...){
 
   # recreate the model using nnet (no predict method for nn)
   moddat <- mod_in$data
   modwts <- neuralweights(mod_in)
   modwts <- unlist(modwts$wts)
   modsz <- mod_in$call$hidden
-  modfrm <- mod_in$call$formula
+  modfrm <- eval(mod_in$call$formula)
   modlin <- mod_in$call$linear.output
   modlin2 <- TRUE
   if(!is.null(modlin)) modlin2 <- modlin
@@ -282,7 +305,7 @@ lekprofile.nn <- function(mod_in, ...){
   mod_in <- eval(mod_in)
   
   # pass to lekprofile.nnet
-  lekprofile(mod_in, ...)
+  lekprofile(mod_in, xsel = xsel, ysel = ysel, ...)
   
 }
 

@@ -264,7 +264,7 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
 #' @param var_sel chr string of explanatory variable to select
 #' @param step_val number of values to sequence range of selected explanatory variable
 #' @param grps matrix of values for holding explanatory values constant, one column per variable and one row per group
-#' @param ynms chr string of response variable names for correct labelling
+#' @param ysel chr string of response variable names for correct labelling
 #'
 #'@details
 #' Gets predicted output for a model's response variable based on matrix of explanatory variables that are restricted following Lek's profile method. The selected explanatory variable is sequenced across a range of values. All other explanatory variables are held constant at the values in \code{grps}.
@@ -290,7 +290,7 @@ neuralweights.nn <- function(mod_in, rel_rsc = NULL, ...){
 #' grps <- apply(mat_in, 2, quantile, seq(0, 1, by = 0.2))
 #' 
 #' pred_sens(mat_in, mod, 'X1', 100, grps, 'Y1')
-pred_sens <- function(mat_in, mod_in, var_sel, step_val, grps, ynms){
+pred_sens <- function(mat_in, mod_in, var_sel, step_val, grps, ysel){
 
   # exp variable to evaluate across its range
   chngs <- range(mat_in[, var_sel, drop = FALSE], na.rm = TRUE)
@@ -308,9 +308,11 @@ pred_sens <- function(mat_in, mod_in, var_sel, step_val, grps, ynms){
     topred <- cbind(chngs, topred)
     row.names(topred) <- 1:nrow(topred)
     topred <- topred[, names(mat_in)] # this has to be in correct order....
-  
+
     preds <- data.frame(predict(mod_in, newdata = topred))
-    names(preds) <- ynms
+    if(ncol(preds) > 1)
+      preds <- preds[, ysel, drop = FALSE]
+    else names(preds) <- ysel
 
     x_vars <- topred[, var_sel]
     preds <- data.frame(preds, x_vars)
@@ -686,6 +688,8 @@ bias_lines <- function(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, n
 #' Create optional barplot of constant values of each variable for each group used with \code{\link{lekprofile}}
 #'
 #' @param grps \code{\link[base]{data.frame}} of values for each variable in each group used to create groups in \code{\link{lekprofile}}
+#' @param position chr string indicating bar position (e.g., 'dodge', 'fill', 'stack'), passed to \code{\link[ggplot2]{geom_bar}}
+#' @param grp_nms optional chr string of alternative names for groups in legend
 #' 
 #' @import ggplot2
 #' 
@@ -699,15 +703,31 @@ bias_lines <- function(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, n
 #' grps <- kmeans(x, 6)$center
 #' 
 #' lekgrps(grps)
-lekgrps <- function(grps){
+lekgrps <- function(grps, position = 'dodge', grp_nms = NULL){
   
   # add split columns, make long form
   grps <- as.data.frame(grps)
-  grps$Groups <- factor(1:nrow(grps))
+  
+  # change group labels if needed
+  if(is.null(grp_nms)){
+    
+    grps$Groups <- factor(1:nrow(grps))
+    
+  } else {
+   
+    uni_grps <- 1:nrow(grps)
+    if(length(grp_nms) != length(uni_grps))
+      stop('grp_nms must have same length as group_vals')
+    
+    grps$Groups <- factor(uni_grps, labels = grp_nms)
+    
+  }
+  
+  # long format
   grps <- tidyr::gather(grps, 'variable', 'value', -ncol(grps))
 
   p <- ggplot(grps, aes_string(x = 'Groups', y = 'value', fill = 'variable')) +
-    geom_bar(stat = 'identity') + 
+    geom_bar(stat = 'identity', position = position) + 
     theme_bw() + 
     theme(legend.title = element_blank()) + 
     scale_y_continuous('Constant values')

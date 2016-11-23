@@ -7,7 +7,7 @@
 #' @param y_names chr string of response variable names, obtained from the model object
 #' @param bar_plot logical indicating if a \code{ggplot} object is returned (default \code{T}), otherwise numeric values are returned
 #' @param x_lab chr string of alternative names to be used for explanatory variables in the figure, default is taken from \code{mod_in}
-#' @param y_lab chr string of alternative names to be used for response variable in the figure, otherwise it is taken from the input model
+#' @param y_lab chr string of alternative name to be used for the y-axis in the figure
 #' @param ... arguments passed to other methods
 #' 
 #' @details
@@ -103,6 +103,10 @@ garson <- function(mod_in, ...) UseMethod('garson')
 #' @method garson default
 garson.default <- function(mod_in, x_names, y_names, bar_plot = TRUE, x_lab = NULL, y_lab = NULL, ...){
   
+  # stop if more than one y output
+  if(length(y_names) > 1) 
+    stop('Garson only applies to neural networks with one output node')
+  
   # change variables names to user sub 
   if(!is.null(x_lab)){
     if(length(x_names) != length(x_lab)) stop('x_lab length not equal to number of input variables')
@@ -126,10 +130,6 @@ garson.default <- function(mod_in, x_names, y_names, bar_plot = TRUE, x_lab = NU
   # stop if multiple hidden layers
   max_i <- length(inp_hid)
   if(max_i > 1) stop('Garsons algorithm not applicable for multiple hidden layers')
-  
-  # stop if more than one y output
-  if(length(y_names) > 1) 
-    stop('Garson only applies to neural networks with one output node')
   
   # final layer weights for output
   hid_out <- wts_in[[grep('out 1', names(wts_in))]][-1]
