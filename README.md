@@ -7,7 +7,7 @@ Linux build: [![Travis-CI Build Status](http://travis-ci.org/fawda123/NeuralNetT
 
 Windows build: [![AppVeyor Build Status](http://ci.appveyor.com/api/projects/status/github/fawda123/NeuralNetTools?branch=master)](http://ci.appveyor.com/project/fawda123/NeuralNetTools)
 
-[![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/grand-total/NeuralNetTools)](http://cran.rstudio.com/package=NeuralNetTools)
+[![Downloads from the RStudio CRAN mirror](http://cranlogs.r-pkg.org/badges/grand-total/NeuralNetTools)](https://cran.r-project.org/package=NeuralNetTools)
 
 This is the development repository for the NeuralNetTools package.  Functions within this package can be used for the interpretation of neural network models created in R, including functions to plot a neural network interpretation diagram, evaluation of variable importance, and a sensitivity analysis of input variables. 
 
@@ -31,7 +31,7 @@ install.packages('NeuralNetTools')
 
 Please cite this package as follows:
 
-*Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.5.0. http://cran.rstudio.com/package=NeuralNetTools*
+*Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.5.0. https://cran.rstudio.com/package=NeuralNetTools*
 
 ### Bug reports
 
@@ -41,7 +41,7 @@ Please submit any bug reports (or suggestions) using the [issues](https://github
 
 
 
-Four core functions are available to plot (`plotnet`), evaluate variable importance (`garson`, `olden`), and conduct a simple sensitivity analysis (`lekprofile`).  A sample dataset is also provided for use with the examples.  The functions have S3 methods developed for neural networks from the following packages: [nnet](http://cran.r-project.org/web/packages/nnet/index.html), [neuralnet](http://cran.r-project.org/web/packages/neuralnet/index.html), [RSNNS](http://cran.r-project.org/web/packages/RSNNS/index.html), and [caret](http://cran.r-project.org/web/packages/caret/index.html).  Numeric inputs that describe model weights are also acceptable for most of the functions. A full package descriptions is available in the online [manual](http://cran.r-project.org/web/packages/NeuralNetTools/NeuralNetTools.pdf).
+Four core functions are available to plot (`plotnet`), evaluate variable importance (`garson`, `olden`), and conduct a simple sensitivity analysis (`lekprofile`).  A sample dataset is also provided for use with the examples.  The functions have S3 methods developed for neural networks from the following packages: [nnet](https://cran.r-project.org/package=nnet), [neuralnet](https://cran.r-project.org/package=neuralnet), [RSNNS](https://cran.r-project.org/package=RSNNS), and [caret](https://cran.r-project.org/package=caret).  Numeric inputs that describe model weights are also acceptable for most of the functions. A full package descriptions is available in the online [manual](https://cran.r-project.org/package=NeuralNetTools/NeuralNetTools.pdf).
  
 Start by loading the package and the sample dataset.
 

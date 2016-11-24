@@ -1,5 +1,5 @@
 ## Resubmission
-This is a version update to 1.5.0. 
+This is a version update to 1.5.0. I have also changed all the URLs in the README files to the canonical form for CRAN: 
 
 ## Test environments
 * local Windows 10 install, R 3.3.2 

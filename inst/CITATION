@@ -6,4 +6,4 @@ bibentry(bibtype = "Manual",
          author = person("Marcus", "Beck"),
          year = year,
          note = note,
-         url = "http://CRAN.R-project.org/package=NeuralNetTools")
+         url = "https://CRAN.R-project.org/package=NeuralNetTools")
