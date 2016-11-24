@@ -31,7 +31,7 @@ install.packages('NeuralNetTools')
 
 Please cite this package as follows:
 
-*Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.4.0. http://cran.r-project.org/web/packages/NeuralNetTools/*
+*Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.5.0. http://cran.rstudio.com/package=NeuralNetTools*
 
 ### Bug reports
 
@@ -65,7 +65,7 @@ par(mar = numeric(4))
 plotnet(mod)
 ```
 
-![](README_files/figure-html/unnamed-chunk-6-1.png)
+![](README_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 The `garson` function uses Garson's algorithm to evaluate relative variable importance. This function identifies the relative importance of explanatory variables for a single response variable by deconstructing the model weights. The importance of each variable can be determined by identifying all weighted connections between the layers in the network. That is, all weights connecting the specific input node that pass through the hidden layer to the response variable are identified. This is repeated for all other explanatory variables until a list of all weights that are specific to each input variable is obtained. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with the response variable in the model. The results indicate relative importance as the absolute magnitude from zero to one.  The function cannot be used to evaluate the direction of the response.  Only neural networks with one hidden layer and one output node can be evaluated.
 
@@ -75,7 +75,7 @@ The `garson` function uses Garson's algorithm to evaluate relative variable impo
 garson(mod)
 ```
 
-![](README_files/figure-html/unnamed-chunk-7-1.png)
+![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 The `olden` function is an alternative and more flexible approach to evaluate variable importance. The function calculates iportance as the product of the raw input-hidden and hidden-output connection weights between each input and output neuron and sums the product across all hidden neurons. An advantage of this approach is the relative contributions of each connection weight are maintained in terms of both magnitude and sign as compared to Garson's algorithm which only considers the absolute magnitude. For example, connection weights that change sign (e.g., positive to negative) between the input-hidden to hidden-output layers would have a cancelling effect whereas Garson's algorithm may provide misleading results based on the absolute magnitude. An additional advantage is that Olden's algorithm is capable of evaluating neural networks with multiple hidden layers and response variables.  The importance values assigned to each variable are in units that are based directly on the summed product of the connection weights. The actual values should only be interpreted based on relative sign and magnitude between explanatory variables. Comparisons between different models should not be made.
 
@@ -85,7 +85,7 @@ The `olden` function is an alternative and more flexible approach to evaluate va
 olden(mod)
 ```
 
-![](README_files/figure-html/unnamed-chunk-8-1.png)
+![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 The `lekprofile` function performs a simple sensitivity analysis for neural networks. The Lek profile method is fairly generic and can be extended to any statistical model in R with a predict method. However, it is one of few methods to evaluate sensitivity in neural networks. The function begins by predicting the response variable across the range of values for a given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum) that are indicated in the plot legend. The final result is a set of predictions for the response that are evaluated across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is repeated for each explanatory variable to describe the fitted response values returned by the model.
 
@@ -95,7 +95,7 @@ The `lekprofile` function performs a simple sensitivity analysis for neural netw
 lekprofile(mod)
 ```
 
-![](README_files/figure-html/unnamed-chunk-9-1.png)
+![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
 ### License
 
