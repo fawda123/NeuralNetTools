@@ -1,13 +1,13 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
-README.html
+README.md
+README.Rmd
 cran-comments.md
 .gitignore
 .Rhistory
 ^\.travis\.yml$
 ^appveyor\.yml$
-^README_files/.*
 ^README_cache/.*
 README.Rmd
 ^revdep/.*

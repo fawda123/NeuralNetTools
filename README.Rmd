@@ -3,7 +3,7 @@ output:
   html_document:
     keep_md: yes
     toc: no
-    self_contained: no
+    self_contained: yes
   pdf_document:
     toc: yes
 ---
