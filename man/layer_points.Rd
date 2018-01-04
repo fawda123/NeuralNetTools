@@ -39,4 +39,3 @@ layer_points(layer, x_loc, x_range, layer_name, cex_val, circle_cex, bord_col,
 \description{
 Plot neural network nodes in \code{\link{plotnet}}
 }
-

@@ -18,4 +18,3 @@ get_ys(lyr, max_sp, struct, y_range)
 \description{
 Get y locations for input, hidden, output layers in \code{\link{plotnet}}
 }
-

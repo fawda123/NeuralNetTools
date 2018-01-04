@@ -40,4 +40,3 @@ mod <- nnet(Y1 ~ X1 + X2 + X3, data = neuraldat, size = 5, linout = TRUE,
 neuralskips(mod)  
 
 }
-

@@ -3,10 +3,10 @@
 \name{garson}
 \alias{garson}
 \alias{garson.default}
+\alias{garson.numeric}
+\alias{garson.nnet}
 \alias{garson.mlp}
 \alias{garson.nn}
-\alias{garson.nnet}
-\alias{garson.numeric}
 \alias{garson.train}
 \title{Variable importance using Garson's algorithm}
 \usage{
@@ -128,4 +128,3 @@ Olden, J.D., Joy, M.K., Death, R.G. 2004. An accurate comparison of methods for 
 \seealso{
 \code{\link{olden}} for a more flexible approach for variable importance
 }
-

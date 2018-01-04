@@ -20,4 +20,3 @@ neuraldat
 A simulated dataset of 2000 observations containing two response variables and three explanatory variables.  Explanatory variables were sampled from a standard normal distribution.  Response variables were linear combinations of the explanatory variables.  The response variables Y1 and Y2 are standardized from 0 to 1.
 }
 \keyword{datasets}
-

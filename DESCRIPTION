@@ -27,4 +27,4 @@ Depends:
 Authors@R: person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),
     email = "mbafs2012@gmail.com")
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

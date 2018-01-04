@@ -41,4 +41,3 @@ bias_lines(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, neg_col,
 \description{
 Plot connection weights for bias lines in \code{\link{plotnet}}
 }
-

@@ -3,10 +3,10 @@
 \name{plotnet}
 \alias{plotnet}
 \alias{plotnet.default}
-\alias{plotnet.mlp}
-\alias{plotnet.nn}
 \alias{plotnet.nnet}
 \alias{plotnet.numeric}
+\alias{plotnet.mlp}
+\alias{plotnet.nn}
 \alias{plotnet.train}
 \title{Plot a neural network model}
 \usage{
@@ -202,4 +202,3 @@ plotnet(mod, circle_col = list(cols, 'lightblue'))
 \references{
 Ozesmi, S.L., Ozesmi, U. 1999. An artificial neural network approach to spatial habitat modeling with interspecific interaction. Ecological Modelling. 116:15-31.
 }
-

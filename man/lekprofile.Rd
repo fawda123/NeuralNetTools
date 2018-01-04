@@ -3,10 +3,10 @@
 \name{lekprofile}
 \alias{lekprofile}
 \alias{lekprofile.default}
-\alias{lekprofile.mlp}
-\alias{lekprofile.nn}
 \alias{lekprofile.nnet}
+\alias{lekprofile.mlp}
 \alias{lekprofile.train}
+\alias{lekprofile.nn}
 \title{Sensitivity analysis using Lek's profile method}
 \usage{
 lekprofile(mod_in, ...)
@@ -135,4 +135,3 @@ Gevrey, M., Dimopoulos, I., Lek, S. 2003. Review and comparison of methods to st
 
 Olden, J.D., Joy, M.K., Death, R.G. 2004. An accurate comparison of methods for quantifying variable importance in artificial neural networks using simulated data. Ecological Modelling. 178:389-397.
 }
-

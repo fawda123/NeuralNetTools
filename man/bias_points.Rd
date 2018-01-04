@@ -31,4 +31,3 @@ bias_points(bias_x, bias_y, layer_name, node_labs, x_range, y_range, circle_cex,
 \description{
 Plot bias points in \code{\link{plotnet}}
 }
-

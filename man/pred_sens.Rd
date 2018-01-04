@@ -47,4 +47,3 @@ pred_sens(mat_in, mod, 'X1', 100, grps, 'Y1')
 \seealso{
 lekprofile
 }
-

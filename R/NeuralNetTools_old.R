@@ -118,7 +118,7 @@ olden.default <- function(mod_in, x_names, y_names, out_var = NULL, bar_plot = T
   
   # stop if out_var is not a named variable
   if(!out_var %in% y_names) stop(paste('out_var must match one:', paste(y_names, collapse = ', ')))
-  else out_ind <- grep(out_var, y_names)
+  else out_ind <- grep(out_var, y_names, fixed = TRUE)
   
   #change variables names to user sub 
   if(!is.null(x_lab)){

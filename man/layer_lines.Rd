@@ -52,4 +52,3 @@ layer_lines(mod_in, h_layer, layer1 = 1, layer2 = 2, out_layer = FALSE,
 \description{
 Plot connection weights in \code{\link{plotnet}}
 }
-

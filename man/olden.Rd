@@ -3,10 +3,10 @@
 \name{olden}
 \alias{olden}
 \alias{olden.default}
+\alias{olden.numeric}
+\alias{olden.nnet}
 \alias{olden.mlp}
 \alias{olden.nn}
-\alias{olden.nnet}
-\alias{olden.numeric}
 \alias{olden.train}
 \title{Variable importance using connection weights}
 \usage{
@@ -134,4 +134,3 @@ Olden, J.D., Jackson, D.A. 2002. Illuminating the 'black-box': a randomization a
 
 Olden, J.D., Joy, M.K., Death, R.G. 2004. An accurate comparison of methods for quantifying variable importance in artificial neural networks using simulated data. Ecological Modelling. 178:389-397.
 }
-

@@ -26,4 +26,3 @@ grps <- kmeans(x, 6)$center
 
 lekgrps(grps)
 }
-

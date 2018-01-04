@@ -2,10 +2,10 @@
 % Please edit documentation in R/NeuralNetTools_utils.R
 \name{neuralweights}
 \alias{neuralweights}
+\alias{neuralweights.numeric}
+\alias{neuralweights.nnet}
 \alias{neuralweights.mlp}
 \alias{neuralweights.nn}
-\alias{neuralweights.nnet}
-\alias{neuralweights.numeric}
 \title{Get weights for a neural network}
 \usage{
 neuralweights(mod_in, ...)
@@ -87,4 +87,3 @@ mod <- neuralnet(Y1 ~ X1 + X2 + X3, data = neuraldat, hidden = 5)
 neuralweights(mod)
 }
 }
-
