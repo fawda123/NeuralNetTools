@@ -427,7 +427,7 @@ get_ys <- function(lyr, max_sp, struct, y_range){
 #' @param x_range numeric for total range of x-axis
 #' @param layer_name string indicating text to put in node
 #' @param cex_val numeric indicating size of point text
-#' @param circle_cex numeric indcating size of circles
+#' @param circle_cex numeric indicating size of circles
 #' @param bord_col chr string indicating border color around nodes, default \code{lightblue}
 #' @param in_col chr string indicating interior color of nodes
 #' @param node_labs logical indicating if node labels are to be plotted

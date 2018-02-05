@@ -18,7 +18,7 @@ layer_points(layer, x_loc, x_range, layer_name, cex_val, circle_cex, bord_col,
 
 \item{cex_val}{numeric indicating size of point text}
 
-\item{circle_cex}{numeric indcating size of circles}
+\item{circle_cex}{numeric indicating size of circles}
 
 \item{bord_col}{chr string indicating border color around nodes, default \code{lightblue}}
 
