@@ -10,4 +10,6 @@ cran-comments.md
 ^appveyor\.yml$
 ^README_cache/.*
 README.Rmd
+README.html
+^README_files/.*
 ^revdep/.*

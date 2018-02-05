@@ -10,7 +10,7 @@ output:
 
 ## NeuralNetTools
 
-#### *Marcus W. Beck, mbafs2012@gmail.com*
+#### *Marcus W. Beck, marcusb@sccwrp.org*
 
 Linux build: [![Travis-CI Build Status](http://travis-ci.org/fawda123/NeuralNetTools.png?branch=master)](http://travis-ci.org/fawda123/NeuralNetTools)
 
