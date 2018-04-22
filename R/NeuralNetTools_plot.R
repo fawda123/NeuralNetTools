@@ -23,6 +23,7 @@
 #' @param prune_col chr string indicating color of pruned connections, otherwise not shown
 #' @param prune_lty line type for pruned connections, passed to \code{\link[graphics]{segments}}
 #' @param max_sp logical value indicating if space between nodes in each layer is maximized, default \code{FALSE}
+#' @param pad_x numeric for increasing or decreasing padding on the x-axis, values less than one will increase padding and values greater than one will decrease padding
 #' @param skip logical if skip layer connections are plotted instead of the primary network
 #' @param ...	additional arguments passed to or from other methods
 #' 
@@ -151,7 +152,7 @@ plotnet <- function(mod_in, ...) UseMethod('plotnet')
 #' @export
 #'
 #' @method plotnet default
-plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, rel_rsc = c(1, 7), circle_cex = 5, node_labs = TRUE, var_labs = TRUE, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, prune_col = NULL, prune_lty = 'dashed', skip = NULL, ...){
+plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, rel_rsc = c(1, 7), circle_cex = 5, node_labs = TRUE, var_labs = TRUE, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, pad_x = 1, prune_col = NULL, prune_lty = 'dashed', skip = NULL, ...){
 
   wts <- neuralweights(mod_in, struct = struct)
   struct <- wts$struct
@@ -165,11 +166,10 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
   else circle_col_inp <- circle_col
   
   #initiate plotting
-  x_range <- c(0, 100)
-  y_range <- c(0, 100)
-  #these are all proportions from 0-1
+  x_range <- c(-1, 1)
+  y_range <- c(0, 1)
   if(is.null(line_stag)) line_stag <- 0.011 * circle_cex/2
-  layer_x <- seq(0.17, 0.9, length = length(struct))
+  layer_x <- seq(-0.4, 0.4, length = length(struct)) * pad_x
   bias_x <- layer_x[-length(layer_x)] + diff(layer_x)/2
   bias_y <- 0.95
   circle_cex <- circle_cex
