@@ -31,6 +31,9 @@
 #' @export
 #' 
 #' @references
+#' 
+#' Beck, M.W. 2018. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Journal of Statistical Software. 85(11):1-20.
+#' 
 #' Ozesmi, S.L., Ozesmi, U. 1999. An artificial neural network approach to spatial habitat modeling with interspecific interaction. Ecological Modelling. 116:15-31.
 #' 
 #' @return A graphics object unless \code{wts_only = TRUE}, then neural network weights from \code{\link{neuralweights}}.

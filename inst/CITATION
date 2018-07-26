@@ -1,9 +1,15 @@
-year <- sub("-.*", "", meta$Date)
-note <- sprintf("R package version %s", meta$Version)
+bibentry(bibtype = "Article",
+  title        = "{NeuralNetTools}: Visualization and Analysis Tools for Neural Networks",
+  author       = person(given = c("Marcus", "W."),
+                        family = "Beck",
+                        email = "marcusb@sccwrp.org"),
+  journal      = "Journal of Statistical Software",
+  year         = "2018",
+  volume       = "85",
+  number       = "11",
+  pages        = "1--20",
+  doi          = "10.18637/jss.v085.i11",
 
-bibentry(bibtype = "Manual",
-         title = "{NeuralNetTools: Visualization and Analysis Tools for Neural Networks}",
-         author = person("Marcus", "Beck"),
-         year = year,
-         note = note,
-         url = "https://CRAN.R-project.org/package=NeuralNetTools")
+  header       = "To cite NeuralNetTools in publications use:"
+)
+

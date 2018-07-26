@@ -1,5 +1,5 @@
 ## Resubmission
-This is a version update to 1.5.1. 
+This is an update to v1.5.2.
 
 ## Test environments
 * ubuntu 14.04.5 LTS (on travis-ci), R 3.4.2
