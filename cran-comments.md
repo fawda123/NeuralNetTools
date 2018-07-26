@@ -1,24 +1,26 @@
 ## Resubmission
-This is an update to v1.5.2.
+This is an update to v1.5.2 with new CITATION file for JSS article
 
 ## Test environments
-* ubuntu 14.04.5 LTS (on travis-ci), R 3.4.2
-* Windows install (on AppVeyor), R 3.4.3 Patched (2018-02-03 r74202)
+* Ubuntu 14.04.5 LTS (on travis-ci), R 3.4.4
+* local Windows 7 install, R 3.4.4
+* local Windows 7 install, Current r-devel (2018-07-25 r75005)
+* Windows install (on AppVeyor), R 3.5.1 Patched (2018-07-24 r75006)
 * win-builder [http://win-builder.r-project.org/](http://win-builder.r-project.org/) (devel and release)
-* local Windows 7 install, R 3.4.3
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
 
-There was 1 NOTE, related to a change in my contact email: 
+There was 1 NOTE, the DOI will be registered by JSS when this version is on CRAN: 
 
 * checking CRAN incoming feasibility ... NOTE
 Maintainer: 'Marcus W. Beck <marcusb@sccwrp.org>'
 
-New maintainer:
-  Marcus W. Beck <marcusb@sccwrp.org>
-Old maintainer(s):
-  Marcus W. Beck <mbafs2012@gmail.com>
+Found the following (possibly) invalid DOIs:
+  DOI: 10.18637/jss.v085.i11
+    From: inst/CITATION
+    Status: Not Found
+    Message: 404
 
 ## Downstream dependencies
-I have also run R CMD check on the darch, radiant.model, and RSNNS downstream dependencies for NeuralNetTools.  There were no ERRORs, WARNINGs, or NOTEs.
+I have also run R CMD check on the radiant.model and RSNNS downstream dependencies for NeuralNetTools.  There were no ERRORs, WARNINGs, or NOTEs.
