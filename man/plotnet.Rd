@@ -17,7 +17,7 @@ plotnet(mod_in, ...)
   rel_rsc = c(1, 7), circle_cex = 5, node_labs = TRUE, var_labs = TRUE,
   line_stag = NULL, cex_val = 1, alpha_val = 1,
   circle_col = "lightblue", pos_col = "black", neg_col = "grey",
-  bord_col = "lightblue", max_sp = FALSE, prune_col = NULL,
+  bord_col = "lightblue", max_sp = FALSE, pad_x = 1, prune_col = NULL,
   prune_lty = "dashed", skip = NULL, ...)
 
 \method{plotnet}{nnet}(mod_in, x_names = NULL, y_names = NULL,
@@ -76,6 +76,8 @@ plotnet(mod_in, ...)
 \item{bord_col}{chr string indicating border color around nodes, default \code{'lightblue'}}
 
 \item{max_sp}{logical value indicating if space between nodes in each layer is maximized, default \code{FALSE}}
+
+\item{pad_x}{numeric for increasing or decreasing padding on the x-axis, values less than one will increase padding and values greater than one will decrease padding}
 
 \item{prune_col}{chr string indicating color of pruned connections, otherwise not shown}
 
