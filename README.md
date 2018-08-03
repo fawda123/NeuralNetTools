@@ -7,8 +7,6 @@ Linux build: [![Travis-CI Build Status](http://travis-ci.org/fawda123/NeuralNetT
 
 Windows build: [![AppVeyor Build Status](http://ci.appveyor.com/api/projects/status/github/fawda123/NeuralNetTools?branch=master)](http://ci.appveyor.com/project/fawda123/NeuralNetTools)
 
-[![](http://cranlogs.r-pkg.org/badges/grand-total/NeuralNetTools)](http://cran.rstudio.com/web/packages/NeuralNetTools/index.html)
-
 This is the development repository for the NeuralNetTools package.  Functions within this package can be used for the interpretation of neural network models created in R, including functions to plot a neural network interpretation diagram, evaluation of variable importance, and a sensitivity analysis of input variables. 
 
 The development version of this package can be installed from Github:
@@ -31,7 +29,8 @@ install.packages('NeuralNetTools')
 
 Please cite this package as follows:
 
-*Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.5.0. https://cran.rstudio.com/package=NeuralNetTools*
+Beck MW (2018). "NeuralNetTools: Visualization and Analysis Tools for Neural Networks." _Journal of Statistical
+Software_, *85*(11), pp. 1-20. doi: 10.18637/jss.v085.i11 (URL: http://doi.org/10.18637/jss.v085.i11).
 
 ### Bug reports
 

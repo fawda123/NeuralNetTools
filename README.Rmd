@@ -36,7 +36,8 @@ install.packages('NeuralNetTools')
 
 Please cite this package as follows:
 
-*Beck MW. 2015. NeuralNetTools: Visualization and Analysis Tools for Neural Networks. Version 1.5.0. https://cran.rstudio.com/package=NeuralNetTools*
+Beck MW (2018). "NeuralNetTools: Visualization and Analysis Tools for Neural Networks." _Journal of Statistical
+Software_, *85*(11), pp. 1-20. doi: 10.18637/jss.v085.i11 (URL: http://doi.org/10.18637/jss.v085.i11).
 
 ### Bug reports
 
