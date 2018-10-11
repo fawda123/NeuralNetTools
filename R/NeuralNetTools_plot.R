@@ -9,6 +9,7 @@
 #' @param all_out	chr string indicating names of response variables for which connections are plotted, default all
 #' @param all_in	chr string indicating names of input variables for which connections are plotted, default all
 #' @param bias	logical value indicating if bias nodes and connections are plotted, default \code{TRUE}
+#' @param bias_y value from 0 to 1 for locattion of bias nodes on y-axis
 #' @param rel_rsc	numeric indicating the scaling range for the width of connection weights
 #' @param circle_cex	numeric value indicating size of nodes, default 5
 #' @param node_labs	logical value indicating if labels are plotted directly on nodes, default \code{TRUE}
@@ -155,7 +156,7 @@ plotnet <- function(mod_in, ...) UseMethod('plotnet')
 #' @export
 #'
 #' @method plotnet default
-plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, rel_rsc = c(1, 7), circle_cex = 5, node_labs = TRUE, var_labs = TRUE, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, pad_x = 1, prune_col = NULL, prune_lty = 'dashed', skip = NULL, ...){
+plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE, all_out = TRUE, all_in = TRUE, bias = TRUE, bias_y = 0.95, rel_rsc = c(1, 7), circle_cex = 5, node_labs = TRUE, var_labs = TRUE, line_stag = NULL, cex_val = 1, alpha_val = 1, circle_col = 'lightblue', pos_col = 'black', neg_col = 'grey', bord_col = 'lightblue', max_sp = FALSE, pad_x = 1, prune_col = NULL, prune_lty = 'dashed', skip = NULL, ...){
 
   wts <- neuralweights(mod_in, struct = struct)
   struct <- wts$struct
@@ -174,7 +175,6 @@ plotnet.default <- function(mod_in, x_names, y_names, struct = NULL, nid = TRUE,
   if(is.null(line_stag)) line_stag <- 0.011 * circle_cex/2
   layer_x <- seq(-0.4, 0.4, length = length(struct)) * pad_x
   bias_x <- layer_x[-length(layer_x)] + diff(layer_x)/2
-  bias_y <- 0.95
   circle_cex <- circle_cex
   
   #initiate plot

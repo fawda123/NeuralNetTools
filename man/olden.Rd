@@ -13,7 +13,8 @@
 olden(mod_in, ...)
 
 \method{olden}{default}(mod_in, x_names, y_names, out_var = NULL,
-  bar_plot = TRUE, x_lab = NULL, y_lab = NULL, skip_wts = NULL, ...)
+  bar_plot = TRUE, x_lab = NULL, y_lab = NULL, skip_wts = NULL,
+  ...)
 
 \method{olden}{numeric}(mod_in, struct, ...)
 

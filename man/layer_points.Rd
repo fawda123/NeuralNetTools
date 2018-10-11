@@ -4,8 +4,8 @@
 \alias{layer_points}
 \title{Plot neural network nodes}
 \usage{
-layer_points(layer, x_loc, x_range, layer_name, cex_val, circle_cex, bord_col,
-  in_col, node_labs, line_stag, var_labs, x_names, y_names, ...)
+layer_points(layer, x_loc, x_range, layer_name, cex_val, circle_cex,
+  bord_col, in_col, node_labs, line_stag, var_labs, x_names, y_names, ...)
 }
 \arguments{
 \item{layer}{specifies which layer, integer from \code{struct}}

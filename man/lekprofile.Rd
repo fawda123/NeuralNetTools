@@ -17,8 +17,8 @@ lekprofile(mod_in, ...)
 
 \method{lekprofile}{nnet}(mod_in, xsel = NULL, ysel = NULL, ...)
 
-\method{lekprofile}{mlp}(mod_in, xvars, yvars, xsel = NULL, ysel = NULL,
-  ...)
+\method{lekprofile}{mlp}(mod_in, xvars, yvars, xsel = NULL,
+  ysel = NULL, ...)
 
 \method{lekprofile}{train}(mod_in, xsel = NULL, ysel = NULL, ...)
 
