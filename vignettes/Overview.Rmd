@@ -1,43 +1,20 @@
 ---
-output: github_document
+title: "Overview"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-## NeuralNetTools
-
-#### *Marcus W. Beck, marcusb@sccwrp.org*
-
-[![R-CMD-check](https://github.com/fawda123/NeuralNetTools/workflows/R-CMD-check/badge.svg)](https://github.com/fawda123/NeuralNetTools/actions)
-[![pkgdown](https://github.com/fawda123/NeuralNetTools/workflows/pkgdown/badge.svg)](https://github.com/fawda123/NeuralNetTools/actions)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/NeuralNetTools)](https://cran.rstudio.com/web/packages/NeuralNetTools/index.html)
-
-This is the development repository for the NeuralNetTools package.  Functions within this package can be used for the interpretation of neural network models created in R, including functions to plot a neural network interpretation diagram, evaluation of variable importance, and a sensitivity analysis of input variables. 
-
-The development version of this package can be installed from Github:
-
-```{r, eval = FALSE}
-install.packages('devtools')
-library(devtools)
-install_github('fawda123/NeuralNetTools', ref = 'development')
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  comment = "#>"
+)
 ```
-
-The current release can be installed from CRAN:
-
-```{r, eval = FALSE}
-install.packages('NeuralNetTools')
-```
-
-### Citation
-
-Please cite this package as follows:
-
-Beck MW (2018). "NeuralNetTools: Visualization and Analysis Tools for Neural Networks." _Journal of Statistical
-Software_, *85*(11), pp. 1-20. doi: 10.18637/jss.v085.i11 (URL: http://doi.org/10.18637/jss.v085.i11).
-
-### Bug reports
-
-Please submit any bug reports or suggestions using the [issues](https://github.com/fawda123/NeuralNetTools/issues) tab of the GitHub page.
-
-### Functions
 
 ```{r, echo = FALSE, message = FALSE, eval = FALSE}
 library(NeuralNetTools)
@@ -88,7 +65,3 @@ The `lekprofile` function performs a simple sensitivity analysis for neural netw
 # sensitivity analysis
 lekprofile(mod)
 ```
-
-### License
-
-This package is released in the public domain under the creative commons license [CC0](https://tldrlegal.com/license/creative-commons-cc0-1.0-universal). 
