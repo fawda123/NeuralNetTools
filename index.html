@@ -76,9 +76,7 @@
 <h4 class="hasAnchor">
 <a href="#marcus-w-beck-marcusbsccwrporg" class="anchor"></a><em>Marcus W. Beck, <a href="mailto:marcusb@sccwrp.org" class="email">marcusb@sccwrp.org</a></em>
 </h4>
-<p>Linux build: <a href="http://travis-ci.org/fawda123/NeuralNetTools"><img src="http://travis-ci.org/fawda123/NeuralNetTools.png?branch=master" alt="Travis-CI Build Status"></a></p>
-<p>Windows build: <a href="http://ci.appveyor.com/project/fawda123/NeuralNetTools"><img src="http://ci.appveyor.com/api/projects/status/github/fawda123/NeuralNetTools?branch=master" alt="AppVeyor Build Status"></a></p>
-<p><a href="https://cran.rstudio.com/web/packages/NeuralNetTools/index.html"><img src="http://cranlogs.r-pkg.org/badges/grand-total/NeuralNetTools"></a></p>
+
 <p>This is the development repository for the NeuralNetTools package. Functions within this package can be used for the interpretation of neural network models created in R, including functions to plot a neural network interpretation diagram, evaluation of variable importance, and a sensitivity analysis of input variables.</p>
 <p>The development version of this package can be installed from Github:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -117,22 +115,22 @@
 <span class="co"># plot</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="reference/plotnet.html">plotnet</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<p><img src="README_files/figure-html/unnamed-chunk-6-1.png"><!-- --></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-6-1.png"><!-- --></p>
 <p>The <code>garson</code> function uses Garson’s algorithm to evaluate relative variable importance. This function identifies the relative importance of explanatory variables for a single response variable by deconstructing the model weights. The importance of each variable can be determined by identifying all weighted connections between the layers in the network. That is, all weights connecting the specific input node that pass through the hidden layer to the response variable are identified. This is repeated for all other explanatory variables until a list of all weights that are specific to each input variable is obtained. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with the response variable in the model. The results indicate relative importance as the absolute magnitude from zero to one. The function cannot be used to evaluate the direction of the response. Only neural networks with one hidden layer and one output node can be evaluated.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># importance of each variable</span>
 <span class="fu"><a href="reference/garson.html">garson</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<p><img src="README_files/figure-html/unnamed-chunk-7-1.png"><!-- --></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-7-1.png"><!-- --></p>
 <p>The <code>olden</code> function is an alternative and more flexible approach to evaluate variable importance. The function calculates iportance as the product of the raw input-hidden and hidden-output connection weights between each input and output neuron and sums the product across all hidden neurons. An advantage of this approach is the relative contributions of each connection weight are maintained in terms of both magnitude and sign as compared to Garson’s algorithm which only considers the absolute magnitude. For example, connection weights that change sign (e.g., positive to negative) between the input-hidden to hidden-output layers would have a cancelling effect whereas Garson’s algorithm may provide misleading results based on the absolute magnitude. An additional advantage is that Olden’s algorithm is capable of evaluating neural networks with multiple hidden layers and response variables. The importance values assigned to each variable are in units that are based directly on the summed product of the connection weights. The actual values should only be interpreted based on relative sign and magnitude between explanatory variables. Comparisons between different models should not be made.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># importance of each variable</span>
 <span class="fu"><a href="reference/olden.html">olden</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<p><img src="README_files/figure-html/unnamed-chunk-8-1.png"><!-- --></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-8-1.png"><!-- --></p>
 <p>The <code>lekprofile</code> function performs a simple sensitivity analysis for neural networks. The Lek profile method is fairly generic and can be extended to any statistical model in R with a predict method. However, it is one of few methods to evaluate sensitivity in neural networks. The function begins by predicting the response variable across the range of values for a given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum) that are indicated in the plot legend. The final result is a set of predictions for the response that are evaluated across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is repeated for each explanatory variable to describe the fitted response values returned by the model.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># sensitivity analysis</span>
 <span class="fu"><a href="reference/lekprofile.html">lekprofile</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<p><img src="README_files/figure-html/unnamed-chunk-9-1.png"><!-- --></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-9-1.png"><!-- --></p>
 </div>
 <div id="license" class="section level3">
 <h3 class="hasAnchor">
@@ -173,7 +171,15 @@
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/fawda123/NeuralNetTools/actions"><img src="https://github.com/fawda123/NeuralNetTools/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/fawda123/NeuralNetTools/actions"><img src="https://github.com/fawda123/NeuralNetTools/workflows/pkgdown/badge.svg" alt="pkgdown"></a></li>
+<li><a href="https://cran.rstudio.com/web/packages/NeuralNetTools/index.html"><img src="http://cranlogs.r-pkg.org/badges/grand-total/NeuralNetTools"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
