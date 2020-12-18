@@ -4,8 +4,23 @@
 \alias{bias_lines}
 \title{Plot connection weights for bias lines}
 \usage{
-bias_lines(bias_x, bias_y, mod_in, nid, rel_rsc, all_out, pos_col, neg_col,
-  struct, y_names, x_range, y_range, layer_x, line_stag, max_sp)
+bias_lines(
+  bias_x,
+  bias_y,
+  mod_in,
+  nid,
+  rel_rsc,
+  all_out,
+  pos_col,
+  neg_col,
+  struct,
+  y_names,
+  x_range,
+  y_range,
+  layer_x,
+  line_stag,
+  max_sp
+)
 }
 \arguments{
 \item{bias_x}{numeric vector x axis locations for bias lines}

@@ -4,7 +4,8 @@
 \name{neuraldat}
 \alias{neuraldat}
 \title{Simulated dataset for function examples}
-\format{A data frame with 2000 rows and 5 variables:
+\format{
+A data frame with 2000 rows and 5 variables:
 \describe{
   \item{Y1}{numeric}
   \item{Y2}{numeric}
@@ -12,7 +13,8 @@
   \item{X2}{numeric}
   \item{X3}{numeric}
   ...
-}}
+}
+}
 \usage{
 neuraldat
 }

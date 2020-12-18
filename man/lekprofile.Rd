@@ -11,14 +11,23 @@
 \usage{
 lekprofile(mod_in, ...)
 
-\method{lekprofile}{default}(mod_in, xvars, ysel = NULL, xsel = NULL,
-  steps = 100, group_vals = seq(0, 1, by = 0.2), val_out = FALSE,
-  group_show = FALSE, grp_nms = NULL, position = "dodge", ...)
+\method{lekprofile}{default}(
+  mod_in,
+  xvars,
+  ysel = NULL,
+  xsel = NULL,
+  steps = 100,
+  group_vals = seq(0, 1, by = 0.2),
+  val_out = FALSE,
+  group_show = FALSE,
+  grp_nms = NULL,
+  position = "dodge",
+  ...
+)
 
 \method{lekprofile}{nnet}(mod_in, xsel = NULL, ysel = NULL, ...)
 
-\method{lekprofile}{mlp}(mod_in, xvars, yvars, xsel = NULL, ysel = NULL,
-  ...)
+\method{lekprofile}{mlp}(mod_in, xvars, yvars, xsel = NULL, ysel = NULL, ...)
 
 \method{lekprofile}{train}(mod_in, xsel = NULL, ysel = NULL, ...)
 

@@ -16,19 +16,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r, echo = FALSE, message = FALSE, eval = FALSE}
-library(NeuralNetTools)
-```
-
 Four core functions are available to plot (`plotnet`), evaluate variable importance (`garson`, `olden`), and conduct a simple sensitivity analysis (`lekprofile`).  A sample dataset is also provided for use with the examples.  The functions have S3 methods developed for neural networks from the following packages: [nnet](https://cran.r-project.org/package=nnet), [neuralnet](https://cran.r-project.org/package=neuralnet), [RSNNS](https://cran.r-project.org/package=RSNNS), and [caret](https://cran.r-project.org/package=caret).  Numeric inputs that describe model weights are also acceptable for most of the functions. A full package descriptions is available in the online [manual](https://cran.r-project.org/package=NeuralNetTools/NeuralNetTools.pdf).
  
 Start by loading the package and the sample dataset.
 
-```{r, message = FALSE, echo = FALSE}
-devtools::load_all('.')
-data(neuraldat)
-```
-```{r, eval = FALSE}
+```{r}
 library(NeuralNetTools)
 data(neuraldat)
 ```
