@@ -35,7 +35,7 @@ Software_, *85*(11), pp. 1-20. doi: 10.18637/jss.v085.i11 (URL: http://doi.org/1
 
 ### Bug reports
 
-Please submit any bug reports (or suggestions) using the [issues](https://github.com/fawda123/NeuralNetTools/issues) tab of the GitHub page.
+Please submit any bug reports or suggestions using the [issues](https://github.com/fawda123/NeuralNetTools/issues) tab of the GitHub page.
 
 ### Functions
 
