@@ -49,6 +49,18 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/Overview.html">Overview</a>
+    </li>
+  </ul>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -69,13 +81,10 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="neuralnettools" class="section level2">
-<h2 class="hasAnchor">
-<a href="#neuralnettools" class="anchor"></a>NeuralNetTools</h2>
-<div id="marcus-w-beck-marcusbsccwrporg" class="section level4">
-<h4 class="hasAnchor">
-<a href="#marcus-w-beck-marcusbsccwrporg" class="anchor"></a><em>Marcus W. Beck, <a href="mailto:marcusb@sccwrp.org" class="email">marcusb@sccwrp.org</a></em>
-</h4>
+
+<div id="readme" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#readme" class="anchor"></a>README</h1></div>
 
 <p>This is the development repository for the NeuralNetTools package. Functions within this package can be used for the interpretation of neural network models created in R, including functions to plot a neural network interpretation diagram, evaluation of variable importance, and a sensitivity analysis of input variables.</p>
 <p>The development version of this package can be installed from Github:</p>
@@ -86,58 +95,31 @@
 <p>The current release can be installed from CRAN:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'NeuralNetTools'</span><span class="op">)</span></code></pre></div>
-</div>
+<p>See the <a href="http://fawda123.github.io/NeuralNetTools">website</a> for additional information.</p>
 <div id="citation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h3>
 <p>Please cite this package as follows:</p>
 <p>Beck MW (2018). “NeuralNetTools: Visualization and Analysis Tools for Neural Networks.” <em>Journal of Statistical Software</em>, <em>85</em>(11), pp. 1-20. doi: 10.18637/jss.v085.i11 (URL: <a href="http://doi.org/10.18637/jss.v085.i11" class="uri">http://doi.org/10.18637/jss.v085.i11</a>).</p>
 </div>
-<div id="bug-reports" class="section level3">
-<h3 class="hasAnchor">
-<a href="#bug-reports" class="anchor"></a>Bug reports</h3>
-<p>Please submit any bug reports (or suggestions) using the <a href="https://github.com/fawda123/NeuralNetTools/issues">issues</a> tab of the GitHub page.</p>
 </div>
-<div id="functions" class="section level3">
-<h3 class="hasAnchor">
-<a href="#functions" class="anchor"></a>Functions</h3>
-<p>Four core functions are available to plot (<code>plotnet</code>), evaluate variable importance (<code>garson</code>, <code>olden</code>), and conduct a simple sensitivity analysis (<code>lekprofile</code>). A sample dataset is also provided for use with the examples. The functions have S3 methods developed for neural networks from the following packages: <a href="https://cran.r-project.org/package=nnet">nnet</a>, <a href="https://cran.r-project.org/package=neuralnet">neuralnet</a>, <a href="https://cran.r-project.org/package=RSNNS">RSNNS</a>, and <a href="https://cran.r-project.org/package=caret">caret</a>. Numeric inputs that describe model weights are also acceptable for most of the functions. A full package descriptions is available in the online <a href="https://cran.r-project.org/package=NeuralNetTools/NeuralNetTools.pdf">manual</a>.</p>
-<p>Start by loading the package and the sample dataset.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">NeuralNetTools</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">neuraldat</span><span class="op">)</span></code></pre></div>
-<p>The <code>plotnet</code> function plots a neural network as a simple network or as a neural interpretation diagram (NID). The default settings are to plot as NID with positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled as I1 through In for n input variables. One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn. The output layer is plotted last with nodes labeled as O1 through On. Bias nodes connected to the hidden and output layers are also shown.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># create neural network</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">nnet</a></span><span class="op">)</span>
-<span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/nnet/man/nnet.html">nnet</a></span><span class="op">(</span><span class="va">Y1</span> <span class="op">~</span> <span class="va">X1</span> <span class="op">+</span> <span class="va">X2</span> <span class="op">+</span> <span class="va">X3</span>, data <span class="op">=</span> <span class="va">neuraldat</span>, size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
-
-<span class="co"># plot</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="reference/plotnet.html">plotnet</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<p><img src="README_files/figure-gfm/unnamed-chunk-6-1.png"><!-- --></p>
-<p>The <code>garson</code> function uses Garson’s algorithm to evaluate relative variable importance. This function identifies the relative importance of explanatory variables for a single response variable by deconstructing the model weights. The importance of each variable can be determined by identifying all weighted connections between the layers in the network. That is, all weights connecting the specific input node that pass through the hidden layer to the response variable are identified. This is repeated for all other explanatory variables until a list of all weights that are specific to each input variable is obtained. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with the response variable in the model. The results indicate relative importance as the absolute magnitude from zero to one. The function cannot be used to evaluate the direction of the response. Only neural networks with one hidden layer and one output node can be evaluated.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># importance of each variable</span>
-<span class="fu"><a href="reference/garson.html">garson</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<p><img src="README_files/figure-gfm/unnamed-chunk-7-1.png"><!-- --></p>
-<p>The <code>olden</code> function is an alternative and more flexible approach to evaluate variable importance. The function calculates iportance as the product of the raw input-hidden and hidden-output connection weights between each input and output neuron and sums the product across all hidden neurons. An advantage of this approach is the relative contributions of each connection weight are maintained in terms of both magnitude and sign as compared to Garson’s algorithm which only considers the absolute magnitude. For example, connection weights that change sign (e.g., positive to negative) between the input-hidden to hidden-output layers would have a cancelling effect whereas Garson’s algorithm may provide misleading results based on the absolute magnitude. An additional advantage is that Olden’s algorithm is capable of evaluating neural networks with multiple hidden layers and response variables. The importance values assigned to each variable are in units that are based directly on the summed product of the connection weights. The actual values should only be interpreted based on relative sign and magnitude between explanatory variables. Comparisons between different models should not be made.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># importance of each variable</span>
-<span class="fu"><a href="reference/olden.html">olden</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<p><img src="README_files/figure-gfm/unnamed-chunk-8-1.png"><!-- --></p>
-<p>The <code>lekprofile</code> function performs a simple sensitivity analysis for neural networks. The Lek profile method is fairly generic and can be extended to any statistical model in R with a predict method. However, it is one of few methods to evaluate sensitivity in neural networks. The function begins by predicting the response variable across the range of values for a given explanatory variable. All other explanatory variables are held constant at set values (e.g., minimum, 20th percentile, maximum) that are indicated in the plot legend. The final result is a set of predictions for the response that are evaluated across the range of values for one explanatory variable, while holding all other explanatory variables constant. This is repeated for each explanatory variable to describe the fitted response values returned by the model.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># sensitivity analysis</span>
-<span class="fu"><a href="reference/lekprofile.html">lekprofile</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
-<p><img src="README_files/figure-gfm/unnamed-chunk-9-1.png"><!-- --></p>
+<div id="issues-and-suggestions" class="section level1">
+<h1 class="hasAnchor">
+<a href="#issues-and-suggestions" class="anchor"></a>Issues and suggestions</h1>
+<p>Please report any issues and suggestions on the <a href="https://github.com/fawda123/NeuralNetTools/issues">issues link</a> for the repository.</p>
+<p>A guide to posting issues can be found <a href="ISSUE_TEMPLATE.html">here</a>.</p>
 </div>
+<div id="contributing" class="section level1">
+<h1 class="hasAnchor">
+<a href="#contributing" class="anchor"></a>Contributing</h1>
+<p>Please view our <a href="CONTRIBUTING.html">contributing</a> guidelines for any changes or pull requests.</p>
 <div id="license" class="section level3">
 <h3 class="hasAnchor">
 <a href="#license" class="anchor"></a>License</h3>
 <p>This package is released in the public domain under the creative commons license <a href="https://tldrlegal.com/license/creative-commons-cc0-1.0-universal">CC0</a>.</p>
 </div>
 </div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -156,6 +138,12 @@
 <h2>License</h2>
 <ul class="list-unstyled">
 <li>CC0</li>
+</ul>
+</div>
+<div class="community">
+<h2>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
 </ul>
 </div>
 <div class="citation">

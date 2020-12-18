@@ -87,6 +87,18 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/Overview.html">Overview</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -120,16 +132,25 @@
     <pre class="usage"><span class='fu'>lekprofile</span><span class='op'>(</span><span class='va'>mod_in</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>lekprofile</span><span class='op'>(</span><span class='va'>mod_in</span>, <span class='va'>xvars</span>, ysel <span class='op'>=</span> <span class='cn'>NULL</span>, xsel <span class='op'>=</span> <span class='cn'>NULL</span>,
-  steps <span class='op'>=</span> <span class='fl'>100</span>, group_vals <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, by <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>, val_out <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  group_show <span class='op'>=</span> <span class='cn'>FALSE</span>, grp_nms <span class='op'>=</span> <span class='cn'>NULL</span>, position <span class='op'>=</span> <span class='st'>"dodge"</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>lekprofile</span><span class='op'>(</span>
+  <span class='va'>mod_in</span>,
+  <span class='va'>xvars</span>,
+  ysel <span class='op'>=</span> <span class='cn'>NULL</span>,
+  xsel <span class='op'>=</span> <span class='cn'>NULL</span>,
+  steps <span class='op'>=</span> <span class='fl'>100</span>,
+  group_vals <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, by <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>,
+  val_out <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  group_show <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  grp_nms <span class='op'>=</span> <span class='cn'>NULL</span>,
+  position <span class='op'>=</span> <span class='st'>"dodge"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for nnet</span>
 <span class='fu'>lekprofile</span><span class='op'>(</span><span class='va'>mod_in</span>, xsel <span class='op'>=</span> <span class='cn'>NULL</span>, ysel <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for mlp</span>
-<span class='fu'>lekprofile</span><span class='op'>(</span><span class='va'>mod_in</span>, <span class='va'>xvars</span>, <span class='va'>yvars</span>, xsel <span class='op'>=</span> <span class='cn'>NULL</span>, ysel <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>lekprofile</span><span class='op'>(</span><span class='va'>mod_in</span>, <span class='va'>xvars</span>, <span class='va'>yvars</span>, xsel <span class='op'>=</span> <span class='cn'>NULL</span>, ysel <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for train</span>
 <span class='fu'>lekprofile</span><span class='op'>(</span><span class='va'>mod_in</span>, xsel <span class='op'>=</span> <span class='cn'>NULL</span>, ysel <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>

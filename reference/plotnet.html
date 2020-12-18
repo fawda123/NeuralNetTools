@@ -87,6 +87,18 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/Overview.html">Overview</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -120,32 +132,55 @@
     <pre class="usage"><span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, <span class='va'>x_names</span>, <span class='va'>y_names</span>, struct <span class='op'>=</span> <span class='cn'>NULL</span>,
-  nid <span class='op'>=</span> <span class='cn'>TRUE</span>, all_out <span class='op'>=</span> <span class='cn'>TRUE</span>, all_in <span class='op'>=</span> <span class='cn'>TRUE</span>, bias <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  rel_rsc <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>7</span><span class='op'>)</span>, circle_cex <span class='op'>=</span> <span class='fl'>5</span>, node_labs <span class='op'>=</span> <span class='cn'>TRUE</span>, var_labs <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  line_stag <span class='op'>=</span> <span class='cn'>NULL</span>, cex_val <span class='op'>=</span> <span class='fl'>1</span>, alpha_val <span class='op'>=</span> <span class='fl'>1</span>,
-  circle_col <span class='op'>=</span> <span class='st'>"lightblue"</span>, pos_col <span class='op'>=</span> <span class='st'>"black"</span>, neg_col <span class='op'>=</span> <span class='st'>"grey"</span>,
-  bord_col <span class='op'>=</span> <span class='st'>"lightblue"</span>, max_sp <span class='op'>=</span> <span class='cn'>FALSE</span>, pad_x <span class='op'>=</span> <span class='fl'>1</span>, prune_col <span class='op'>=</span> <span class='cn'>NULL</span>,
-  prune_lty <span class='op'>=</span> <span class='st'>"dashed"</span>, skip <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>plotnet</span><span class='op'>(</span>
+  <span class='va'>mod_in</span>,
+  <span class='va'>x_names</span>,
+  <span class='va'>y_names</span>,
+  struct <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nid <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  all_out <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  all_in <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  bias <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  rel_rsc <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>7</span><span class='op'>)</span>,
+  circle_cex <span class='op'>=</span> <span class='fl'>5</span>,
+  node_labs <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  var_labs <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  line_stag <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cex_val <span class='op'>=</span> <span class='fl'>1</span>,
+  alpha_val <span class='op'>=</span> <span class='fl'>1</span>,
+  circle_col <span class='op'>=</span> <span class='st'>"lightblue"</span>,
+  pos_col <span class='op'>=</span> <span class='st'>"black"</span>,
+  neg_col <span class='op'>=</span> <span class='st'>"grey"</span>,
+  bord_col <span class='op'>=</span> <span class='st'>"lightblue"</span>,
+  max_sp <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  pad_x <span class='op'>=</span> <span class='fl'>1</span>,
+  prune_col <span class='op'>=</span> <span class='cn'>NULL</span>,
+  prune_lty <span class='op'>=</span> <span class='st'>"dashed"</span>,
+  skip <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for nnet</span>
-<span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, x_names <span class='op'>=</span> <span class='cn'>NULL</span>, y_names <span class='op'>=</span> <span class='cn'>NULL</span>,
-  skip <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, x_names <span class='op'>=</span> <span class='cn'>NULL</span>, y_names <span class='op'>=</span> <span class='cn'>NULL</span>, skip <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for numeric</span>
-<span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, <span class='va'>struct</span>, x_names <span class='op'>=</span> <span class='cn'>NULL</span>, y_names <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, <span class='va'>struct</span>, x_names <span class='op'>=</span> <span class='cn'>NULL</span>, y_names <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for mlp</span>
-<span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, x_names <span class='op'>=</span> <span class='cn'>NULL</span>, y_names <span class='op'>=</span> <span class='cn'>NULL</span>,
-  prune_col <span class='op'>=</span> <span class='cn'>NULL</span>, prune_lty <span class='op'>=</span> <span class='st'>"dashed"</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>plotnet</span><span class='op'>(</span>
+  <span class='va'>mod_in</span>,
+  x_names <span class='op'>=</span> <span class='cn'>NULL</span>,
+  y_names <span class='op'>=</span> <span class='cn'>NULL</span>,
+  prune_col <span class='op'>=</span> <span class='cn'>NULL</span>,
+  prune_lty <span class='op'>=</span> <span class='st'>"dashed"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for nn</span>
 <span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, x_names <span class='op'>=</span> <span class='cn'>NULL</span>, y_names <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for train</span>
-<span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, x_names <span class='op'>=</span> <span class='cn'>NULL</span>, y_names <span class='op'>=</span> <span class='cn'>NULL</span>,
-  skip <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+<span class='fu'>plotnet</span><span class='op'>(</span><span class='va'>mod_in</span>, x_names <span class='op'>=</span> <span class='cn'>NULL</span>, y_names <span class='op'>=</span> <span class='cn'>NULL</span>, skip <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
