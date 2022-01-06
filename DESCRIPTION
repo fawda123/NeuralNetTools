@@ -4,7 +4,7 @@ Title: Visualization and Analysis Tools for Neural Networks
 Version: 1.5.3
 Date: 2022-01-06
 Author: Marcus W. Beck [aut, cre]
-Maintainer: Marcus W. Beck <marcusb@sccwrp.org>
+Maintainer: Marcus W. Beck <mbafs2012@gmail.com>
 Description: Visualization and analysis tools to aid in the interpretation of
     neural network models.  Functions are available for plotting,
     quantifying variable importance, conducting a sensitivity analysis, and
