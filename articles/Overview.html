@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">NeuralNetTools</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.5.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -61,7 +57,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/fawda123/NeuralNetTools/">
+  <a href="https://github.com/fawda123/NeuralNetTools/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -82,26 +78,26 @@
       <h1 data-toc-skip>Overview</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/fawda123/NeuralNetTools/blob/master/vignettes/Overview.Rmd"><code>vignettes/Overview.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/fawda123/NeuralNetTools/blob/HEAD/vignettes/Overview.Rmd" class="external-link"><code>vignettes/Overview.Rmd</code></a></small>
       <div class="hidden name"><code>Overview.Rmd</code></div>
 
     </div>
 
     
     
-<p>Four core functions are available to plot (<code>plotnet</code>), evaluate variable importance (<code>garson</code>, <code>olden</code>), and conduct a simple sensitivity analysis (<code>lekprofile</code>). A sample dataset is also provided for use with the examples. The functions have S3 methods developed for neural networks from the following packages: <a href="https://cran.r-project.org/package=nnet">nnet</a>, <a href="https://cran.r-project.org/package=neuralnet">neuralnet</a>, <a href="https://cran.r-project.org/package=RSNNS">RSNNS</a>, and <a href="https://cran.r-project.org/package=caret">caret</a>. Numeric inputs that describe model weights are also acceptable for most of the functions. A full package descriptions is available in the online <a href="https://cran.r-project.org/package=NeuralNetTools/NeuralNetTools.pdf">manual</a>.</p>
+<p>Four core functions are available to plot (<code>plotnet</code>), evaluate variable importance (<code>garson</code>, <code>olden</code>), and conduct a simple sensitivity analysis (<code>lekprofile</code>). A sample dataset is also provided for use with the examples. The functions have S3 methods developed for neural networks from the following packages: <a href="https://cran.r-project.org/package=nnet" class="external-link">nnet</a>, <a href="https://cran.r-project.org/package=neuralnet" class="external-link">neuralnet</a>, <a href="https://cran.r-project.org/package=RSNNS" class="external-link">RSNNS</a>, and <a href="https://cran.r-project.org/package=caret" class="external-link">caret</a>. Numeric inputs that describe model weights are also acceptable for most of the functions. A full package descriptions is available in the online <a href="https://cran.r-project.org/package=NeuralNetTools/NeuralNetTools.pdf" class="external-link">manual</a>.</p>
 <p>Start by loading the package and the sample dataset.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">NeuralNetTools</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">neuraldat</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">NeuralNetTools</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">neuraldat</span><span class="op">)</span></code></pre></div>
 <p>The <code>plotnet</code> function plots a neural network as a simple network or as a neural interpretation diagram (NID). The default settings are to plot as NID with positive weights between layers as black lines and negative weights as grey lines. Line thickness is in proportion to relative magnitude of each weight. The first layer includes only input variables with nodes labelled as I1 through In for n input variables. One through many hidden layers are plotted with each node in each layer labelled as H1 through Hn. The output layer is plotted last with nodes labeled as O1 through On. Bias nodes connected to the hidden and output layers are also shown.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># create neural network</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">nnet</a></span><span class="op">)</span>
-<span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/nnet/man/nnet.html">nnet</a></span><span class="op">(</span><span class="va">Y1</span> <span class="op">~</span> <span class="va">X1</span> <span class="op">+</span> <span class="va">X2</span> <span class="op">+</span> <span class="va">X3</span>, data <span class="op">=</span> <span class="va">neuraldat</span>, size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">nnet</a></span><span class="op">)</span>
+<span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/nnet/man/nnet.html" class="external-link">nnet</a></span><span class="op">(</span><span class="va">Y1</span> <span class="op">~</span> <span class="va">X1</span> <span class="op">+</span> <span class="va">X2</span> <span class="op">+</span> <span class="va">X3</span>, data <span class="op">=</span> <span class="va">neuraldat</span>, size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
 
 <span class="co"># plot</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/plotnet.html">plotnet</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></code></pre></div>
 <p><img src="Overview_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 <p>The <code>garson</code> function uses Garson’s algorithm to evaluate relative variable importance. This function identifies the relative importance of explanatory variables for a single response variable by deconstructing the model weights. The importance of each variable can be determined by identifying all weighted connections between the layers in the network. That is, all weights connecting the specific input node that pass through the hidden layer to the response variable are identified. This is repeated for all other explanatory variables until a list of all weights that are specific to each input variable is obtained. The connections are tallied for each input node and scaled relative to all other inputs. A single value is obtained for each explanatory variable that describes the relationship with the response variable in the model. The results indicate relative importance as the absolute magnitude from zero to one. The function cannot be used to evaluate the direction of the response. Only neural networks with one hidden layer and one output node can be evaluated.</p>
@@ -130,11 +126,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Marcus W. Beck.</p>
+  <p></p>
+<p>Developed by Marcus W. Beck.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -142,6 +140,8 @@
 
   
 
+
+  
 
   </body>
 </html>
