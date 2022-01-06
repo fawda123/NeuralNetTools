@@ -1,8 +1,8 @@
 Package: NeuralNetTools
 Type: Package
 Title: Visualization and Analysis Tools for Neural Networks
-Version: 1.5.2
-Date: 2018-07-26
+Version: 1.5.3
+Date: 2022-01-06
 Author: Marcus W. Beck [aut, cre]
 Maintainer: Marcus W. Beck <marcusb@sccwrp.org>
 Description: Visualization and analysis tools to aid in the interpretation of
@@ -28,6 +28,6 @@ Depends:
     R (>= 3.1.1)
 Authors@R: person(given = "Marcus W.", family = "Beck",
     role = c("aut","cre"),
-    email = "marcusb@sccwrp.org")
+    email = "mbafs2012@gmail.com")
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr

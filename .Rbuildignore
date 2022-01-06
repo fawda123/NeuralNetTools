@@ -14,3 +14,4 @@ README.html
 ^README_files/.*
 ^revdep/.*
 ^\.github$
+^LICENSE\.md$
