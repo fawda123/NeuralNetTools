@@ -12,8 +12,15 @@
 \usage{
 garson(mod_in, ...)
 
-\method{garson}{default}(mod_in, x_names, y_names, bar_plot = TRUE,
-  x_lab = NULL, y_lab = NULL, ...)
+\method{garson}{default}(
+  mod_in,
+  x_names,
+  y_names,
+  bar_plot = TRUE,
+  x_lab = NULL,
+  y_lab = NULL,
+  ...
+)
 
 \method{garson}{numeric}(mod_in, struct, ...)
 

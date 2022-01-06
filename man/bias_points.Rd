@@ -4,8 +4,18 @@
 \alias{bias_points}
 \title{Plot bias points}
 \usage{
-bias_points(bias_x, bias_y, layer_name, node_labs, x_range, y_range,
-  circle_cex, cex_val, bord_col, circle_col)
+bias_points(
+  bias_x,
+  bias_y,
+  layer_name,
+  node_labs,
+  x_range,
+  y_range,
+  circle_cex,
+  cex_val,
+  bord_col,
+  circle_col
+)
 }
 \arguments{
 \item{bias_x}{numeric vector of values for x locations}

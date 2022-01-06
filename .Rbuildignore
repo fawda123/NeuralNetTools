@@ -13,3 +13,4 @@ README.Rmd
 README.html
 ^README_files/.*
 ^revdep/.*
+^\.github$
