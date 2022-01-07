@@ -2,6 +2,8 @@
 
 [![R-CMD-check](https://github.com/fawda123/NeuralNetTools/workflows/R-CMD-check/badge.svg)](https://github.com/fawda123/NeuralNetTools/actions)
 [![pkgdown](https://github.com/fawda123/NeuralNetTools/workflows/pkgdown/badge.svg)](https://github.com/fawda123/NeuralNetTools/actions)
+https://www.r-pkg.org/badges/version/NeuralNetTool
+[![CRAN status](https://www.r-pkg.org/badges/version/NeuralNetTools)](https://CRAN.R-project.org/package=NeuralNetTools)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/NeuralNetTools)](https://cran.rstudio.com/web/packages/NeuralNetTools/index.html)
 
 This is the development repository for the NeuralNetTools package.  Functions within this package can be used for the interpretation of neural network models created in R, including functions to plot a neural network interpretation diagram, evaluation of variable importance, and a sensitivity analysis of input variables. 
